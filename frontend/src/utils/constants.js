@@ -33,12 +33,23 @@ export const PROVINCES = Object.freeze([
 ])
 
 // Display labels for backend enum values (UI metadata only).
+// Mirrors backend/src/utils/constants.js - the backend zod enums are the
+// source of truth, these copies are display/validation only.
+export const ANIMAL_TYPES = Object.freeze(['CATTLE', 'GOATS', 'SHEEP', 'PIGS', 'POULTRY'])
+
 export const ANIMAL_TYPE_LABELS = Object.freeze({
   CATTLE: 'Cattle',
   GOATS: 'Goats',
   SHEEP: 'Sheep',
   PIGS: 'Pigs',
   POULTRY: 'Poultry',
+})
+
+export const ANIMAL_SEXES = Object.freeze(['MALE', 'FEMALE'])
+
+export const ANIMAL_SEX_LABELS = Object.freeze({
+  MALE: 'Male',
+  FEMALE: 'Female',
 })
 
 export const REPORT_STATUS_LABELS = Object.freeze({

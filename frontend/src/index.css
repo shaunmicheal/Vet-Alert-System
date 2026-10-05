@@ -114,6 +114,10 @@
     @apply text-charcoal-600 hover:bg-charcoal-100 hover:text-charcoal-900;
   }
 
+  .btn-danger {
+    @apply bg-red-600 text-white shadow-sm hover:bg-red-700;
+  }
+
   .card {
     @apply rounded-xl border border-charcoal-200 bg-white shadow-sm;
   }

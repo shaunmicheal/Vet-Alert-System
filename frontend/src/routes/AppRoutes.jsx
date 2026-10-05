@@ -9,6 +9,7 @@ import NotFoundPage from '../pages/NotFoundPage'
 import UnauthorizedPage from '../pages/UnauthorizedPage'
 import FarmerDashboardPage from '../pages/farmer/FarmerDashboardPage'
 import FarmProfilePage from '../pages/farmer/FarmProfilePage'
+import AnimalsPage from '../pages/farmer/AnimalsPage'
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
 import ProtectedRoute from './ProtectedRoute'
@@ -51,7 +52,7 @@ export default function AppRoutes() {
           <Route index element={<FarmerDashboardPage />} />
           <Route path="farm" element={<FarmProfilePage />} />
           <Route path="reports" element={<ModulePlaceholder title="Health Reports" />} />
-          <Route path="animals" element={<ModulePlaceholder title="My Animals" />} />
+          <Route path="animals" element={<AnimalsPage />} />
           <Route path="referrals" element={<ModulePlaceholder title="Referrals" />} />
           <Route path="reminders" element={<ModulePlaceholder title="Reminders" />} />
           <Route path="veterinarians" element={<ModulePlaceholder title="Veterinary Directory" />} />
