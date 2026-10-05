@@ -6,6 +6,7 @@ import {
   FiClipboard,
   FiFileText,
   FiHome,
+  FiMapPin,
   FiShare2,
   FiShield,
   FiUser,
@@ -23,8 +24,9 @@ export const ROLE_LABELS = Object.freeze({
 export const ROLE_NAVIGATION = Object.freeze({
   [ROLES.FARMER]: [
     { label: 'Dashboard', path: '/farmer', icon: FiHome, end: true },
-    { label: 'Health Reports', path: '/farmer/reports', icon: FiFileText },
+    { label: 'Farm Profile', path: '/farmer/farm', icon: FiMapPin },
     { label: 'My Animals', path: '/farmer/animals', icon: FaPaw },
+    { label: 'Health Reports', path: '/farmer/reports', icon: FiFileText },
     { label: 'Referrals', path: '/farmer/referrals', icon: FiShare2 },
     { label: 'Reminders', path: '/farmer/reminders', icon: FiBell },
     { label: 'Veterinary Directory', path: '/farmer/veterinarians', icon: FaUserMd },

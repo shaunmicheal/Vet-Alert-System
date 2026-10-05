@@ -16,3 +16,34 @@ export const ROLE_HOME = Object.freeze({
 export const SESSION_EXPIRED_EVENT = 'vetalert:session-expired'
 
 export const homePathForRole = (role) => ROLE_HOME[role] || '/unauthorized'
+
+// Zimbabwe provinces. Mirrors backend/src/utils/constants.js PROVINCES exactly -
+// the backend zod enum is the source of truth, this copy is display/validation only.
+export const PROVINCES = Object.freeze([
+  'Harare',
+  'Bulawayo',
+  'Manicaland',
+  'Mashonaland Central',
+  'Mashonaland East',
+  'Mashonaland West',
+  'Masvingo',
+  'Matabeleland North',
+  'Matabeleland South',
+  'Midlands',
+])
+
+// Display labels for backend enum values (UI metadata only).
+export const ANIMAL_TYPE_LABELS = Object.freeze({
+  CATTLE: 'Cattle',
+  GOATS: 'Goats',
+  SHEEP: 'Sheep',
+  PIGS: 'Pigs',
+  POULTRY: 'Poultry',
+})
+
+export const REPORT_STATUS_LABELS = Object.freeze({
+  PENDING: 'Pending',
+  REVIEWED: 'Reviewed',
+  REFERRED: 'Referred',
+  RESOLVED: 'Resolved',
+})

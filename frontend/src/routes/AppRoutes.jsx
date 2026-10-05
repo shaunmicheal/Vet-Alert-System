@@ -7,6 +7,8 @@ import AppShell from '../layouts/AppShell'
 import ModulePlaceholder from '../pages/ModulePlaceholder'
 import NotFoundPage from '../pages/NotFoundPage'
 import UnauthorizedPage from '../pages/UnauthorizedPage'
+import FarmerDashboardPage from '../pages/farmer/FarmerDashboardPage'
+import FarmProfilePage from '../pages/farmer/FarmProfilePage'
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
 import ProtectedRoute from './ProtectedRoute'
@@ -46,7 +48,8 @@ export default function AppRoutes() {
       {/* Farmer area - FARMER role only */}
       <Route element={<ProtectedRoute roles={[ROLES.FARMER]} />}>
         <Route path="/farmer" element={<AppShell />}>
-          <Route index element={<ModulePlaceholder title="Dashboard" icon={FiCompass} />} />
+          <Route index element={<FarmerDashboardPage />} />
+          <Route path="farm" element={<FarmProfilePage />} />
           <Route path="reports" element={<ModulePlaceholder title="Health Reports" />} />
           <Route path="animals" element={<ModulePlaceholder title="My Animals" />} />
           <Route path="referrals" element={<ModulePlaceholder title="Referrals" />} />
