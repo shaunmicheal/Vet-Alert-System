@@ -1,0 +1,235 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  FARMER
+  VETERINARY_PROFESSIONAL
+  ADMIN
+}
+
+enum AnimalType {
+  CATTLE
+  GOATS
+  SHEEP
+  PIGS
+  POULTRY
+}
+
+enum RiskLevel {
+  LOW
+  MODERATE
+  HIGH
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  REFERRED
+  RESOLVED
+}
+
+enum ReferralStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  DECLINED
+}
+
+enum ReminderType {
+  VACCINATION
+  DEWORMING
+  DIPPING
+  PREGNANCY_CHECK
+  FOLLOW_UP
+  OTHER
+}
+
+enum AlertType {
+  POSSIBLE_CLUSTER
+  HIGH_RISK
+  SYSTEM
+}
+
+model User {
+  id                    String                   @id @default(cuid())
+  name                  String
+  email                 String                   @unique
+  password              String
+  phone                 String?
+  role                  Role                     @default(FARMER)
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+
+  farm                  Farm?
+  veterinaryProfessional VeterinaryProfessional?
+  healthReports         HealthReport[]
+  reminders             Reminder[]
+  referralsMade         Referral[]               @relation("ReferralFarmer")
+}
+
+model Farm {
+  id          String    @id @default(cuid())
+  name        String
+  province    String
+  district    String
+  ward        String?
+  village     String?
+  address     String?
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  farmerId    String    @unique
+  farmer      User      @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  animals     Animal[]
+  reports     HealthReport[]
+}
+
+model Animal {
+  id          String      @id @default(cuid())
+  animalType  AnimalType
+  name        String?
+  tagNumber   String?
+  breed       String?
+  age         Int?
+  sex         String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  farmId      String
+  farm        Farm        @relation(fields: [farmId], references: [id], onDelete: Cascade)
+
+  reports     HealthReport[]
+}
+
+model HealthReport {
+  id                  String          @id @default(cuid())
+  title               String
+  description         String
+  symptomsDuration    String?
+  appetite            String?
+  breathingDifficulty Boolean         @default(false)
+  affectedAnimals     Int?
+  recentMovement      Boolean         @default(false)
+  recentVaccination   Boolean         @default(false)
+  recentTreatment     String?
+  additionalNotes     String?
+
+  riskLevel           RiskLevel?
+  aiAssessment        String?
+  aiRecommendations   String?
+
+  status              ReportStatus    @default(PENDING)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  farmerId            String
+  farmer              User            @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+
+  farmId              String
+  farm                Farm            @relation(fields: [farmId], references: [id], onDelete: Cascade)
+
+  animalId            String?
+  animal              Animal?         @relation(fields: [animalId], references: [id], onDelete: SetNull)
+
+  symptoms            ReportSymptom[]
+  referrals           Referral[]
+  alerts              Alert[]
+}
+
+model Symptom {
+  id          String          @id @default(cuid())
+  name        String          @unique
+  description String?
+  createdAt   DateTime        @default(now())
+
+  reports     ReportSymptom[]
+}
+
+model ReportSymptom {
+  id          String       @id @default(cuid())
+
+  reportId    String
+  report      HealthReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  symptomId   String
+  symptom     Symptom      @relation(fields: [symptomId], references: [id], onDelete: Cascade)
+
+  @@unique([reportId, symptomId])
+}
+
+model VeterinaryProfessional {
+  id              String    @id @default(cuid())
+  name            String
+  professionalType String
+  phone           String
+  email           String?
+  province        String
+  district        String
+  specialisation  String?
+  availability    String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  userId          String?   @unique
+  user            User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  referrals       Referral[]
+}
+
+model Referral {
+  id                    String                 @id @default(cuid())
+  status                ReferralStatus         @default(PENDING)
+  farmerMessage         String?
+  professionalResponse  String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  reportId              String
+  report                HealthReport           @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  farmerId              String
+  farmer                User                   @relation("ReferralFarmer", fields: [farmerId], references: [id], onDelete: Cascade)
+
+  professionalId        String
+  professional          VeterinaryProfessional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+}
+
+model Reminder {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  type        ReminderType
+  dueDate     DateTime
+  completed   Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  farmerId    String
+  farmer      User          @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+}
+
+model Alert {
+  id          String       @id @default(cuid())
+  title       String
+  message     String
+  type        AlertType
+  province    String?
+  district    String?
+  animalType  AnimalType?
+  reportCount Int?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  reportId    String?
+  report      HealthReport? @relation(fields: [reportId], references: [id], onDelete: SetNull)
+}
