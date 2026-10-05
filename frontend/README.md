@@ -1,16 +1,59 @@
-# React + Vite
+# VetAlert Zimbabwe — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React + Vite single-page application for VetAlert Zimbabwe. JavaScript/JSX only — no TypeScript.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + Vite
+- React Router (routing + role guards)
+- Tailwind CSS 4 (`@tailwindcss/vite`)
+- Axios (centralised API client)
+- React Hook Form + Zod (form validation)
+- react-icons (icons)
+- oxlint (linting)
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Copy `.env.example` to `.env` and set the API location:
 
-## Expanding the Oxlint configuration
+   ```
+   VITE_API_URL=http://localhost:5000
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+   `VITE_API_URL` is the **only** frontend environment variable. Never put backend
+   secrets (Gemini keys, JWT secrets, database URLs) in frontend env files.
+
+2. Install and run:
+
+   ```bash
+   npm install
+   npm run dev      # http://localhost:5173
+   npm run build    # production build
+   npm run lint     # oxlint
+   ```
+
+   The backend allows CORS from `http://localhost:5173` by default.
+
+## Structure
+
+```
+src/
+  api/         # Axios client + endpoint functions
+  components/  # Logo and shared UI (loading, alerts, empty states)
+  context/     # Auth provider/context
+  hooks/       # useAuth, useDocumentTitle
+  layouts/     # AuthLayout (public pages), AppShell (authenticated shell)
+  pages/       # Login, registration, 404, unauthorized, placeholders
+  routes/      # AppRoutes + ProtectedRoute / PublicOnlyRoute
+  utils/       # constants, storage, errors, navigation
+  assets/      # static assets
+```
+
+## Roles
+
+`FARMER`, `VETERINARY_PROFESSIONAL` and `ADMIN` route to `/farmer`, `/vet` and
+`/admin` respectively. Frontend guards are UX protection only — the backend
+remains the real security boundary.
+
+Only farmers can self-register; veterinary professionals and administrators are
+created by the backend/admin.
