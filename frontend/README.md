@@ -20,8 +20,12 @@ React + Vite single-page application for VetAlert Zimbabwe. JavaScript/JSX only 
    VITE_API_URL=http://localhost:5000
    ```
 
-   `VITE_API_URL` is the **only** frontend environment variable. Never put backend
-   secrets (Gemini keys, JWT secrets, database URLs) in frontend env files.
+   `VITE_API_URL` is the **only** frontend environment variable. Point it at the API
+   origin; the Axios client appends `/api` automatically because the backend mounts
+   every route under `/api` (for example `/api/auth/register`).
+
+   Never put backend secrets (Gemini keys, JWT secrets, database URLs) in frontend
+   env files.
 
 2. Install and run:
 

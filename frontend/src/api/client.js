@@ -4,7 +4,19 @@ import { getStoredToken } from '../utils/storage'
 
 // Single source of truth for the API location. Only VITE_API_URL is exposed to
 // the browser - never backend secrets (Gemini keys, JWT secrets, database URLs).
-const baseURL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/+$/, '')
+//
+// The backend mounts every router under /api (see backend/src/app.js), so the
+// base URL is normalised to end with /api. VITE_API_URL may therefore be set to
+// the origin (http://localhost:5000) or already include the suffix
+// (http://localhost:5000/api) - both resolve to the same correct base URL.
+const API_BASE_PATH = '/api'
+const configuredBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(
+  /\/+$/,
+  '',
+)
+const baseURL = configuredBaseUrl.endsWith(API_BASE_PATH)
+  ? configuredBaseUrl
+  : `${configuredBaseUrl}${API_BASE_PATH}`
 
 const api = axios.create({
   baseURL,
