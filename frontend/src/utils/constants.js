@@ -58,3 +58,16 @@ export const REPORT_STATUS_LABELS = Object.freeze({
   REFERRED: 'Referred',
   RESOLVED: 'Resolved',
 })
+
+// Mirrors backend RISK_LEVELS - used for filtering and risk summaries.
+export const RISK_LEVELS = Object.freeze(['LOW', 'MODERATE', 'HIGH'])
+
+export const RISK_LEVEL_LABELS = Object.freeze({
+  LOW: 'Low risk',
+  MODERATE: 'Moderate risk',
+  HIGH: 'High risk',
+})
+
+// Safety wording used only if the backend does not return its own disclaimer.
+export const FRONTEND_DISCLAIMER =
+  'This AI-assisted assessment is not a veterinary diagnosis. For serious, worsening, or high-risk cases, seek professional veterinary assistance.'

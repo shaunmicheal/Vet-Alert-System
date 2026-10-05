@@ -7,6 +7,9 @@ import AppShell from '../layouts/AppShell'
 import ModulePlaceholder from '../pages/ModulePlaceholder'
 import NotFoundPage from '../pages/NotFoundPage'
 import UnauthorizedPage from '../pages/UnauthorizedPage'
+import HealthReportsPage from '../pages/farmer/HealthReportsPage'
+import HealthReportDetailPage from '../pages/farmer/HealthReportDetailPage'
+import HealthReportFormPage from '../pages/farmer/HealthReportFormPage'
 import FarmerDashboardPage from '../pages/farmer/FarmerDashboardPage'
 import FarmProfilePage from '../pages/farmer/FarmProfilePage'
 import AnimalsPage from '../pages/farmer/AnimalsPage'
@@ -51,7 +54,9 @@ export default function AppRoutes() {
         <Route path="/farmer" element={<AppShell />}>
           <Route index element={<FarmerDashboardPage />} />
           <Route path="farm" element={<FarmProfilePage />} />
-          <Route path="reports" element={<ModulePlaceholder title="Health Reports" />} />
+          <Route path="reports/new" element={<HealthReportFormPage />} />
+          <Route path="reports" element={<HealthReportsPage />} />
+          <Route path="reports/:id" element={<HealthReportDetailPage />} />
           <Route path="animals" element={<AnimalsPage />} />
           <Route path="referrals" element={<ModulePlaceholder title="Referrals" />} />
           <Route path="reminders" element={<ModulePlaceholder title="Reminders" />} />
