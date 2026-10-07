@@ -84,6 +84,130 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
         </h2>
 
         {/* What is being shared */}
+
+        {step === 'message' ? (
+          <div className="mt-4">
+            <label htmlFor="referral-message" className="field-label">
+              Message to the professional{' '}
+              <span className="font-normal text-charcoal-400">(optional)</span>
+            </label>
+            <textarea
+              id="referral-message"
+              className="field-input min-h-[110px] resize-y"
+              placeholder="Add anything you think they should know…"
+              maxLength={MAX_MESSAGE_LENGTH}
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              disabled={submitting}
+            />
+            <p className="mt-1.5 text-xs text-charcoal-500">
+              {trimmedMessage.length} of {MAX_MESSAGE_LENGTH} characters
+            </p>
+            <p className="mt-3 text-xs leading-relaxed text-charcoal-500">
+              The professional will see this report&rsquo;s details, including its AI-assisted risk
+              assessment if one has been run. That assessment is health guidance, not a confirmed
+              diagnosis.
+            </p>
+          </div>
+        ) : (
+          <dl className="mt-4 space-y-3 text-sm">
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-charcoal-400">
+                Health report
+              </dt>
+              <dd className="mt-0.5 text-charcoal-800">
+                {report.title} · {animalLabel} · Submitted {formatDate(report.createdAt)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-charcoal-400">
+                Sending to
+              </dt>
+              <dd className="mt-0.5 text-charcoal-800">
+                {professional.name} ({professional.professionalType || 'Professional'})
+                {professional.district ? `, ${professional.district}` : ''}
+                {professional.province ? `, ${professional.province}` : ''}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-charcoal-400">
+                Your message
+              </dt>
+              <dd className="mt-0.5 whitespace-pre-line text-charcoal-800">
+                {trimmedMessage || 'No message added.'}
+              </dd>
+            </div>
+          </dl>
+        )}
+
+        {error && (
+          <AlertMessage variant="error" className="mt-4">
+            {error}
+          </AlertMessage>
+        )}
+
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
+          {step === 'review' ? (
+            <button
+              type="button"
+              onClick={() => setStep('message')}
+              className="btn btn-secondary"
+              disabled={submitting}
+            >
+              Back
+            </button>
+          ) : (
+            <button type="button" onClick={onCancel} className="btn btn-secondary" disabled={submitting}>
+              Cancel
+            </button>
+          )}
+
+          {step === 'message' ? (
+            <button
+              type="button"
+              onClick={() => {
+                setError(null)
+                setStep('review')
+              }}
+              className="btn btn-primary"
+              disabled={submitting}
+            >
+              Review referral
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="btn btn-primary"
+              disabled={submitting}
+              aria-busy={submitting}
+            >
+              {submitting ? (
+                <>
+                  <Spinner className="h-4 w-4" />
+                  Sending referral…
+                </>
+              ) : (
+                <>
+                  <FiSend className="h-4 w-4" aria-hidden="true" />
+                  Submit referral
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* Success feedback lives on the status page the farmer is sent to. */}
+        <p className="mt-4 flex items-start gap-1.5 text-xs leading-relaxed text-charcoal-500">
+          <FiCheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-forest-600" aria-hidden="true" />
+          After submitting you will see the referral&rsquo;s status, where you can track any
+          response from the professional.
+        </p>
+      </div>
+    </div>
+  )
+}
+
         <div className="mt-3 rounded-lg border border-charcoal-200 bg-cream-50 p-4 text-sm">
           <p className="font-semibold text-charcoal-900">{report.title}</p>
           <p className="mt-0.5 text-charcoal-600">

@@ -25,8 +25,32 @@ const app = express();
 // We are often behind a proxy (hosting platforms) - this keeps req.ip correct.
 app.set('trust proxy', 1);
 
-// Only the configured frontend origin may call the API.
-app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
+// ---- CORS ------------------------------------------------------------------
+// Allowed origins:
+//  1. CLIENT_URL (one URL, or several separated by commas)
+//  2. This project's own Vercel deployment URLs (branch / preview deployments),
+//     e.g. https://vet-alert-system-git-main-shaunmicheals-projects.vercel.app
+const allowedOrigins = String(env.CLIENT_URL || '')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
+const vercelProjectPattern =
+  /^https:\/\/vet-alert-system(-[a-z0-9-]+)?-shaunmicheals-projects\.vercel\.app$/;
+
+const corsOptions = {
+  origin(origin, callback) {
+    // No Origin header = non-browser clients (curl, health checks) - allow.
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin) || vercelProjectPattern.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Parse JSON bodies. The limit protects the API from very large payloads.
 app.use(express.json({ limit: '1mb' }));
