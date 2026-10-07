@@ -74,8 +74,8 @@ export default function TriageResult({ triage }) {
                 Veterinary attention recommended.
               </p>
               <p className={`mt-1 text-sm ${panel.body}`}>
-                Please contact a veterinary professional as soon as you can. Referral tools and the
-                veterinary directory arrive in a later VetAlert release.
+                Please contact a veterinary professional as soon as you can. You can find one in
+                the Veterinary Directory.
               </p>
             </>
           ) : (

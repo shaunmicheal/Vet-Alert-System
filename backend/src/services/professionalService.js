@@ -37,6 +37,18 @@ const listActiveProfessionals = (filters = {}) => {
   if (filters.specialisation) {
     where.specialisation = { contains: filters.specialisation, mode: 'insensitive' };
   }
+  // Free-text search across the fields a farmer would recognise: who they are,
+  // what they help with, how to reach them, and where they operate.
+  if (filters.search) {
+    where.OR = [
+      { name: { contains: filters.search, mode: 'insensitive' } },
+      { email: { contains: filters.search, mode: 'insensitive' } },
+      { phone: { contains: filters.search, mode: 'insensitive' } },
+      { specialisation: { contains: filters.search, mode: 'insensitive' } },
+      { district: { contains: filters.search, mode: 'insensitive' } },
+      { province: { contains: filters.search, mode: 'insensitive' } },
+    ];
+  }
 
   return prisma.veterinaryProfessional.findMany({
     where,

@@ -11,6 +11,7 @@ const listProfessionals = async (req, res) => {
     district: req.query.district,
     professionalType: req.query.professionalType,
     specialisation: req.query.specialisation,
+    search: req.query.search,
   });
 
   return sendSuccess(res, { professionals, count: professionals.length });

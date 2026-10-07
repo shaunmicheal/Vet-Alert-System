@@ -1,6 +1,6 @@
 import { Link, Outlet } from 'react-router-dom'
 import { FaUserMd } from 'react-icons/fa'
-import { FiAlertTriangle, FiShare2 } from 'react-icons/fi'
+import { FiAlertTriangle, FiFileText } from 'react-icons/fi'
 import Logo from '../components/Logo'
 
 // Computed once at module load (not during render).
@@ -9,18 +9,18 @@ const CURRENT_YEAR = new Date().getFullYear()
 const FEATURES = [
   {
     icon: FiAlertTriangle,
-    title: 'Early outbreak alerts',
+    title: 'Early health alerts',
     description: 'High-risk cases and possible clusters are flagged straight away.',
   },
   {
-    icon: FiShare2,
-    title: 'Referrals you can follow',
-    description: 'Track every veterinary referral from first report to resolution.',
+    icon: FiFileText,
+    title: 'Practical health advisories',
+    description: 'Every assessment includes clear recommendations and warning signs to watch for.',
   },
   {
     icon: FaUserMd,
     title: 'Trusted professionals',
-    description: 'Connect with verified veterinary professionals across Zimbabwe.',
+    description: 'Connect with veterinary professionals across Zimbabwe.',
   },
 ]
 
@@ -29,7 +29,10 @@ const FEATURES = [
 export default function AuthLayout() {
   return (
     <div className="min-h-screen bg-cream-50 lg:grid lg:grid-cols-[1.05fr_1fr]">
-      <aside className="relative flex flex-col justify-between overflow-hidden bg-forest-800 px-10 py-12 xl:px-14">
+      {/* Branding panel is desktop-only: below lg the compact header inside
+          <main> carries the logo, so showing both would duplicate branding and
+          push the sign-in form below a full screen of marketing copy. */}
+      <aside className="relative hidden flex-col justify-between overflow-hidden bg-forest-800 px-10 py-12 lg:flex xl:px-14">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-earth-500/20"

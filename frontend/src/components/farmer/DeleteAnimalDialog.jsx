@@ -49,7 +49,7 @@ export default function DeleteAnimalDialog({ animal, onCancel, onDeleted }) {
         onClick={onCancel}
       />
 
-      <div className="relative w-full max-w-md rounded-t-xl bg-white p-5 shadow-xl sm:rounded-xl sm:p-6">
+      <div className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-xl bg-white p-5 shadow-xl sm:rounded-xl sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-700">
             <FiTrash2 className="h-5 w-5" aria-hidden="true" />

@@ -21,6 +21,7 @@ const directoryQuerySchema = z.object({
   district: z.string().trim().min(2, 'District filter is too short').max(120).optional(),
   professionalType: z.string().trim().min(2, 'Professional type filter is too short').max(120).optional(),
   specialisation: z.string().trim().min(2, 'Specialisation filter is too short').max(120).optional(),
+  search: z.string().trim().min(2, 'Search is too short').max(120).optional(),
 });
 
 router.get('/', validateQuery(directoryQuerySchema), listProfessionals);

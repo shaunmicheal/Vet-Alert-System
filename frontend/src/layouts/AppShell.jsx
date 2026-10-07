@@ -221,7 +221,11 @@ export default function AppShell() {
             >
               {initials}
             </span>
-            <button type="button" onClick={logout} className="btn btn-ghost hidden px-3 py-2 lg:hidden">
+            <button
+              type="button"
+              onClick={logout}
+              className="btn btn-ghost px-3 py-2 lg:hidden"
+            >
               <FiLogOut className="h-4 w-4" aria-hidden="true" />
               <span className="hidden sm:inline">Log out</span>
             </button>

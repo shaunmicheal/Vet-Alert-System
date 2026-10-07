@@ -9,8 +9,9 @@ const show = (value) => value || '—'
 export default function AnimalList({ animals, onEdit, onDelete }) {
   return (
     <>
-      {/* Tablet / desktop table */}
-      <div className="card hidden overflow-hidden md:block">
+      {/* Tablet / desktop table. overflow-x-auto keeps long tag numbers/breeds
+          scrollable instead of clipped (the schema allows up to 80 characters). */}
+      <div className="card hidden overflow-x-auto md:block">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Animals registered to your farm</caption>
           <thead className="bg-charcoal-100 text-xs font-semibold uppercase tracking-wider text-charcoal-500">

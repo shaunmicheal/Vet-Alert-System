@@ -42,10 +42,15 @@ export default function LoginPage() {
       // The role comes from the authenticated user - never from the form.
       const user = await login(values)
 
+      // Only return to the requested page when it lives inside THIS user's
+      // workspace. A stale link to another role's area (e.g. /admin/alerts hit
+      // while signed out) must land on the role home, not an access-denied page.
+      const homePath = homePathForRole(user.role)
       const requestedPath = location.state && location.state.from && location.state.from.pathname
-      const isPublicRequest =
-        !requestedPath || requestedPath.startsWith('/login') || requestedPath.startsWith('/register')
-      const destination = isPublicRequest ? homePathForRole(user.role) : requestedPath
+      const isOwnWorkspace =
+        typeof requestedPath === 'string' &&
+        (requestedPath === homePath || requestedPath.startsWith(`${homePath}/`))
+      const destination = isOwnWorkspace ? requestedPath : homePath
 
       navigate(destination, { replace: true })
     } catch (error) {

@@ -10,6 +10,7 @@ import UnauthorizedPage from '../pages/UnauthorizedPage'
 import HealthReportsPage from '../pages/farmer/HealthReportsPage'
 import HealthReportDetailPage from '../pages/farmer/HealthReportDetailPage'
 import HealthReportFormPage from '../pages/farmer/HealthReportFormPage'
+import VeterinaryDirectoryPage from '../pages/farmer/VeterinaryDirectoryPage'
 import FarmerDashboardPage from '../pages/farmer/FarmerDashboardPage'
 import FarmProfilePage from '../pages/farmer/FarmProfilePage'
 import AnimalsPage from '../pages/farmer/AnimalsPage'
@@ -34,8 +35,9 @@ function HomeRedirect() {
   return <Navigate to={homePathForRole(user.role)} replace />
 }
 
-// All application routes. Role areas are protected by role; each nav item has
-// a placeholder route for now - later phases replace them with real pages.
+// All application routes. Role areas are protected by role; the farmer area is
+// fully implemented, while the veterinary/admin/referral areas still use the
+// structural placeholder until their pages are built.
 export default function AppRoutes() {
   return (
     <Routes>
@@ -60,7 +62,10 @@ export default function AppRoutes() {
           <Route path="animals" element={<AnimalsPage />} />
           <Route path="referrals" element={<ModulePlaceholder title="Referrals" />} />
           <Route path="reminders" element={<ModulePlaceholder title="Reminders" />} />
-          <Route path="veterinarians" element={<ModulePlaceholder title="Veterinary Directory" />} />
+          <Route
+            path="veterinarians"
+            element={<VeterinaryDirectoryPage />}
+          />
         </Route>
       </Route>
 
