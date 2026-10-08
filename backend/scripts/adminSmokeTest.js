@@ -222,7 +222,15 @@ const run = async () => {
 
     const adminList = await api(base, '/api/admin/alerts', { headers: auth(adminToken) });
     check('Admin can list alerts (200)', adminList.status === 200 && Array.isArray(adminList.body?.data?.alerts));
-    check('Admin sees an empty alert list before any alert exists', adminList.body?.data?.count === 0, `count ${adminList.body?.data?.count}`);
+    // The shared development database is intentionally persistent (it may hold
+    // real development alerts such as HIGH_RISK alerts from other users), and
+    // cleanup() deliberately removes ONLY Phase5-owned alerts. So the initial
+    // empty-state check must be scoped to this suite's own test data instead of
+    // asserting the global alert table is empty.
+    const phase5AlertsBefore = (adminList.body?.data?.alerts || []).filter(
+      (a) => (a.district || '').startsWith('Phase5') || (a.type === 'SYSTEM' && (a.title || '').startsWith('Phase5')),
+    );
+    check('Admin sees an empty alert list before any alert exists', phase5AlertsBefore.length === 0, `count ${phase5AlertsBefore.length} (total ${adminList.body?.data?.count})`);
 
     // --- 2. Alert creation, detail, filters --------------------------------
     const systemCreate = await api(

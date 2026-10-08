@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { FiArrowLeft, FiRefreshCw, FiX } from 'react-icons/fi'
+import { FiArrowLeft, FiRefreshCw, FiShare2, FiX } from 'react-icons/fi'
 import { getHealthReport, runTriage } from '../../api/healthReports'
+import ReferralStatusBadge from '../../components/farmer/ReferralStatusBadge'
 import ReportStatusBadge from '../../components/farmer/ReportStatusBadge'
 import RiskBadge from '../../components/farmer/RiskBadge'
 import TriageResult from '../../components/farmer/TriageResult'
@@ -188,6 +189,61 @@ export default function HealthReportDetailPage() {
               <p>Your report is safe — you can try the assessment again.</p>
             </AlertMessage>
           )}
+
+          {/* Referral entry point + any referrals already made for this report */}
+          <section className="card p-5 sm:p-6" aria-labelledby="report-referrals-title">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2
+                  id="report-referrals-title"
+                  className="text-base font-semibold text-charcoal-900"
+                >
+                  Referrals
+                </h2>
+                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-charcoal-600">
+                  Share this report with a veterinary professional so they can review the details
+                  and respond here. A referral is a request for veterinary attention — it does not
+                  confirm that any disease is present.
+                </p>
+              </div>
+              <Link
+                to={`/farmer/veterinarians?report=${report.id}`}
+                className="btn btn-primary shrink-0"
+              >
+                <FiShare2 className="h-4 w-4" aria-hidden="true" />
+                Refer to a veterinarian
+              </Link>
+            </div>
+
+            {(report.referrals || []).length > 0 ? (
+              <ul className="mt-4 space-y-2 border-t border-charcoal-100 pt-4">
+                {(report.referrals || []).map((referral) => (
+                  <li key={referral.id}>
+                    <Link
+                      to={`/farmer/referrals/${referral.id}`}
+                      className="flex items-center justify-between gap-3 rounded-lg border border-charcoal-200 px-4 py-3 transition hover:border-forest-300"
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold text-charcoal-900">
+                          {referral.professional
+                            ? referral.professional.name
+                            : 'Veterinary professional'}
+                        </span>
+                        <span className="block text-xs text-charcoal-500">
+                          Referred {formatDate(referral.createdAt)}
+                        </span>
+                      </span>
+                      <ReferralStatusBadge status={referral.status} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-4 border-t border-charcoal-100 pt-4 text-sm text-charcoal-500">
+                This report has not been referred to anyone yet.
+              </p>
+            )}
+          </section>
 
           {shownTriage && <TriageResult triage={shownTriage} />}
 

@@ -1,5 +1,4 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { FiCompass } from 'react-icons/fi'
 import LoadingScreen from '../components/ui/LoadingScreen'
 import { useAuth } from '../hooks/useAuth'
 import AuthLayout from '../layouts/AuthLayout'
@@ -7,10 +6,18 @@ import AppShell from '../layouts/AppShell'
 import ModulePlaceholder from '../pages/ModulePlaceholder'
 import NotFoundPage from '../pages/NotFoundPage'
 import UnauthorizedPage from '../pages/UnauthorizedPage'
+import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
 import HealthReportsPage from '../pages/farmer/HealthReportsPage'
 import HealthReportDetailPage from '../pages/farmer/HealthReportDetailPage'
 import HealthReportFormPage from '../pages/farmer/HealthReportFormPage'
+import ReferralsPage from '../pages/farmer/ReferralsPage'
+import ReferralDetailPage from '../pages/farmer/ReferralDetailPage'
+import RemindersPage from '../pages/farmer/RemindersPage'
 import VeterinaryDirectoryPage from '../pages/farmer/VeterinaryDirectoryPage'
+import VetDashboardPage from '../pages/vet/VetDashboardPage'
+import VetCasesPage from '../pages/vet/VetCasesPage'
+import VetCaseDetailPage from '../pages/vet/VetCaseDetailPage'
+import VetProfilePage from '../pages/vet/VetProfilePage'
 import FarmerDashboardPage from '../pages/farmer/FarmerDashboardPage'
 import FarmProfilePage from '../pages/farmer/FarmProfilePage'
 import AnimalsPage from '../pages/farmer/AnimalsPage'
@@ -35,9 +42,9 @@ function HomeRedirect() {
   return <Navigate to={homePathForRole(user.role)} replace />
 }
 
-// All application routes. Role areas are protected by role; the farmer area is
-// fully implemented, while the veterinary/admin/referral areas still use the
-// structural placeholder until their pages are built.
+// All application routes. Role areas are protected by role; the farmer,
+// veterinary and admin dashboard pages are fully implemented, while the
+// remaining admin sub-modules still use structural placeholders for now.
 export default function AppRoutes() {
   return (
     <Routes>
@@ -60,8 +67,9 @@ export default function AppRoutes() {
           <Route path="reports" element={<HealthReportsPage />} />
           <Route path="reports/:id" element={<HealthReportDetailPage />} />
           <Route path="animals" element={<AnimalsPage />} />
-          <Route path="referrals" element={<ModulePlaceholder title="Referrals" />} />
-          <Route path="reminders" element={<ModulePlaceholder title="Reminders" />} />
+          <Route path="referrals" element={<ReferralsPage />} />
+          <Route path="referrals/:id" element={<ReferralDetailPage />} />
+          <Route path="reminders" element={<RemindersPage />} />
           <Route
             path="veterinarians"
             element={<VeterinaryDirectoryPage />}
@@ -72,16 +80,17 @@ export default function AppRoutes() {
       {/* Veterinary professional area - VETERINARY_PROFESSIONAL role only */}
       <Route element={<ProtectedRoute roles={[ROLES.VETERINARY_PROFESSIONAL]} />}>
         <Route path="/vet" element={<AppShell />}>
-          <Route index element={<ModulePlaceholder title="Dashboard" icon={FiCompass} />} />
-          <Route path="cases" element={<ModulePlaceholder title="Assigned Cases" />} />
-          <Route path="profile" element={<ModulePlaceholder title="My Profile" />} />
+          <Route index element={<VetDashboardPage />} />
+          <Route path="cases" element={<VetCasesPage />} />
+          <Route path="cases/:id" element={<VetCaseDetailPage />} />
+          <Route path="profile" element={<VetProfilePage />} />
         </Route>
       </Route>
 
       {/* Admin area - ADMIN role only */}
       <Route element={<ProtectedRoute roles={[ROLES.ADMIN]} />}>
         <Route path="/admin" element={<AppShell />}>
-          <Route index element={<ModulePlaceholder title="Dashboard" icon={FiCompass} />} />
+          <Route index element={<AdminDashboardPage />} />
           <Route path="alerts" element={<ModulePlaceholder title="Alerts" />} />
           <Route path="statistics" element={<ModulePlaceholder title="Statistics" />} />
           <Route path="oversight" element={<ModulePlaceholder title="Oversight" />} />

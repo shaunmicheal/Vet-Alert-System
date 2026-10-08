@@ -19,6 +19,8 @@ const vetRoutes = require('./routes/vetRoutes');
 const referralRoutes = require('./routes/referralRoutes');
 // Phase 5 - admin & alerting
 const adminRoutes = require('./routes/adminRoutes');
+// Phase 6F-B - reminders
+const reminderRoutes = require('./routes/reminderRoutes');
 
 const app = express();
 
@@ -86,6 +88,9 @@ app.use('/api/reports', healthReportRoutes); // health reports -> /api/reports
 app.use('/api/vets', vetDirectoryRoutes); // professional directory -> /api/vets
 app.use('/api/vet', vetRoutes); // vet workspace -> /api/vet/profile, /api/vet/cases
 app.use('/api/referrals', referralRoutes); // farmer referrals -> /api/referrals
+
+// Phase 6F-B - farmer reminders
+app.use('/api/reminders', reminderRoutes);
 
 // Phase 5 - admin & alerting
 app.use('/api/admin', adminRoutes); // admin oversight -> /api/admin/alerts, /api/admin/stats

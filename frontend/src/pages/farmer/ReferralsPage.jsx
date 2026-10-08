@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { FiRefreshCw, FiSearch, FiShare2 } from 'react-icons/fi'
 import { getMyReferrals } from '../../api/referrals'
 import ReferralCard from '../../components/farmer/ReferralCard'
-import ReferralStatusBadge from '../../components/farmer/ReferralStatusBadge'
 import DashboardStatCard from '../../components/farmer/DashboardStatCard'
 import AlertMessage from '../../components/ui/AlertMessage'
 import EmptyState from '../../components/ui/EmptyState'
@@ -110,16 +109,13 @@ export default function ReferralsPage() {
           <p className="text-sm text-charcoal-600">Loading your referrals…</p>
         </div>
       ) : loadError ? (
-        <AlertMessage
-          variant="error"
-          title="Could not load your referrals"
-          message={loadError}
-          action={
-            <button type="button" onClick={reloadReferrals} className="btn btn-secondary">
-              Try again
-            </button>
-          }
-        />
+        <AlertMessage variant="error" title="Could not load your referrals">
+          <p>{loadError}</p>
+          <button type="button" onClick={reloadReferrals} className="btn btn-secondary mt-3">
+            <FiRefreshCw className="h-4 w-4" aria-hidden="true" />
+            Try again
+          </button>
+        </AlertMessage>
       ) : referrals.length === 0 ? (
         <EmptyState
           icon={FiShare2}

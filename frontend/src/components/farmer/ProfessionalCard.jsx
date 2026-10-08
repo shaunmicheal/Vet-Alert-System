@@ -1,8 +1,10 @@
-import { FiAward, FiClock, FiMail, FiMapPin, FiPhone } from 'react-icons/fi'
+import { FiAward, FiClock, FiMail, FiMapPin, FiPhone, FiShare2 } from 'react-icons/fi'
 
 // One professional in the veterinary directory. Contact details come straight
-// from the backend record - there is no "Refer" action in this phase.
-export default function ProfessionalCard({ professional }) {
+// from the backend record. `onSelect` is only provided by the referral flow
+// (Health Report Detail -> Directory?report=<id>); without it the card stays
+// read-only exactly as before.
+export default function ProfessionalCard({ professional, onSelect }) {
   const { name, professionalType, province, district, specialisation, availability, phone, email } =
     professional
 
@@ -62,6 +64,17 @@ export default function ProfessionalCard({ professional }) {
       </dl>
 
       <div className="mt-4 flex flex-wrap gap-2 border-t border-charcoal-100 pt-4">
+        {onSelect && (
+          <button
+            type="button"
+            onClick={() => onSelect(professional)}
+            className="btn btn-primary min-h-[44px] px-3.5 py-2"
+            aria-label={`Select ${name} to receive this referral`}
+          >
+            <FiShare2 className="h-4 w-4" aria-hidden="true" />
+            Select
+          </button>
+        )}
         {phone && (
           <a
             href={`tel:${phone.replace(/\s+/g, '')}`}

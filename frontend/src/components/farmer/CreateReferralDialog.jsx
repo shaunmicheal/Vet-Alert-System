@@ -84,6 +84,20 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
         </h2>
 
         {/* What is being shared */}
+        <div className="mt-3 rounded-lg border border-charcoal-200 bg-cream-50 p-4 text-sm">
+          <p className="font-semibold text-charcoal-900">{report.title}</p>
+          <p className="mt-0.5 text-charcoal-600">
+            {animalLabel} · Submitted {formatDate(report.createdAt)}
+          </p>
+          <p className="mt-2 border-t border-charcoal-200 pt-2 font-semibold text-charcoal-900">
+            {professional.name}
+          </p>
+          <p className="mt-0.5 text-charcoal-600">
+            {professional.professionalType || 'Professional'}
+            {professional.district ? ` · ${professional.district}` : ''}
+            {professional.province ? `, ${professional.province}` : ''}
+          </p>
+        </div>
 
         {step === 'message' ? (
           <div className="mt-4">
@@ -208,17 +222,3 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
   )
 }
 
-        <div className="mt-3 rounded-lg border border-charcoal-200 bg-cream-50 p-4 text-sm">
-          <p className="font-semibold text-charcoal-900">{report.title}</p>
-          <p className="mt-0.5 text-charcoal-600">
-            {animalLabel} · Submitted {formatDate(report.createdAt)}
-          </p>
-          <p className="mt-2 border-t border-charcoal-200 pt-2 font-semibold text-charcoal-900">
-            {professional.name}
-          </p>
-          <p className="mt-0.5 text-charcoal-600">
-            {professional.professionalType || 'Professional'}
-            {professional.district ? ` · ${professional.district}` : ''}
-            {professional.province ? `, ${professional.province}` : ''}
-          </p>
-        </div>

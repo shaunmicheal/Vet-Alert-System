@@ -13,6 +13,7 @@
     "smoke:triage": "node scripts/triageSmokeTest.js",
     "smoke:vet": "node scripts/vetSmokeTest.js",
     "smoke:admin": "node scripts/adminSmokeTest.js",
+    "smoke:reminder": "node scripts/reminderSmokeTest.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "prisma skills sync || exit 0"
   },

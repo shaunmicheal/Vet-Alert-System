@@ -5,9 +5,11 @@ import { FiAlertTriangle, FiFileText, FiHome, FiMapPin, FiPlus, FiRefreshCw } fr
 import { getMyAnimals } from '../../api/animals'
 import { getMyFarm } from '../../api/farmer'
 import { getMyHealthReports } from '../../api/healthReports'
+import { getMyReminders } from '../../api/reminders'
 import DashboardStatCard from '../../components/farmer/DashboardStatCard'
 import FarmOverviewCard from '../../components/farmer/FarmOverviewCard'
 import RecentReports from '../../components/farmer/RecentReports'
+import ReminderSummaryCard from '../../components/farmer/ReminderSummaryCard'
 import AlertMessage from '../../components/ui/AlertMessage'
 import EmptyState from '../../components/ui/EmptyState'
 import Spinner from '../../components/ui/Spinner'
@@ -38,12 +40,13 @@ export default function FarmerDashboardPage() {
   const [farm, setFarm] = useState(null)
   const [animals, setAnimals] = useState([])
   const [reports, setReports] = useState([])
+  const [reminders, setReminders] = useState([])
 
   // Promise-chain style (like AuthProvider) so setState never runs synchronously
   // inside the mount effect.
   const loadDashboard = useCallback(() => {
-    return Promise.allSettled([getMyFarm(), getMyAnimals(), getMyHealthReports()]).then(
-      ([farmResult, animalsResult, reportsResult]) => {
+    return Promise.allSettled([getMyFarm(), getMyAnimals(), getMyHealthReports(), getMyReminders()]).then(
+      ([farmResult, animalsResult, reportsResult, remindersResult]) => {
         const failed = []
 
         if (farmResult.status === 'fulfilled') {
@@ -62,6 +65,12 @@ export default function FarmerDashboardPage() {
           setReports(reportsResult.value)
         } else {
           failed.push('reports')
+        }
+
+        if (remindersResult.status === 'fulfilled') {
+          setReminders(Array.isArray(remindersResult.value) ? remindersResult.value : [])
+        } else {
+          failed.push('reminders')
         }
 
         setFailedSections(failed)
@@ -205,6 +214,8 @@ export default function FarmerDashboardPage() {
             {!sectionFailed('reports') && (
               <RecentReports reports={reports.slice(0, 5)} actionPath="/farmer/reports" />
             )}
+
+            <ReminderSummaryCard reminders={reminders} failed={sectionFailed('reminders')} />
           </div>
         </>
       )}
