@@ -3,12 +3,12 @@ import LoadingScreen from '../components/ui/LoadingScreen'
 import { useAuth } from '../hooks/useAuth'
 import AuthLayout from '../layouts/AuthLayout'
 import AppShell from '../layouts/AppShell'
-import ModulePlaceholder from '../pages/ModulePlaceholder'
 import NotFoundPage from '../pages/NotFoundPage'
 import UnauthorizedPage from '../pages/UnauthorizedPage'
 import AdminAlertDetailPage from '../pages/admin/AdminAlertDetailPage'
 import AdminAlertsPage from '../pages/admin/AdminAlertsPage'
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
+import AdminOversightPage from '../pages/admin/AdminOversightPage'
 import AdminStatisticsPage from '../pages/admin/AdminStatisticsPage'
 import HealthReportsPage from '../pages/farmer/HealthReportsPage'
 import HealthReportDetailPage from '../pages/farmer/HealthReportDetailPage'
@@ -46,9 +46,8 @@ function HomeRedirect() {
 }
 
 // All application routes. Role areas are protected by role; the farmer,
-// veterinary, admin dashboard, admin alerts and admin statistics pages are
-// fully implemented, while the remaining admin sub-module (oversight) still
-// uses a structural placeholder for now.
+// veterinary, admin dashboard, admin alerts, admin statistics and admin
+// oversight pages are fully implemented.
 export default function AppRoutes() {
   return (
     <Routes>
@@ -98,7 +97,7 @@ export default function AppRoutes() {
           <Route path="alerts" element={<AdminAlertsPage />} />
           <Route path="alerts/:id" element={<AdminAlertDetailPage />} />
           <Route path="statistics" element={<AdminStatisticsPage />} />
-          <Route path="oversight" element={<ModulePlaceholder title="Oversight" />} />
+          <Route path="oversight" element={<AdminOversightPage />} />
         </Route>
       </Route>
 
