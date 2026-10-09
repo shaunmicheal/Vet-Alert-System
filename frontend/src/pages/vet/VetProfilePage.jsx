@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { FiAward, FiClock, FiMail, FiMapPin, FiPhone, FiRefreshCw } from 'react-icons/fi'
-import { getVetProfile, updateVetProfile } from '../../api/vet'
+import { getVetProfile, createVetProfile, updateVetProfile } from '../../api/vet'
 import AlertMessage from '../../components/ui/AlertMessage'
 import Spinner from '../../components/ui/Spinner'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
@@ -118,23 +118,34 @@ export default function VetProfilePage() {
     setSaveError(null)
     setSavedMessage(null)
 
-    const payload = {}
-    EDITABLE_FIELDS.forEach((field) => {
-      if (!dirtyFields[field]) return
-      if (field === 'email' && values.email === '') return
-      payload[field] = values[field]
-    })
+    const isCreating = !profile
+    let payload = values
 
-    if (Object.keys(payload).length === 0) {
-      setSaveError('Your email address cannot be left blank. Enter a valid address or restore the current one.')
-      return
+    if (!isCreating) {
+      payload = {}
+      EDITABLE_FIELDS.forEach((field) => {
+        if (!dirtyFields[field]) return
+        if (field === 'email' && values.email === '') return
+        payload[field] = values[field]
+      })
+
+      if (Object.keys(payload).length === 0) {
+        setSaveError('Your email address cannot be left blank. Enter a valid address or restore the current one.')
+        return
+      }
     }
 
     try {
-      const saved = await updateVetProfile(payload)
+      const saved = isCreating
+        ? await createVetProfile(payload)
+        : await updateVetProfile(payload)
       setProfile(saved)
       reset(toFormValues(saved))
-      setSavedMessage('Your professional profile has been saved.')
+      setSavedMessage(
+        isCreating
+          ? 'Your professional profile has been created and is now listed in the directory.'
+          : 'Your professional profile has been saved.'
+      )
     } catch (error) {
       const status = error && error.response ? error.response.status : null
       if (status === 404) {
@@ -174,19 +185,9 @@ export default function VetProfilePage() {
             Try again
           </button>
         </AlertMessage>
-      ) : !profile ? (
-        <AlertMessage variant="warning" title="Your professional profile has not been set up yet">
-          <p>
-            Your account does not have a professional record yet, so there is nothing to display
-            or edit. Please contact a VetAlert administrator to set it up.
-          </p>
-          <button type="button" onClick={reloadProfile} className="btn btn-secondary mt-3">
-            <FiRefreshCw className="h-4 w-4" aria-hidden="true" />
-            Refresh
-          </button>
-        </AlertMessage>
       ) : (
         <>
+          {profile && (
           <section className="card p-5 sm:p-6" aria-labelledby="profile-overview-title">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
@@ -238,11 +239,16 @@ export default function VetProfilePage() {
               </DetailItem>
             </dl>
           </section>
+          )}
           <section className="card p-5 sm:p-6" aria-labelledby="profile-form-heading">
             <h2 id="profile-form-heading" className="text-base font-semibold text-charcoal-900">
-              Edit profile
+              {profile ? 'Edit profile' : 'Create your profile'}
             </h2>
-            <p className="mt-1 text-sm text-charcoal-600">Fields marked with * are required.</p>
+            <p className="mt-1 text-sm text-charcoal-600">
+              {profile
+                ? 'Fields marked with * are required.'
+                : 'Set up your professional profile so farmers can find you in the veterinary directory and send referrals. Fields marked with * are required.'}
+            </p>
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-5 space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
@@ -313,7 +319,7 @@ export default function VetProfilePage() {
                   />
                   {!errors.email && (
                     <p id="profile-email-hint" className="mt-1.5 text-xs text-charcoal-500">
-                      {profile.email
+                      {profile?.email
                         ? 'Shown to farmers who find you in the directory. Leave blank to keep your current address.'
                         : 'Optional. Add an address farmers can use to reach you.'}
                     </p>
@@ -417,15 +423,19 @@ export default function VetProfilePage() {
                   {isSubmitting ? (
                     <>
                       <Spinner className="h-4 w-4" />
-                      Saving…
+                      {profile ? 'Saving…' : 'Creating…'}
                     </>
-                  ) : (
+                  ) : profile ? (
                     'Save changes'
+                  ) : (
+                    'Create profile'
                   )}
                 </button>
                 <p className="text-xs leading-relaxed text-charcoal-500">
                   {isDirty
-                    ? 'Only the fields you changed are sent to the server.'
+                    ? profile
+                      ? 'Only the fields you changed are sent to the server.'
+                      : 'Complete the required fields, then create your profile.'
                     : 'No changes yet - edit a field to enable saving.'}
                 </p>
               </div>

@@ -39,6 +39,10 @@ export const ROLE_NAVIGATION = Object.freeze({
     { label: 'Dashboard', path: '/admin', icon: FiHome, end: true },
     { label: 'Alerts', path: '/admin/alerts', icon: FiAlertTriangle },
     { label: 'Statistics', path: '/admin/statistics', icon: FiBarChart2 },
+    { label: 'Users', path: '/admin/users', icon: FiUser },
+    { label: 'Reports', path: '/admin/reports', icon: FiFileText },
+    { label: 'Referrals', path: '/admin/referrals', icon: FiShare2 },
+    { label: 'Veterinary', path: '/admin/veterinary', icon: FaUserMd },
     { label: 'Oversight', path: '/admin/oversight', icon: FiShield },
   ],
 })

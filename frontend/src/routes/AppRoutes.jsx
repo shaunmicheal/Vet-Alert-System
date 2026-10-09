@@ -9,7 +9,15 @@ import AdminAlertDetailPage from '../pages/admin/AdminAlertDetailPage'
 import AdminAlertsPage from '../pages/admin/AdminAlertsPage'
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
 import AdminOversightPage from '../pages/admin/AdminOversightPage'
+import AdminReferralDetailPage from '../pages/admin/AdminReferralDetailPage'
+import AdminReferralsPage from '../pages/admin/AdminReferralsPage'
+import AdminReportDetailPage from '../pages/admin/AdminReportDetailPage'
+import AdminReportsPage from '../pages/admin/AdminReportsPage'
 import AdminStatisticsPage from '../pages/admin/AdminStatisticsPage'
+import AdminUserDetailPage from '../pages/admin/AdminUserDetailPage'
+import AdminUsersPage from '../pages/admin/AdminUsersPage'
+import AdminVeterinaryDetailPage from '../pages/admin/AdminVeterinaryDetailPage'
+import AdminVeterinaryPage from '../pages/admin/AdminVeterinaryPage'
 import HealthReportsPage from '../pages/farmer/HealthReportsPage'
 import HealthReportDetailPage from '../pages/farmer/HealthReportDetailPage'
 import HealthReportFormPage from '../pages/farmer/HealthReportFormPage'
@@ -90,6 +98,14 @@ export default function AppRoutes() {
           <Route path="alerts/:id" element={<AdminAlertDetailPage />} />
           <Route path="statistics" element={<AdminStatisticsPage />} />
           <Route path="oversight" element={<AdminOversightPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="users/:id" element={<AdminUserDetailPage />} />
+          <Route path="reports" element={<AdminReportsPage />} />
+          <Route path="reports/:id" element={<AdminReportDetailPage />} />
+          <Route path="referrals" element={<AdminReferralsPage />} />
+          <Route path="referrals/:id" element={<AdminReferralDetailPage />} />
+          <Route path="veterinary" element={<AdminVeterinaryPage />} />
+          <Route path="veterinary/:id" element={<AdminVeterinaryDetailPage />} />
         </Route>
       </Route>
 

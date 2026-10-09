@@ -171,18 +171,21 @@ export default function AdminStatisticsPage() {
                 label="Platform users"
                 value={users.total || 0}
                 sub={`${users.farmers || 0} farmers · ${users.veterinaryProfessionals || 0} veterinary professionals · ${users.admins || 0} admins`}
+                to="/admin/users"
               />
               <PlatformCard
                 icon={FiFileText}
                 label="Health reports"
                 value={reportTotal}
                 sub={`${reportStatuses.PENDING || 0} awaiting review`}
+                to="/admin/reports"
               />
               <PlatformCard
                 icon={FiShare2}
                 label="Referrals"
                 value={referralTotal}
                 sub={`${referralStatuses.PENDING || 0} pending · ${referralStatuses.IN_PROGRESS || 0} in progress`}
+                to="/admin/referrals"
               />
               <PlatformCard
                 icon={FiAlertTriangle}
@@ -190,6 +193,7 @@ export default function AdminStatisticsPage() {
                 value={alertTotal}
                 sub={`${activeAlerts} currently active`}
                 tone={activeAlerts > 0 ? 'warning' : 'default'}
+                to="/admin/alerts?status=ACTIVE"
               />
             </section>
 

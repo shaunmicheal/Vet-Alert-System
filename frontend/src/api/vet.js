@@ -33,6 +33,11 @@ export const getVetProfile = async () => {
   return data.data.profile ?? null
 }
 
+export const createVetProfile = async (payload) => {
+  const { data } = await api.post('/vet/profile', payload)
+  return data.data.profile
+}
+
 export const updateVetProfile = async (payload) => {
   const { data } = await api.patch('/vet/profile', payload)
   return data.data.profile

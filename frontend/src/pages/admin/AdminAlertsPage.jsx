@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   FiAlertTriangle,
   FiBell,
@@ -58,10 +59,14 @@ function FilterSelect({ id, label, allLabel, value, options, onChange }) {
 export default function AdminAlertsPage() {
   useDocumentTitle('Alerts')
 
+  const [searchParams, setSearchParams] = useSearchParams()
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
-  const [filters, setFilters] = useState(EMPTY_FILTERS)
+  const [filters, setFilters] = useState(() => ({
+    ...EMPTY_FILTERS,
+    status: (searchParams.get('status') || '').toUpperCase() === 'ACTIVE' ? 'ACTIVE' : EMPTY_FILTERS.status,
+  }))
   const [flash, setFlash] = useState(null)
   const [createOpen, setCreateOpen] = useState(false)
   const [scanning, setScanning] = useState(false)
@@ -135,10 +140,21 @@ export default function AdminAlertsPage() {
 
   const filtersActive = Object.values(filters).some(Boolean)
 
-  const setFilter = (key) => (event) =>
-    setFilters((prev) => ({ ...prev, [key]: event.target.value }))
+  const setFilter = (key) => (event) => {
+    const value = event.target.value
+    setFilters((prev) => ({ ...prev, [key]: value }))
+    if (key === 'status') {
+      const next = new URLSearchParams(searchParams)
+      if (value) next.set('status', value)
+      else next.delete('status')
+      setSearchParams(next, { replace: true })
+    }
+  }
 
-  const clearFilters = () => setFilters(EMPTY_FILTERS)
+  const clearFilters = () => {
+    setFilters(EMPTY_FILTERS)
+    setSearchParams({}, { replace: true })
+  }
 
   const handleCreated = (created) => {
     setAlerts((prev) => [created, ...prev])

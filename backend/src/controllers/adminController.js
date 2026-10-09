@@ -3,6 +3,7 @@ const prisma = require('../config/prisma');
 const ApiError = require('../utils/ApiError');
 const { sendSuccess } = require('../utils/response');
 const alertService = require('../services/alertService');
+const { PUBLIC_PROFESSIONAL_SELECT } = require('../services/professionalService');
 const {
   ALERT_TYPES,
   ANIMAL_TYPES,
@@ -81,6 +82,170 @@ const runClusterScan = async (req, res) => {
   const { district } = req.body || {};
   const alerts = await alertService.detectPossibleClusters({ district });
   return sendSuccess(res, { alerts, count: alerts.length });
+};
+
+const parsePagination = (query) => {
+  const page = Math.min(Math.max(Number.parseInt(query.page, 10) || 1, 1), 1000);
+  const limit = Math.min(Math.max(Number.parseInt(query.limit, 10) || 20, 1), 100);
+  return { page, limit, skip: (page - 1) * limit };
+};
+
+const toPagination = (page, limit, total) => ({
+  page,
+  limit,
+  total,
+  totalPages: Math.max(Math.ceil(total / limit), 1),
+});
+
+const ADMIN_SAFE_USER_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  role: true,
+  createdAt: true,
+  updatedAt: true,
+};
+
+const listUsers = async (req, res) => {
+  const { page, limit, skip } = parsePagination(req.query);
+  const where = {};
+  if (req.query.role) where.role = req.query.role;
+  if (req.query.search) {
+    const term = req.query.search.trim();
+    where.OR = [
+      { name: { contains: term, mode: 'insensitive' } },
+      { email: { contains: term, mode: 'insensitive' } },
+    ];
+  }
+
+  const [total, users] = await Promise.all([
+    prisma.user.count({ where }),
+    prisma.user.findMany({
+      where,
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+      skip,
+      take: limit,
+      select: {
+        ...ADMIN_SAFE_USER_SELECT,
+        veterinaryProfessional: { select: { id: true, name: true, isActive: true } },
+        farm: { select: { id: true, name: true, province: true, district: true } },
+      },
+    }),
+  ]);
+
+  return sendSuccess(res, { users, pagination: toPagination(page, limit, total) });
+};
+
+const getUser = async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.params.id },
+    select: {
+      ...ADMIN_SAFE_USER_SELECT,
+      farm: true,
+      veterinaryProfessional: { select: { ...PUBLIC_PROFESSIONAL_SELECT, userId: true } },
+      healthReports: {
+        select: { id: true, title: true, status: true, riskLevel: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      },
+      referralsMade: {
+        select: { id: true, status: true, createdAt: true, professionalId: true },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      },
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(404, 'Unable to find that record.');
+  }
+
+  return sendSuccess(res, { user });
+};
+
+const ADMIN_REPORT_SELECT = {
+  id: true,
+  title: true,
+  description: true,
+  riskLevel: true,
+  status: true,
+  createdAt: true,
+  updatedAt: true,
+  farmer: { select: { id: true, name: true, email: true } },
+  farm: { select: { id: true, name: true, province: true, district: true } },
+  animal: true,
+  symptoms: { include: { symptom: true } },
+};
+
+const ADMIN_REFERRAL_SELECT = {
+  id: true,
+  status: true,
+  farmerMessage: true,
+  createdAt: true,
+  updatedAt: true,
+  farmer: { select: { id: true, name: true, email: true, phone: true } },
+  professional: { select: { ...PUBLIC_PROFESSIONAL_SELECT, userId: true } },
+  report: {
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      riskLevel: true,
+      createdAt: true,
+      farm: { select: { id: true, name: true, province: true, district: true } },
+      animal: { select: { id: true, animalType: true, name: true, tagNumber: true } },
+    },
+  },
+};
+
+const listReports = async (req, res) => {
+  const { page, limit, skip } = parsePagination(req.query);
+  const where = {};
+  if (req.query.status) where.status = req.query.status;
+  if (req.query.riskLevel) where.riskLevel = req.query.riskLevel;
+  if (req.query.province) where.farm = { province: req.query.province };
+  if (req.query.animalType) where.animal = { animalType: req.query.animalType };
+  if (req.query.search) {
+    const term = req.query.search.trim();
+    where.OR = [
+      { title: { contains: term, mode: 'insensitive' } },
+      { description: { contains: term, mode: 'insensitive' } },
+    ];
+  }
+
+  const [total, reports] = await Promise.all([
+    prisma.healthReport.count({ where }),
+    prisma.healthReport.findMany({
+      where,
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+      skip,
+      take: limit,
+      select: ADMIN_REPORT_SELECT,
+    }),
+  ]);
+
+  return sendSuccess(res, { reports, pagination: toPagination(page, limit, total) });
+};
+
+const getReport = async (req, res) => {
+  const report = await prisma.healthReport.findUnique({
+    where: { id: req.params.id },
+    include: {
+      farmer: { select: { id: true, name: true, email: true, phone: true } },
+      farm: true,
+      animal: true,
+      symptoms: { include: { symptom: true } },
+      referrals: { select: { id: true, status: true, createdAt: true, professionalId: true } },
+      alerts: { select: { id: true, title: true, type: true, isActive: true, createdAt: true } },
+    },
+  });
+
+  if (!report) {
+    throw new ApiError(404, 'Unable to find that record.');
+  }
+
+  return sendSuccess(res, { report });
 };
 
 const getStatistics = async (req, res) => {
@@ -166,6 +331,102 @@ const getStatistics = async (req, res) => {
   return sendSuccess(res, { statistics });
 };
 
+const listReferrals = async (req, res) => {
+  const { page, limit, skip } = parsePagination(req.query);
+  const where = {};
+  if (req.query.status) where.status = req.query.status;
+  if (req.query.province) where.report = { farm: { province: req.query.province } };
+  if (req.query.search) {
+    const term = req.query.search.trim();
+    where.OR = [
+      { farmer: { name: { contains: term, mode: 'insensitive' } } },
+      { farmer: { email: { contains: term, mode: 'insensitive' } } },
+    ];
+  }
+
+  const [total, referrals] = await Promise.all([
+    prisma.referral.count({ where }),
+    prisma.referral.findMany({
+      where,
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+      skip,
+      take: limit,
+      select: ADMIN_REFERRAL_SELECT,
+    }),
+  ]);
+
+  return sendSuccess(res, { referrals, pagination: toPagination(page, limit, total) });
+};
+
+const getReferral = async (req, res) => {
+  const referral = await prisma.referral.findUnique({
+    where: { id: req.params.id },
+    select: ADMIN_REFERRAL_SELECT,
+  });
+
+  if (!referral) {
+    throw new ApiError(404, 'Unable to find that record.');
+  }
+
+  return sendSuccess(res, { referral });
+};
+
+const listProfessionals = async (req, res) => {
+  const { page, limit, skip } = parsePagination(req.query);
+  const where = {};
+  if (req.query.isActive === 'true') where.isActive = true;
+  if (req.query.isActive === 'false') where.isActive = false;
+  if (req.query.province) where.province = req.query.province;
+  if (req.query.search) {
+    const term = req.query.search.trim();
+    where.OR = [
+      { name: { contains: term, mode: 'insensitive' } },
+      { email: { contains: term, mode: 'insensitive' } },
+      { district: { contains: term, mode: 'insensitive' } },
+    ];
+  }
+
+  const [total, professionals] = await Promise.all([
+    prisma.veterinaryProfessional.count({ where }),
+    prisma.veterinaryProfessional.findMany({
+      where,
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      skip,
+      take: limit,
+      select: {
+        ...PUBLIC_PROFESSIONAL_SELECT,
+        userId: true,
+        user: { select: { id: true, name: true, email: true, role: true } },
+        _count: { select: { referrals: true } },
+      },
+    }),
+  ]);
+
+  return sendSuccess(res, { professionals, pagination: toPagination(page, limit, total) });
+};
+
+const getProfessional = async (req, res) => {
+  const professional = await prisma.veterinaryProfessional.findUnique({
+    where: { id: req.params.id },
+    select: {
+      ...PUBLIC_PROFESSIONAL_SELECT,
+      userId: true,
+      user: { select: { id: true, name: true, email: true, role: true, createdAt: true } },
+      referrals: {
+        select: { id: true, status: true, createdAt: true, farmerId: true, reportId: true },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      },
+    },
+  });
+
+  if (!professional) {
+    throw new ApiError(404, 'Unable to find that record.');
+  }
+
+  return sendSuccess(res, { professional });
+};
+
 module.exports = {
   listAlerts,
   getAlert,
@@ -173,4 +434,12 @@ module.exports = {
   acknowledgeAlert,
   runClusterScan,
   getStatistics,
+  listUsers,
+  getUser,
+  listReports,
+  getReport,
+  listReferrals,
+  getReferral,
+  listProfessionals,
+  getProfessional,
 };

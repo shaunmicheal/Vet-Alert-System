@@ -140,6 +140,7 @@ export default function AdminDashboardPage() {
                 label="Total users"
                 value={users.total || 0}
                 sub="All registered accounts"
+                to="/admin/users"
               />
               <DashboardStatCard
                 icon={GiCow}
@@ -147,24 +148,28 @@ export default function AdminDashboardPage() {
                 value={users.farmers || 0}
                 sub="Farmer accounts"
                 tone="earth"
+                to="/admin/users?role=FARMER"
               />
               <DashboardStatCard
                 icon={FaUserMd}
                 label="Veterinary professionals"
                 value={users.veterinaryProfessionals || 0}
                 sub="Professional accounts"
+                to="/admin/users?role=VETERINARY_PROFESSIONAL"
               />
               <DashboardStatCard
                 icon={FiUser}
                 label="Directory profiles"
                 value={professionals.total || 0}
                 sub={`${professionals.active || 0} active in the directory`}
+                to="/admin/veterinary"
               />
               <DashboardStatCard
                 icon={FiFileText}
                 label="Health reports"
                 value={reports.total || 0}
                 sub="Submitted by farmers"
+                to="/admin/reports"
               />
               <DashboardStatCard
                 icon={FiClock}
@@ -172,12 +177,14 @@ export default function AdminDashboardPage() {
                 value={reportStatuses.PENDING || 0}
                 sub="Reports still pending triage review"
                 tone="warning"
+                to="/admin/reports?status=PENDING"
               />
               <DashboardStatCard
                 icon={FiShare2}
                 label="Referrals"
                 value={referrals.total || 0}
                 sub="Farmer-to-vet referrals"
+                to="/admin/referrals"
               />
               <DashboardStatCard
                 icon={FiAlertTriangle}
@@ -189,6 +196,7 @@ export default function AdminDashboardPage() {
                     : `${alerts.total} generated in total`
                 }
                 tone={(alerts.active || 0) > 0 ? 'warning' : 'default'}
+                to="/admin/alerts?status=ACTIVE"
               />
             </section>
 
