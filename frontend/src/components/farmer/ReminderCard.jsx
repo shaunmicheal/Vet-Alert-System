@@ -10,9 +10,6 @@ import {
 import ReminderStatusBadge from './ReminderStatusBadge'
 import Spinner from '../ui/Spinner'
 
-// One reminder in the farmer's list (mobile-first card, no wide tables).
-// Complete uses the persisted backend endpoint; edit/delete are delegated up
-// so the page owns dialog state. Errors surface inline on the card.
 export default function ReminderCard({ reminder, onEdit, onDelete, onCompleted }) {
   const [completing, setCompleting] = useState(false)
   const [actionError, setActionError] = useState(null)

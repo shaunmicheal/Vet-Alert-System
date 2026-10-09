@@ -5,7 +5,6 @@ import { useAuth } from '../hooks/useAuth'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import { homePathForRole } from '../utils/constants'
 
-// Professional 404 page with a way back to the right place.
 export default function NotFoundPage() {
   useDocumentTitle('Page not found')
 

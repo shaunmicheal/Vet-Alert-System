@@ -6,12 +6,6 @@ import { getApiErrorMessage } from '../../utils/errors'
 import AlertMessage from '../ui/AlertMessage'
 import Spinner from '../ui/Spinner'
 
-// Confirmation dialog for acknowledging an alert - a consequential state
-// change, so nothing is submitted until the admin confirms. Acknowledgement
-// only marks the administrative alert as handled (isActive=false); it never
-// claims the underlying health event was resolved. The updated alert comes
-// straight back from the PATCH response, so no page reload is needed and an
-// already-acknowledged alert simply resolves to the same inactive state.
 export default function ConfirmAcknowledgeDialog({ alert, onCancel, onAcknowledged }) {
   useDialogEffects(onCancel)
 

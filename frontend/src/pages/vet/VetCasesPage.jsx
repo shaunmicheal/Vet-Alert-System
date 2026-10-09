@@ -10,9 +10,6 @@ import { getApiErrorMessage } from '../../utils/errors'
 import { caseStatusLabel } from '../../utils/vetCases'
 import { RISK_LEVEL_LABELS, RISK_LEVELS } from '../../utils/constants'
 
-// Assigned cases for the logged-in professional (GET /api/vet/cases).
-// Filtering is client-side over stable response fields: referral status,
-// report risk level, and free-text search over farmer/report/location text.
 export default function VetCasesPage() {
   useDocumentTitle('Assigned Cases')
   const [cases, setCases] = useState([])

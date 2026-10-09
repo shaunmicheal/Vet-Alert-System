@@ -4,20 +4,13 @@ import { SESSION_EXPIRED_EVENT } from '../utils/constants'
 import { clearStoredAuth, readStoredAuth, writeStoredAuth } from '../utils/storage'
 import { AuthContext } from './AuthContext'
 
-// Central authentication state for the whole app.
-// - Restores the session on first load (GET /auth/me)
-// - login / register against the real backend endpoints
-// - logout + forced sign-out when the API reports an expired session
 export function AuthProvider({ children }) {
-  // Lazy-read any stored session once during the first render so the initial
-  // loading state is already correct (no synchronous setState in effects).
   const [storedSession] = useState(() => readStoredAuth())
   const [user, setUser] = useState(() => (storedSession ? storedSession.user : null))
   const [token, setToken] = useState(storedSession ? storedSession.token : null)
   const [loading, setLoading] = useState(Boolean(storedSession))
   const [sessionExpired, setSessionExpired] = useState(false)
 
-  // Verify the restored session against the backend (GET /auth/me).
   useEffect(() => {
     if (!storedSession) return undefined
 
@@ -30,8 +23,6 @@ export function AuthProvider({ children }) {
       .catch((error) => {
         if (!active) return
         const status = error && error.response ? error.response.status : null
-        // 401/403/404 = the session is genuinely gone. For network or server
-        // errors we keep the token so a reload can retry instead of signing out.
         if (status === 401 || status === 403 || status === 404) {
           clearStoredAuth()
           setToken(null)
@@ -47,7 +38,6 @@ export function AuthProvider({ children }) {
     }
   }, [storedSession])
 
-  // The API client dispatches this event on any 401 outside login/register.
   useEffect(() => {
     const handleSessionExpired = () => {
       clearStoredAuth()

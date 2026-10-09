@@ -11,7 +11,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { homePathForRole } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// Mirrors the backend login schema (POST /api/auth/login).
 const loginSchema = z.object({
   email: z.email('Enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
@@ -39,12 +38,8 @@ export default function LoginPage() {
     try {
       setFormError(null)
       clearSessionExpired()
-      // The role comes from the authenticated user - never from the form.
       const user = await login(values)
 
-      // Only return to the requested page when it lives inside THIS user's
-      // workspace. A stale link to another role's area (e.g. /admin/alerts hit
-      // while signed out) must land on the role home, not an access-denied page.
       const homePath = homePathForRole(user.role)
       const requestedPath = location.state && location.state.from && location.state.from.pathname
       const isOwnWorkspace =
@@ -68,7 +63,6 @@ export default function LoginPage() {
         <p className="mt-2 text-sm text-charcoal-600">Sign in to your workspace to continue.</p>
       </div>
 
-      {/* Explain a forced sign-out (expired/invalid session) while it applies. */}
       {sessionExpired && (
         <AlertMessage variant="warning" className="mb-5">
           Your session has expired. Please sign in again.
@@ -178,7 +172,7 @@ export default function LoginPage() {
         </Link>
       </p>
       <p className="mt-3 text-center text-xs leading-relaxed text-charcoal-500">
-        Veterinary professionals and administrators receive accounts from VetAlert — contact your
+        Veterinary professionals and administrators receive accounts from VetAlert. Contact your
         administrator for access.
       </p>
     </div>

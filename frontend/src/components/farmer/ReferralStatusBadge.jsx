@@ -1,5 +1,3 @@
-// Visual badge for the backend referral status enum.
-// PENDING amber, ACCEPTED sky, IN_PROGRESS earth, COMPLETED green, DECLINED red.
 const STATUS_STYLES = Object.freeze({
   PENDING: 'border-amber-200 bg-amber-50 text-amber-800',
   ACCEPTED: 'border-sky-200 bg-sky-50 text-sky-900',

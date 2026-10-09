@@ -20,9 +20,6 @@ const CONFIRM_COPY = Object.freeze({
   },
 })
 
-// Confirmation dialog for consequential status changes (decline, complete).
-// Nothing is submitted until the vet confirms; the updated case comes back
-// from the backend response.
 export default function ConfirmCaseStatusDialog({ vetCase, targetStatus, onCancel, onUpdated }) {
   useDialogEffects(onCancel)
 

@@ -1,7 +1,3 @@
-// One "count by category" card built from real aggregate maps in the stats
-// response (e.g. reports.byStatus, referrals.byStatus). Bars are proportions
-// of the provided total - every value comes from GET /api/admin/stats, and a
-// legitimate zero total switches the card to its empty state.
 export default function StatBreakdownCard({ title, total, rows, emptyTitle, emptyDescription }) {
   const safeTotal = total || 0
   const headingId = `breakdown-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`

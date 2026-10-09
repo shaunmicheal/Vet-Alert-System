@@ -5,8 +5,6 @@ import CaseStatusBadge from './CaseStatusBadge'
 import { ANIMAL_TYPE_LABELS } from '../../utils/constants'
 import { formatDate } from '../../utils/format'
 
-// One assigned case in the vet's list. Links to the case detail view.
-// Shows only case-meaningful fields - no passwords, tokens or internal ids.
 export default function VetCaseCard({ vetCase }) {
   const report = vetCase.report || {}
   const farmer = vetCase.farmer || {}

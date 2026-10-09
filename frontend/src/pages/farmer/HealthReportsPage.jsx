@@ -18,7 +18,6 @@ import {
 import { getApiErrorMessage } from '../../utils/errors'
 import { formatDate } from '../../utils/format'
 
-// Farmer health reports: real records from GET /api/reports.
 export default function HealthReportsPage() {
   useDocumentTitle('Health Reports')
 
@@ -29,8 +28,6 @@ export default function HealthReportsPage() {
   const [status, setStatus] = useState('')
   const [riskLevel, setRiskLevel] = useState('')
 
-  // Promise-chain style (like AuthProvider) so setState never runs
-  // synchronously inside the mount effect.
   const loadReports = useCallback(() => {
     return getMyHealthReports()
       .then((list) => {
@@ -55,7 +52,6 @@ export default function HealthReportsPage() {
     loadReports()
   }, [loadReports])
 
-  // Summary counts derived from the real records.
   const summary = useMemo(
     () => ({
       total: reports.length,
@@ -66,7 +62,6 @@ export default function HealthReportsPage() {
     [reports],
   )
 
-  // Client-side search + filters (the list endpoint returns every report).
   const visibleReports = useMemo(() => {
     const query = search.trim().toLowerCase()
     return reports.filter((report) => {
@@ -92,7 +87,6 @@ export default function HealthReportsPage() {
   }
   return (
     <div className="space-y-6">
-      {/* Header */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
@@ -143,7 +137,6 @@ export default function HealthReportsPage() {
         />
       ) : (
         <>
-          {/* Summary */}
           <section aria-label="Health report summary" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <DashboardStatCard
               icon={FiFileText}
@@ -173,7 +166,6 @@ export default function HealthReportsPage() {
               sub={summary.highRisk > 0 ? 'Veterinary attention advised' : 'No high-risk reports'}
             />
           </section>
-          {/* Search + filters */}
           <section
             aria-label="Search and filter health reports"
             className="flex flex-col gap-3 lg:flex-row"

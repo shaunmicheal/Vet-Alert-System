@@ -1,12 +1,3 @@
-// ============================================================================
-// TEMPORARY FILE - PHASE 1 ONLY
-// ----------------------------------------------------------------------------
-// These routes exist purely to prove that role authorization works end-to-end.
-// They are mounted ONLY when NODE_ENV !== 'production' (see src/app.js).
-//
-// >>> DELETE THIS FILE (and its mount in app.js) BEFORE PRODUCTION/DEPLOYMENT. <<<
-// They are NOT part of the real VetAlert Zimbabwe API.
-// ============================================================================
 const express = require('express');
 
 const authMiddleware = require('../middleware/authMiddleware');

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { FaPaw } from 'react-icons/fa'
+import { GiCow } from 'react-icons/gi'
 import { FiPlus, FiRefreshCw, FiSearch, FiX } from 'react-icons/fi'
 import { getMyAnimals } from '../../api/animals'
 import AnimalForm from '../../components/farmer/AnimalForm'
@@ -13,8 +13,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { ANIMAL_TYPES, ANIMAL_TYPE_LABELS } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// Farmer animal management: list, summary, search/filter, add, edit, delete.
-// Every record comes from the real backend - no mock data.
 export default function AnimalsPage() {
   useDocumentTitle('Animals')
 
@@ -26,8 +24,6 @@ export default function AnimalsPage() {
   const [dialog, setDialog] = useState(null)
   const [flash, setFlash] = useState(null)
 
-  // Promise-chain style (like AuthProvider) so setState never runs
-  // synchronously inside the mount effect.
   const loadAnimals = useCallback(() => {
     return getMyAnimals()
       .then((list) => {
@@ -42,19 +38,16 @@ export default function AnimalsPage() {
       })
   }, [])
 
-  // Retry handler (event context): show the loading state, then reload.
   const reloadAnimals = () => {
     setLoading(true)
     setLoadError(null)
     loadAnimals()
   }
 
-  // Initial load. The first render already starts in the loading state.
   useEffect(() => {
     loadAnimals()
   }, [loadAnimals])
 
-  // Counts derived from the real records - no extra API requests.
   const counts = useMemo(() => {
     const totals = { total: animals.length }
     ANIMAL_TYPES.forEach((type) => {
@@ -66,7 +59,6 @@ export default function AnimalsPage() {
     return totals
   }, [animals])
 
-  // Client-side search + type filter, working together.
   const visibleAnimals = useMemo(() => {
     const query = search.trim().toLowerCase()
     return animals.filter((animal) => {
@@ -93,7 +85,6 @@ export default function AnimalsPage() {
   const openDelete = (animal) => setDialog({ mode: 'delete', animal })
   const closeDialog = () => setDialog(null)
 
-  // Normal (non-optimistic) updates from the successful backend response.
   const handleSaved = (saved) => {
     const wasEdit = Boolean(dialog) && dialog.mode === 'edit'
     setAnimals((previous) =>
@@ -121,7 +112,6 @@ export default function AnimalsPage() {
   }
   return (
     <div className="space-y-6">
-      {/* Header */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">My Farm</p>
@@ -140,7 +130,6 @@ export default function AnimalsPage() {
         </button>
       </header>
 
-      {/* Success flash after add/edit/delete */}
       {flash && (
         <AlertMessage variant="success">
           <div className="flex items-start justify-between gap-3">
@@ -176,7 +165,7 @@ export default function AnimalsPage() {
         </AlertMessage>
       ) : animals.length === 0 ? (
         <EmptyState
-          icon={FaPaw}
+          icon={GiCow}
           title="No animals registered yet"
           description="Adding your animals helps VetAlert link health reports to the right livestock and gives veterinary professionals a clear picture of your farm."
           action={
@@ -188,7 +177,6 @@ export default function AnimalsPage() {
         />
       ) : (
         <>
-          {/* Summary - counts derived from the real records */}
           <section
             aria-label="Animal summary"
             className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
@@ -203,7 +191,6 @@ export default function AnimalsPage() {
             ))}
           </section>
 
-          {/* Search + type filter (client-side) */}
           <section aria-label="Search and filter animals" className="flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
               <label htmlFor="animal-search" className="sr-only">
@@ -276,7 +263,6 @@ export default function AnimalsPage() {
         </>
       )}
 
-      {/* Dialogs */}
       {(dialog?.mode === 'create' || dialog?.mode === 'edit') && (
         <AnimalForm
           animal={dialog.mode === 'edit' ? dialog.animal : null}

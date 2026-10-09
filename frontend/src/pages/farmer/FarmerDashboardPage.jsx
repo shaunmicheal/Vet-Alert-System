@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FaPaw } from 'react-icons/fa'
+import { GiCow } from 'react-icons/gi'
 import { FiAlertTriangle, FiFileText, FiHome, FiMapPin, FiPlus, FiRefreshCw } from 'react-icons/fi'
 import { getMyAnimals } from '../../api/animals'
 import { getMyFarm } from '../../api/farmer'
@@ -18,7 +18,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { ANIMAL_TYPE_LABELS } from '../../utils/constants'
 import { summarizeAnimalTypes } from '../../utils/format'
 
-// Computed once at module load so component render stays pure.
 const NOW = new Date()
 const TODAY_LABEL = NOW.toLocaleDateString('en-ZA', {
   weekday: 'long',
@@ -29,8 +28,6 @@ const TODAY_LABEL = NOW.toLocaleDateString('en-ZA', {
 const GREETING =
   NOW.getHours() < 12 ? 'Good morning' : NOW.getHours() < 17 ? 'Good afternoon' : 'Good evening'
 
-// The three dashboard reads. Each can fail independently - a failure in one
-// section must not hide the rest of the dashboard.
 export default function FarmerDashboardPage() {
   useDocumentTitle('Farmer Dashboard')
 
@@ -42,8 +39,6 @@ export default function FarmerDashboardPage() {
   const [reports, setReports] = useState([])
   const [reminders, setReminders] = useState([])
 
-  // Promise-chain style (like AuthProvider) so setState never runs synchronously
-  // inside the mount effect.
   const loadDashboard = useCallback(() => {
     return Promise.allSettled([getMyFarm(), getMyAnimals(), getMyHealthReports(), getMyReminders()]).then(
       ([farmResult, animalsResult, reportsResult, remindersResult]) => {
@@ -79,14 +74,12 @@ export default function FarmerDashboardPage() {
     )
   }, [])
 
-  // Retry handler (event context): show the loading state, then reload.
   const reloadDashboard = () => {
     setLoading(true)
     setFailedSections([])
     loadDashboard()
   }
 
-  // Initial load. The first render already starts in the loading state.
   useEffect(() => {
     loadDashboard()
   }, [loadDashboard])
@@ -94,7 +87,6 @@ export default function FarmerDashboardPage() {
   const firstName = user && user.name ? user.name.trim().split(/\s+/)[0] : ''
   const sectionFailed = (key) => failedSections.includes(key)
 
-  // Derived counts - no extra API requests needed.
   const activeReports = reports.filter((report) => report.status !== 'RESOLVED')
   const highRiskActive = activeReports.filter((report) => report.riskLevel === 'HIGH').length
   const pendingReports = reports.filter((report) => report.status === 'PENDING').length
@@ -102,7 +94,6 @@ export default function FarmerDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
@@ -120,7 +111,6 @@ export default function FarmerDashboardPage() {
         </Link>
       </header>
 
-      {/* Partial load failure - keep what loaded, offer a retry */}
       {!loading && failedSections.length > 0 && (
         <AlertMessage variant="warning" title="Some information could not be loaded">
           <p>We couldn’t load part of your dashboard. Some details may be missing.</p>
@@ -141,7 +131,6 @@ export default function FarmerDashboardPage() {
         </div>
       ) : (
         <>
-          {/* Summary cards */}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <DashboardStatCard
               icon={FiHome}
@@ -156,7 +145,7 @@ export default function FarmerDashboardPage() {
               }
             />
             <DashboardStatCard
-              icon={FaPaw}
+              icon={GiCow}
               label="Animals"
               tone="earth"
               value={sectionFailed('animals') ? '—' : animals.length}
@@ -193,7 +182,6 @@ export default function FarmerDashboardPage() {
             />
           </div>
 
-          {/* Farm overview + recent reports */}
           <div className="grid gap-6 lg:grid-cols-2">
             {!sectionFailed('farm') &&
               (farm ? (

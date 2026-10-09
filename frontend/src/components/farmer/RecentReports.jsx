@@ -6,7 +6,6 @@ import { formatDate } from '../../utils/format'
 import ReportStatusBadge from './ReportStatusBadge'
 import RiskBadge from './RiskBadge'
 
-// Compact list of the farmer's newest health reports (max 5).
 export default function RecentReports({ reports, actionPath }) {
   if (!reports.length) {
     return (

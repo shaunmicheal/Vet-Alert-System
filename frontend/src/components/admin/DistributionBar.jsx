@@ -1,7 +1,3 @@
-// Accessible horizontal bar with an explicit text equivalent. The count and
-// percentage are always rendered as readable text next to the bar, so colour
-// is decorative context only and never the sole differentiator. The track is
-// hidden from assistive technology because the numbers already tell the story.
 export default function DistributionBar({
   label,
   count,

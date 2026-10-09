@@ -51,9 +51,6 @@ function NavItems({ items, onNavigate, variant }) {
   )
 }
 
-// Authenticated application shell: responsive sidebar (desktop), slide-in
-// navigation (mobile), top bar with identity + logout, and a page container.
-// Role-specific navigation comes from utils/navigation.js.
 export default function AppShell() {
   const { user, logout } = useAuth()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
@@ -64,9 +61,6 @@ export default function AppShell() {
   const homePath = homePathForRole(role)
   const initials = initialsFor(user ? user.name : '')
 
-  // Close the mobile drawer when it loses the route (links close it directly
-  // via onNavigate / onClick below - no effect needed).
-  // Lock body scroll while the drawer is open.
   useEffect(() => {
     document.body.style.overflow = mobileNavOpen ? 'hidden' : ''
     return () => {
@@ -74,7 +68,6 @@ export default function AppShell() {
     }
   }, [mobileNavOpen])
 
-  // Close the drawer with the Escape key.
   useEffect(() => {
     if (!mobileNavOpen) return undefined
     const handleKeyDown = (event) => {
@@ -86,7 +79,6 @@ export default function AppShell() {
 
   return (
     <div className="min-h-screen bg-cream-50">
-      {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-forest-900 lg:flex">
         <div className="flex h-16 items-center border-b border-forest-800 px-5">
           <Link to={homePath} aria-label="VetAlert Zimbabwe home">
@@ -124,7 +116,6 @@ export default function AppShell() {
           </button>
         </div>
       </aside>
-      {/* Mobile drawer */}
       {mobileNavOpen && (
         <div
           className="fixed inset-0 z-40 lg:hidden"
@@ -192,7 +183,6 @@ export default function AppShell() {
         </div>
       )}
 
-      {/* Content area */}
       <div className="lg:pl-64">
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-charcoal-200 bg-white px-4 sm:px-6">
           <button

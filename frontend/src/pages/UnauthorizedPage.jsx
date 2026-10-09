@@ -6,7 +6,6 @@ import { useAuth } from '../hooks/useAuth'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import { homePathForRole } from '../utils/constants'
 
-// Shown when a user tries to reach a route their role does not allow.
 export default function UnauthorizedPage() {
   useDocumentTitle('Access denied')
 

@@ -22,9 +22,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { REPORT_STATUS_LABELS, RISK_LEVEL_LABELS } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// Display metadata for the backend stat maps (UI only - the backend enums stay
-// the source of truth). Risk includes the backend's UNSET bucket for reports
-// whose risk level has not been assessed yet.
 const RISK_ORDER = ['LOW', 'MODERATE', 'HIGH', 'UNSET']
 const RISK_LABELS = { ...RISK_LEVEL_LABELS, UNSET: 'Not yet assessed' }
 const RISK_TONES = {
@@ -34,7 +31,6 @@ const RISK_TONES = {
   UNSET: 'bg-charcoal-400',
 }
 
-// Fixed report workflow order (matches the backend REPORT_STATUSES enum).
 const REPORT_STATUS_ORDER = ['PENDING', 'REVIEWED', 'REFERRED', 'RESOLVED']
 const REPORT_STATUS_TONES = {
   PENDING: 'bg-amber-500',
@@ -43,7 +39,6 @@ const REPORT_STATUS_TONES = {
   RESOLVED: 'bg-forest-600',
 }
 
-// Shared empty-state block for a valid zero (not missing data, not loading).
 function EmptyNote({ title, description }) {
   return (
     <div className="mt-4 rounded-lg border border-charcoal-100 bg-cream-100 px-4 py-5">
@@ -55,8 +50,6 @@ function EmptyNote({ title, description }) {
   )
 }
 
-// Footer note on an analytical card - plain text so the interpretation always
-// travels with the numbers.
 function SafetyNote({ children }) {
   return (
     <p className="mt-4 border-t border-charcoal-100 pt-3 text-xs leading-relaxed text-charcoal-500">
@@ -65,11 +58,6 @@ function SafetyNote({ children }) {
   )
 }
 
-// Admin Statistics & Analytics. A single GET /api/admin/stats request is the
-// only data source - every count, bar and percentage is derived from that live
-// response. There is no mock data, no fabricated metrics and no secondary
-// endpoint. The page emphasises distributions, comparisons and workflow
-// relationships so it complements (rather than duplicates) the dashboard.
 export default function AdminStatisticsPage() {
   useDocumentTitle('Statistics & Analytics')
 
@@ -99,16 +87,12 @@ export default function AdminStatisticsPage() {
     loadStats()
   }, [loadStats])
 
-  // Retry makes one deliberate new request; loadStats is stable so the mount
-  // effect never re-fires and duplicates it.
   const reloadStats = useCallback(() => {
     setLoading(true)
     setLoadError(null)
     loadStats()
   }, [loadStats])
 
-  // Defensive reads: the backend always sends this shape (verified by
-  // adminSmokeTest), but each section degrades safely instead of crashing.
   const users = statistics?.users || {}
   const reports = statistics?.reports || {}
   const alerts = statistics?.alerts || {}
@@ -121,8 +105,6 @@ export default function AdminStatisticsPage() {
   const alertTypes = alerts.byType || {}
   const referralStatuses = referrals.byStatus || {}
 
-  // A missing optional map omits its whole section; a present map with a zero
-  // total renders the section's empty state instead of fake-looking bars.
   const hasRisk = Boolean(reports.byRiskLevel)
   const hasStatus = Boolean(reports.byStatus)
   const hasProvince = Boolean(reports.byProvince)
@@ -158,7 +140,6 @@ export default function AdminStatisticsPage() {
         </Link>
       </header>
 
-      {/* One request drives the whole page, so one clear error is enough. */}
       {loadError && (
         <AlertMessage variant="error" title="Could not load the statistics">
           <p>{loadError}</p>
@@ -169,7 +150,6 @@ export default function AdminStatisticsPage() {
         </AlertMessage>
       )}
 
-      {/* Never render zeroed-out analytics while the first request is in flight. */}
       {loading ? (
         <div
           className="card flex items-center justify-center gap-3 px-6 py-16"
@@ -182,8 +162,6 @@ export default function AdminStatisticsPage() {
       ) : (
         !loadError && (
           <>
-            {/* Platform overview - four relationship-focused figures rather than
-                the dashboard's full set of summary cards. */}
             <section
               aria-label="Platform overview"
               className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
@@ -219,7 +197,6 @@ export default function AdminStatisticsPage() {
               />
             </section>
 
-            {/* Report analytics: risk and workflow status distributions. */}
             <section aria-label="Report analytics" className="grid gap-4 lg:grid-cols-2">
               {hasRisk && (
                 <section className="card p-5" aria-labelledby="risk-distribution-title">
@@ -298,7 +275,6 @@ export default function AdminStatisticsPage() {
               )}
             </section>
 
-            {/* Geographic + animal analytics. */}
             <section
               aria-label="Geographic and animal analytics"
               className="grid gap-4 lg:grid-cols-2"
@@ -363,7 +339,6 @@ export default function AdminStatisticsPage() {
               )}
             </section>
 
-            {/* Referral workflow + alert generation analytics. */}
             <section
               aria-label="Referral and alert analytics"
               className="grid gap-4 lg:grid-cols-2"
@@ -425,7 +400,6 @@ export default function AdminStatisticsPage() {
               )}
             </section>
 
-            {/* Cross-module navigation only - oversight itself is a later phase. */}
             <section
               aria-label="Related admin modules"
               className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between"

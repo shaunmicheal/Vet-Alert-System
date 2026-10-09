@@ -4,8 +4,6 @@ import ReferralStatusBadge from './ReferralStatusBadge'
 import { ANIMAL_TYPE_LABELS } from '../../utils/constants'
 import { formatDate } from '../../utils/format'
 
-// One referral in the farmer's list. Links to the referral detail/status view.
-// Shows only farmer-meaningful fields - no internal ids.
 export default function ReferralCard({ referral }) {
   const professional = referral.professional || {}
   const report = referral.report || {}
@@ -45,7 +43,7 @@ export default function ReferralCard({ referral }) {
             )}
             {hasResponse && (
               <p className="mt-1 text-xs font-medium text-forest-700">
-                The professional has responded — open to read it.
+                The professional has responded. Open to read it.
               </p>
             )}
           </div>

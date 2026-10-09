@@ -13,13 +13,6 @@ import Spinner from '../ui/Spinner'
 const TITLE_MAX = 200
 const DESCRIPTION_MAX = 2000
 
-// Mirrors the backend reminder contract exactly
-// (backend/src/routes/reminderRoutes.js):
-// - title: required, 1-200 chars after trim
-// - description: optional, up to 2000 chars (whitespace-only is omitted)
-// - type: one of the six backend enum values
-// - dueDate: required YYYY-MM-DD date string
-// No farmerId or any other field is ever accepted or sent.
 const reminderSchema = z.object({
   title: z
     .string()
@@ -64,9 +57,6 @@ const toFormValues = (reminder) =>
       }
     : { ...EMPTY_VALUES }
 
-// Form values -> backend payload. Only the four supported fields are sent,
-// and a whitespace-only description is omitted so the strict backend schema
-// never sees an empty string.
 const toPayload = (values) => {
   const payload = {
     title: values.title.trim(),
@@ -78,8 +68,6 @@ const toPayload = (values) => {
   return payload
 }
 
-// Add/edit dialog for one farmer reminder. `reminder` is null when creating;
-// otherwise the same form edits through PATCH /api/reminders/:id.
 export default function CreateReminderDialog({ reminder, onClose, onSaved }) {
   const isEdit = Boolean(reminder)
   useDialogEffects(onClose)

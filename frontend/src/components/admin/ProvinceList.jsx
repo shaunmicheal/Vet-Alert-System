@@ -1,7 +1,5 @@
 import { PROVINCES } from '../../utils/constants'
 
-// Province breakdown rendered as an accessible list/table hybrid. Each row has
-// the province name, a bar, count and percentage; no colour is used alone.
 export default function ProvinceList({ provinces, total }) {
   const safeTotal = total || 0
 

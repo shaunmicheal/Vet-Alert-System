@@ -17,9 +17,6 @@ const TRANSITION_ICONS = Object.freeze({
   COMPLETED: FiCheckCircle,
 })
 
-// Case Actions panel for the detail page. Shows only the transitions the
-// backend allows from the case's CURRENT status; non-confirmed transitions
-// submit inline, confirmed ones (decline, complete) open a dialog via onConfirm.
 export default function CaseActionPanel({ vetCase, onConfirm, onUpdated }) {
   const [pendingStatus, setPendingStatus] = useState(null)
   const [actionError, setActionError] = useState(null)

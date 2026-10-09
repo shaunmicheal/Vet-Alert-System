@@ -1,9 +1,5 @@
-import { FaPaw } from 'react-icons/fa'
-
-// VetAlert Zimbabwe wordmark. Use tone="light" on dark (forest) backgrounds.
 export default function Logo({ tone = 'dark', compact = false }) {
   const isLight = tone === 'light'
-
   return (
     <span className="flex items-center gap-2.5">
       <span
@@ -14,7 +10,14 @@ export default function Logo({ tone = 'dark', compact = false }) {
         }
         aria-hidden="true"
       >
-        <FaPaw className="h-4 w-4" />
+        <svg viewBox="0 0 64 64" className="h-6 w-6" role="presentation" focusable="false">
+          <g fill="none" stroke="currentColor" strokeWidth="4.4" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 22 C14 15 19 12 23 15 L26 17 C28 15 36 15 38 17 L41 15 C45 12 50 15 50 22 L46 30 C44 36 40 44 32 44 C24 44 20 36 18 30 Z" />
+            <path d="M20 20 L17 14" />
+            <path d="M44 20 L47 14" />
+          </g>
+          <path d="M32 44 C32 50 36 53 42 53 L46 53" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" opacity="0.85" />
+        </svg>
       </span>
       <span className="flex flex-col leading-tight">
         <span

@@ -1,7 +1,5 @@
 import { REPORT_STATUS_LABELS } from '../../utils/constants'
 
-// Reusable badge for the backend report status enum.
-// PENDING amber, REVIEWED sky, REFERRED earth, RESOLVED green.
 const STATUS_STYLES = Object.freeze({
   PENDING: 'border-amber-200 bg-amber-50 text-amber-800',
   REVIEWED: 'border-sky-200 bg-sky-50 text-sky-900',

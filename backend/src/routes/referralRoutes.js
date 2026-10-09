@@ -1,5 +1,3 @@
-// Farmer referral routes. Mounted at /api/referrals.
-// Locked to logged-in farmers - other roles get 403, guests get 401.
 const express = require('express');
 const { z } = require('zod');
 
@@ -12,8 +10,6 @@ const router = express.Router();
 
 router.use(authMiddleware, requireRole('FARMER'));
 
-// .strict() rejects unexpected keys, so a client cannot smuggle a farmerId,
-// status or any other ownership field into the request.
 const createReferralSchema = z
   .strictObject({
     reportId: idSchema,

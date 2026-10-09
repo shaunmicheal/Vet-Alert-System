@@ -1,9 +1,5 @@
 import { useEffect, useRef } from 'react'
 
-// Shared modal behaviour for the animal dialogs:
-// - Escape closes the dialog
-// - background scrolling is locked while it is open
-// The latest onClose callback is kept in a ref so the effect runs only once.
 export default function useDialogEffects(onClose) {
   const onCloseRef = useRef(onClose)
 

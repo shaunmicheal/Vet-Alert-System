@@ -1,5 +1,3 @@
-// Plain-language explanations of each referral status, written for
-// non-technical farmers. A referral never means a disease has been confirmed.
 export const REFERRAL_STATUS_LABELS = Object.freeze({
   PENDING: 'Pending',
   ACCEPTED: 'Accepted',
@@ -16,8 +14,6 @@ export const REFERRAL_STATUS_EXPLANATIONS = Object.freeze({
   DECLINED: 'The veterinary professional was unable to accept this referral.',
 })
 
-// "What happens next" for each status, in plain language for farmers.
-// A referral never means a disease has been confirmed.
 export const REFERRAL_STATUS_NEXT = Object.freeze({
   PENDING: 'The professional will review your referral and accept or decline it. Any change will appear on this page.',
   ACCEPTED: 'The professional will start working on the case. Watch this page for their response.',

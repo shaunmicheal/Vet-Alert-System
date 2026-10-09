@@ -1,16 +1,10 @@
 @import 'tailwindcss';
 
-/* ---------------------------------------------------------------------------
-   VetAlert Zimbabwe design tokens
-   Deep agricultural green + earth brown + warm cream + charcoal.
-   Status accents use the Tailwind amber / red / green scales.
---------------------------------------------------------------------------- */
 @theme {
   --font-sans:
     'Segoe UI', ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', Arial,
     sans-serif;
 
-  /* Deep agricultural green - primary */
   --color-forest-50: #f1f8f2;
   --color-forest-100: #dfeee1;
   --color-forest-200: #c1dfc6;
@@ -23,7 +17,6 @@
   --color-forest-900: #1c3a24;
   --color-forest-950: #0f2114;
 
-  /* Earth brown - warm secondary accents */
   --color-earth-50: #faf6f0;
   --color-earth-100: #f2e9dc;
   --color-earth-200: #e4d1b9;
@@ -35,13 +28,11 @@
   --color-earth-800: #6c4231;
   --color-earth-900: #59382a;
 
-  /* Warm cream - page backgrounds */
   --color-cream-50: #fdfbf5;
   --color-cream-100: #f9f4e8;
   --color-cream-200: #f2e9d5;
   --color-cream-300: #e7dab8;
 
-  /* Charcoal - text and UI neutrals */
   --color-charcoal-900: #1b1a17;
   --color-charcoal-800: #2b2926;
   --color-charcoal-700: #3e3b36;
@@ -80,7 +71,6 @@
   }
 }
 
-/* Shared component classes keep forms and buttons consistent across pages. */
 @layer components {
   .field-label {
     @apply mb-1.5 block text-sm font-medium text-charcoal-700;

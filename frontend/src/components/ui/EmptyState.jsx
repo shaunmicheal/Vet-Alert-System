@@ -1,4 +1,3 @@
-// Reusable empty state for pages that have nothing to show yet.
 export default function EmptyState({ icon: Icon, title, description, action, className = '' }) {
   return (
     <div

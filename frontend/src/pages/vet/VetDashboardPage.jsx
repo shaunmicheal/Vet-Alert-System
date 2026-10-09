@@ -12,8 +12,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { getApiErrorMessage } from '../../utils/errors'
 import { countCasesByStatus, isActionableCase, sortCasesByPriority } from '../../utils/vetCases'
 
-// Veterinary dashboard: real assigned cases from GET /api/vet/cases.
-// Every statistic is derived from that list - no invented endpoints.
 export default function VetDashboardPage() {
   useDocumentTitle('Vet Dashboard')
   const { user } = useAuth()

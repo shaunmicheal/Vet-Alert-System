@@ -19,9 +19,6 @@ import { formatDate } from '../../utils/format'
 const yesNo = (value) => (value === true ? 'Yes' : value === false ? 'No' : '—')
 const show = (value) => (value === null || value === undefined || value === '' ? null : value)
 
-// Full detail for ONE assigned case (GET /api/vet/cases/:id - 404 for anything
-// not assigned to this professional). Case actions (status + professional
-// response) persist through the backend and refresh from its response.
 export default function VetCaseDetailPage() {
   const { id } = useParams()
   const [vetCase, setVetCase] = useState(null)
@@ -55,8 +52,6 @@ export default function VetCaseDetailPage() {
     setLoadError(null)
     loadCase()
   }
-  // Persisted updates only: the displayed case is replaced with the backend's
-  // returned case object (both mutation endpoints return the full case).
   const handleStatusUpdated = (updated, targetStatus) => {
     setVetCase(updated)
     setConfirmStatus(null)

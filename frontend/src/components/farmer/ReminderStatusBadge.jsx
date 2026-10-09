@@ -1,5 +1,3 @@
-// Visual badge for the farmer-facing reminder state.
-// Completed green, due-today earth, overdue red, upcoming neutral.
 import { REMINDER_STATE_LABELS } from '../../utils/reminders'
 
 const STATE_STYLES = Object.freeze({

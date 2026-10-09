@@ -11,9 +11,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { PROVINCES } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// Mirrors the backend farm schema (backend/src/routes/farmerRoutes.js):
-// name/province/district required, ward/village/address/coordinates optional.
-// Coordinates stay strings in the form and become numbers only when submitted.
 const coordinateField = (label, min, max) =>
   z
     .string()
@@ -65,8 +62,6 @@ const toFormValues = (farm) =>
       }
     : EMPTY_VALUES
 
-// Form values -> backend payload. Coordinates are sent only when provided
-// (the backend update schema accepts numbers, never null).
 const toPayload = (values) => {
   const payload = {
     name: values.name,
@@ -100,8 +95,6 @@ export default function FarmProfilePage() {
     defaultValues: EMPTY_VALUES,
   })
 
-  // Promise-chain style (like AuthProvider) so setState never runs synchronously
-  // inside the mount effect.
   const loadFarm = useCallback(() => {
     return getMyFarm()
       .then((existing) => {
@@ -117,19 +110,16 @@ export default function FarmProfilePage() {
       })
   }, [reset])
 
-  // Retry handler (event context): show the loading state, then reload.
   const reloadFarm = () => {
     setLoading(true)
     setLoadError(null)
     loadFarm()
   }
 
-  // Initial load. The first render already starts in the loading state.
   useEffect(() => {
     loadFarm()
   }, [loadFarm])
 
-  // No farm yet -> create mode; otherwise edit mode.
   const isCreate = !farm
 
   const onSubmit = async (values) => {
@@ -144,8 +134,6 @@ export default function FarmProfilePage() {
       setSavedMessage(isCreate ? 'Your farm profile has been created.' : 'Farm profile saved.')
     } catch (error) {
       const status = error && error.response ? error.response.status : null
-      // 409 = a farm already exists; 404 = it was deleted elsewhere.
-      // Re-sync with the backend so the form matches reality.
       if (status === 409 || status === 404) {
         await loadFarm()
       }
@@ -195,7 +183,6 @@ export default function FarmProfilePage() {
             <p className="mt-1 text-sm text-charcoal-600">Fields marked with * are required.</p>
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-5 space-y-5">
-              {/* Farm name */}
               <div>
                 <label htmlFor="farm-name" className="field-label">
                   Farm name *
@@ -213,7 +200,6 @@ export default function FarmProfilePage() {
                 <FieldError id="farm-name-error" error={errors.name} />
               </div>
 
-              {/* Province + District */}
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label htmlFor="farm-province" className="field-label">
@@ -253,7 +239,6 @@ export default function FarmProfilePage() {
                   <FieldError id="farm-district-error" error={errors.district} />
                 </div>
               </div>
-              {/* Ward + Village */}
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label htmlFor="farm-ward" className="field-label">
@@ -288,7 +273,6 @@ export default function FarmProfilePage() {
                 </div>
               </div>
 
-              {/* Address */}
               <div>
                 <label htmlFor="farm-address" className="field-label">
                   Address <span className="font-normal text-charcoal-400">(optional)</span>
@@ -306,7 +290,6 @@ export default function FarmProfilePage() {
                 <FieldError id="farm-address-error" error={errors.address} />
               </div>
 
-              {/* Coordinates */}
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label htmlFor="farm-latitude" className="field-label">
@@ -361,7 +344,6 @@ export default function FarmProfilePage() {
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="flex flex-col gap-3 border-t border-charcoal-100 pt-5 sm:flex-row sm:items-center">
                 <button
                   type="submit"
@@ -394,7 +376,6 @@ export default function FarmProfilePage() {
   )
 }
 
-// Small inline field error shared by every field on this form.
 function FieldError({ id, error }) {
   if (!error) return null
   return (

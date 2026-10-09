@@ -1,5 +1,3 @@
-// Visual badge for the backend referral (case) status enum.
-// PENDING amber, ACCEPTED sky, IN_PROGRESS earth, COMPLETED green, DECLINED red.
 import { caseStatusLabel } from '../../utils/vetCases'
 
 const STATUS_STYLES = Object.freeze({

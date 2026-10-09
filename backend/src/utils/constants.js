@@ -1,6 +1,3 @@
-// Shared, schema-aligned constants.
-// These mirror the enums in prisma/schema.prisma. Keeping them in ONE place means
-// we avoid "magic strings" scattered around and validation always matches the DB.
 
 const ROLES = ['FARMER', 'VETERINARY_PROFESSIONAL', 'ADMIN'];
 
@@ -18,7 +15,6 @@ const REMINDER_TYPES = ['VACCINATION', 'DEWORMING', 'DIPPING', 'PREGNANCY_CHECK'
 
 const ALERT_TYPES = ['POSSIBLE_CLUSTER', 'HIGH_RISK', 'SYSTEM'];
 
-// Zimbabwe provinces (V1 set). The app reads from this list so it can grow later.
 const PROVINCES = [
   'Harare',
   'Bulawayo',

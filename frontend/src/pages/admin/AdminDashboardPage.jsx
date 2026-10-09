@@ -11,7 +11,8 @@ import {
   FiUser,
   FiUsers,
 } from 'react-icons/fi'
-import { FaPaw, FaUserMd } from 'react-icons/fa'
+import { GiCow } from 'react-icons/gi'
+import { FaUserMd } from 'react-icons/fa'
 import { getAdminStats } from '../../api/admin'
 import DashboardStatCard from '../../components/farmer/DashboardStatCard'
 import RiskOverviewCard from '../../components/admin/RiskOverviewCard'
@@ -23,7 +24,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { REPORT_STATUS_LABELS } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// Display labels for backend REFERRAL_STATUSES (UI metadata only).
 const REFERRAL_STATUS_LABELS = Object.freeze({
   PENDING: 'Pending',
   ACCEPTED: 'Accepted',
@@ -32,7 +32,6 @@ const REFERRAL_STATUS_LABELS = Object.freeze({
   DECLINED: 'Declined',
 })
 
-// Fixed row order for the two breakdown lists (matches backend enums).
 const REPORT_STATUS_ORDER = Object.freeze(['PENDING', 'REVIEWED', 'REFERRED', 'RESOLVED'])
 const REFERRAL_STATUS_ORDER = Object.freeze([
   'PENDING',
@@ -42,11 +41,6 @@ const REFERRAL_STATUS_ORDER = Object.freeze([
   'DECLINED',
 ])
 
-// Admin console dashboard. A single GET /api/admin/stats request is the only
-// source of truth for every number on this page - there is no mock data, no
-// invented statistics and no repeated requests to the same endpoint. The stats
-// response carries no recent-activity list, so none is fabricated; the same
-// aggregates are presented as overview cards and breakdown lists instead.
 export default function AdminDashboardPage() {
   useDocumentTitle('Admin Dashboard')
 
@@ -82,8 +76,6 @@ export default function AdminDashboardPage() {
     loadStats()
   }
 
-  // Defensive reads: the backend always sends this shape (verified by
-  // adminSmokeTest), but each section degrades safely instead of crashing.
   const users = statistics?.users || {}
   const professionals = statistics?.professionals || {}
   const reports = statistics?.reports || {}
@@ -121,7 +113,6 @@ export default function AdminDashboardPage() {
         </Link>
       </header>
 
-      {/* One request drives the whole dashboard, so one clear error is enough. */}
       {loadError && (
         <AlertMessage variant="error" title="Could not load the platform statistics">
           <p>{loadError}</p>
@@ -140,7 +131,6 @@ export default function AdminDashboardPage() {
       ) : (
         !loadError && (
           <>
-            {/* Summary cards - every value straight from the stats response. */}
             <section
               aria-label="Platform overview"
               className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
@@ -152,7 +142,7 @@ export default function AdminDashboardPage() {
                 sub="All registered accounts"
               />
               <DashboardStatCard
-                icon={FaPaw}
+                icon={GiCow}
                 label="Farmers"
                 value={users.farmers || 0}
                 sub="Farmer accounts"
@@ -202,14 +192,11 @@ export default function AdminDashboardPage() {
               />
             </section>
 
-            {/* Risk + alert overviews side by side. */}
             <div className="grid gap-4 lg:grid-cols-2">
               <RiskOverviewCard reports={reports} />
               <AlertOverviewCard alerts={alerts} />
             </div>
 
-            {/* Status breakdowns from the same aggregates (the stats endpoint
-                returns no recent-activity feed, so none is invented here). */}
             <div className="grid gap-4 lg:grid-cols-2">
               <StatBreakdownCard
                 title="Reports by status"
@@ -227,7 +214,6 @@ export default function AdminDashboardPage() {
               />
             </div>
 
-            {/* Navigation only - these modules are built in later phases. */}
             <section aria-label="Admin modules" className="space-y-3">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-charcoal-500">
                 Admin modules

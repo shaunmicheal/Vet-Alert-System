@@ -1,5 +1,3 @@
-// Visual risk indicator for health reports.
-// LOW = green, MODERATE = amber, HIGH = red, unassessed = neutral.
 const RISK_STYLES = Object.freeze({
   LOW: { label: 'Low', className: 'border-forest-200 bg-forest-50 text-forest-800' },
   MODERATE: { label: 'Moderate', className: 'border-amber-200 bg-amber-50 text-amber-800' },

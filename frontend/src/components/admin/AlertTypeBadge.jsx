@@ -1,7 +1,3 @@
-// Visual badge for the backend AlertType enum (POSSIBLE_CLUSTER, HIGH_RISK,
-// SYSTEM) - UI metadata only, the backend enum stays the source of truth. The
-// tone distinguishes the KIND of administrative alert; it never asserts that
-// an event is confirmed.
 const TYPE_STYLES = Object.freeze({
   POSSIBLE_CLUSTER: {
     label: 'Possible cluster',

@@ -1,17 +1,12 @@
 import { Link } from 'react-router-dom'
 import { FiAlertTriangle } from 'react-icons/fi'
 
-// Display labels for the backend ALERT_TYPES (POSSIBLE_CLUSTER, HIGH_RISK,
-// SYSTEM) - UI metadata only, the backend enum stays the source of truth.
 const ALERT_TYPE_LABELS = Object.freeze({
   POSSIBLE_CLUSTER: 'Possible cluster',
   HIGH_RISK: 'High risk',
   SYSTEM: 'System',
 })
 
-// Alert summary from GET /api/admin/stats -> statistics.alerts
-// ({ total, active, byType }). No acknowledge controls here - the Alerts
-// module (a later phase) owns those actions.
 export default function AlertOverviewCard({ alerts }) {
   const data = alerts || {}
   const total = data.total || 0

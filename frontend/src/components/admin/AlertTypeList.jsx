@@ -1,4 +1,3 @@
-// Alert type breakdown.
 export default function AlertTypeList({ alertTypes, total }) {
   const safeTotal = total || 0
   const rows = [

@@ -14,9 +14,6 @@ import { getApiErrorMessage } from '../../utils/errors'
 import AlertMessage from '../ui/AlertMessage'
 import Spinner from '../ui/Spinner'
 
-// Mirrors the backend animal schema (backend/src/routes/animalRoutes.js):
-// animalType required on create; name/tag/breed/age/sex optional.
-// Empty strings are OMITTED from the payload (the backend rejects them).
 const animalSchema = z.object({
   animalType: z.enum(ANIMAL_TYPES, 'Please select an animal type'),
   name: z.string().trim().max(80, 'Name must be 80 characters or fewer'),
@@ -52,8 +49,6 @@ const toFormValues = (animal) =>
       }
     : EMPTY_VALUES
 
-// Form values -> backend payload. Blank optional fields are left out so the
-// backend keeps whatever it already stores (its schema rejects empty strings).
 const toPayload = (values) => {
   const payload = { animalType: values.animalType }
   if (values.name !== '') payload.name = values.name
@@ -64,7 +59,6 @@ const toPayload = (values) => {
   return payload
 }
 
-// Add/edit dialog for one animal. `animal` is null when creating.
 export default function AnimalForm({ animal, onClose, onSaved }) {
   const isEdit = Boolean(animal)
   useDialogEffects(onClose)
@@ -132,7 +126,6 @@ export default function AnimalForm({ animal, onClose, onSaved }) {
             </AlertMessage>
           )}
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-            {/* Animal type (required by the backend on create) */}
             <div>
               <label htmlFor="animal-type" className="field-label">
                 Animal type *
@@ -159,7 +152,6 @@ export default function AnimalForm({ animal, onClose, onSaved }) {
               )}
             </div>
 
-            {/* Name */}
             <div>
               <label htmlFor="animal-name" className="field-label">
                 Name <span className="font-normal text-charcoal-400">(optional)</span>
@@ -180,7 +172,6 @@ export default function AnimalForm({ animal, onClose, onSaved }) {
               )}
             </div>
 
-            {/* Tag number + Breed */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="animal-tag" className="field-label">
@@ -222,7 +213,6 @@ export default function AnimalForm({ animal, onClose, onSaved }) {
                 )}
               </div>
             </div>
-            {/* Age + Sex */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="animal-age" className="field-label">

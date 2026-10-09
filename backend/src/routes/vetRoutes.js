@@ -1,5 +1,3 @@
-// Veterinary professional WORKSPACE. Mounted at /api/vet.
-// Locked to logged-in VETERINARY_PROFESSIONAL accounts only.
 const express = require('express');
 const { z } = require('zod');
 
@@ -20,8 +18,6 @@ const router = express.Router();
 
 router.use(authMiddleware, requireRole('VETERINARY_PROFESSIONAL'));
 
-// Editable professional fields. `isActive`, `userId` and the User `role` are NOT
-// listed, so an attempt to send them is rejected with a 400 (thanks to .strict()).
 const updateProfileSchema = z
   .strictObject({
     name: z.string().trim().min(2, 'Name must be at least 2 characters').max(120),
@@ -36,20 +32,16 @@ const updateProfileSchema = z
   .partial()
   .refine((data) => Object.keys(data).length > 0, { message: 'Provide at least one field to update' });
 
-// A status update accepts ONLY a known ReferralStatus value (extra keys -> 400).
 const updateStatusSchema = z.strictObject({ status: z.enum(REFERRAL_STATUSES) });
 
-// The professional response is trimmed, non-empty and length-bounded.
 const updateResponseSchema = z.strictObject({
   professionalResponse: z.string().trim().min(10, 'Response must be at least 10 characters').max(2000),
 });
 
-// --- Profile ----------------------------------------------------------------
 router.get('/profile', getProfile);
 router.patch('/profile', validate(updateProfileSchema), updateProfile);
 router.put('/profile', validate(updateProfileSchema), updateProfile);
 
-// --- Case management --------------------------------------------------------
 router.get('/cases', listCases);
 router.get('/cases/:id', validateParams(idParamSchema), getCase);
 router.patch('/cases/:id/status', validateParams(idParamSchema), validate(updateStatusSchema), updateCaseStatus);

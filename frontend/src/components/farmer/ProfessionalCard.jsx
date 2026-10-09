@@ -1,9 +1,5 @@
 import { FiAward, FiClock, FiMail, FiMapPin, FiPhone, FiShare2 } from 'react-icons/fi'
 
-// One professional in the veterinary directory. Contact details come straight
-// from the backend record. `onSelect` is only provided by the referral flow
-// (Health Report Detail -> Directory?report=<id>); without it the card stays
-// read-only exactly as before.
 export default function ProfessionalCard({ professional, onSelect }) {
   const { name, professionalType, province, district, specialisation, availability, phone, email } =
     professional

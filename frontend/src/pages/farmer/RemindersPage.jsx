@@ -12,10 +12,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { getApiErrorMessage } from '../../utils/errors'
 import { REMINDER_TYPE_LABELS, REMINDER_TYPES, getReminderState } from '../../utils/reminders'
 
-// Farmer reminders: real records from GET /api/reminders.
-// Upcoming (overdue + due today + future) and completed stay in separate
-// sections; filters work client-side. Create/edit share one dialog, delete
-// asks for confirmation, and completion uses the persisted backend endpoint.
 export default function RemindersPage() {
   useDocumentTitle('Reminders')
   const [reminders, setReminders] = useState([])

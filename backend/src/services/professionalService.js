@@ -1,14 +1,8 @@
-// Shared helpers for the veterinary professional DIRECTORY and PROFILE.
-//
-// The "public" shape below is the ONLY set of fields we ever expose to other
-// users. It deliberately omits the internal `userId` link to a User account.
-// (VeterinaryProfessional has no password column, so none can leak here.)
 const prisma = require('../config/prisma');
 const ApiError = require('../utils/ApiError');
 
 const NOT_FOUND = 'Unable to find that record.';
 
-// Fields safe to show farmers (and other professionals) in the directory.
 const PUBLIC_PROFESSIONAL_SELECT = {
   id: true,
   name: true,
@@ -24,8 +18,6 @@ const PUBLIC_PROFESSIONAL_SELECT = {
   updatedAt: true,
 };
 
-// Farmer-facing directory. Only ACTIVE professionals are ever returned, and the
-// scoping/filtering happens in the database query itself.
 const listActiveProfessionals = (filters = {}) => {
   const where = { isActive: true };
 
@@ -37,8 +29,6 @@ const listActiveProfessionals = (filters = {}) => {
   if (filters.specialisation) {
     where.specialisation = { contains: filters.specialisation, mode: 'insensitive' };
   }
-  // Free-text search across the fields a farmer would recognise: who they are,
-  // what they help with, how to reach them, and where they operate.
   if (filters.search) {
     where.OR = [
       { name: { contains: filters.search, mode: 'insensitive' } },
@@ -57,12 +47,10 @@ const listActiveProfessionals = (filters = {}) => {
   });
 };
 
-// The professional record linked to the logged-in vet (VeterinaryProfessional.userId is unique).
 const getProfessionalByUserId = (userId) => {
   return prisma.veterinaryProfessional.findUnique({ where: { userId } });
 };
 
-// Same as above, but throws 404 when the vet has no professional record yet.
 const requireProfessionalByUserId = async (userId) => {
   const professional = await getProfessionalByUserId(userId);
   if (!professional) {

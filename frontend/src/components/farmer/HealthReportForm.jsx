@@ -8,9 +8,6 @@ import { getApiErrorMessage } from '../../utils/errors'
 import AlertMessage from '../ui/AlertMessage'
 import Spinner from '../ui/Spinner'
 
-// Mirrors the backend createReportSchema (backend/src/routes/healthReportRoutes.js).
-// The backend has no symptoms listing endpoint, so symptomIds are not sent and
-// the farmer describes the signs in the description instead.
 const optionalText = (max, label) =>
   z.string().trim().max(max, `${label} must be ${max} characters or fewer`)
 
@@ -44,7 +41,6 @@ const healthReportSchema = z.object({
   additionalNotes: optionalText(2000, 'Additional notes'),
 })
 
-// Form values -> backend payload. Blank optional values are omitted.
 const toPayload = (values) => {
   const payload = { title: values.title, description: values.description }
   if (values.animalId !== '') payload.animalId = values.animalId
@@ -59,15 +55,12 @@ const toPayload = (values) => {
   return payload
 }
 
-// Shared label helper for the animal select (kept local to this component).
 const animalOptionLabel = (animal) => {
   const type = ANIMAL_TYPE_LABELS[animal.animalType] || animal.animalType
   const name = animal.name || 'Unnamed animal'
   return animal.tagNumber ? `${name} (${type}) · ${animal.tagNumber}` : `${name} (${type})`
 }
 
-// New health report form. On success the report is created and the separate
-// AI triage step runs automatically, so the farmer lands on a finished report.
 export default function HealthReportForm({ animals, onSubmitted, onCancel }) {
   const [stage, setStage] = useState('form')
   const [formError, setFormError] = useState(null)
@@ -107,8 +100,6 @@ export default function HealthReportForm({ animals, onSubmitted, onCancel }) {
           triageError: null,
         })
       } catch (triageError) {
-        // The report was saved - only the AI step failed. Continue to the
-        // report page so the farmer can retry the assessment later.
         onSubmitted({ report, triage: null, triageError: getApiErrorMessage(triageError) })
       }
     } catch (error) {
@@ -124,7 +115,6 @@ export default function HealthReportForm({ animals, onSubmitted, onCancel }) {
         </AlertMessage>
       )}
 
-      {/* Report details */}
       <section className="card p-5 sm:p-6" aria-labelledby="report-details-heading">
         <h2
           id="report-details-heading"
@@ -197,14 +187,13 @@ export default function HealthReportForm({ animals, onSubmitted, onCancel }) {
             </select>
             {animals.length === 0 && (
               <p className="mt-1.5 text-xs text-charcoal-500">
-                You have no registered animals yet — you can still submit a general farm report.
+                You have no registered animals yet. You can still submit a general farm report.
               </p>
             )}
             <FieldError id="report-animal-error" error={errors.animalId} />
           </div>
         </div>
       </section>
-      {/* Signs and symptoms */}
       <section className="card p-5 sm:p-6" aria-labelledby="report-signs-heading">
         <h2 id="report-signs-heading" className="text-base font-semibold text-charcoal-900">
           Signs and symptoms
@@ -286,7 +275,6 @@ export default function HealthReportForm({ animals, onSubmitted, onCancel }) {
         </div>
       </section>
 
-      {/* Recent events */}
       <section className="card p-5 sm:p-6" aria-labelledby="report-events-heading">
         <h2 id="report-events-heading" className="text-base font-semibold text-charcoal-900">
           Recent events
@@ -340,7 +328,6 @@ export default function HealthReportForm({ animals, onSubmitted, onCancel }) {
           </div>
         </div>
       </section>
-      {/* Additional information */}
       <section className="card p-5 sm:p-6" aria-labelledby="report-notes-heading">
         <h2 id="report-notes-heading" className="text-base font-semibold text-charcoal-900">
           Additional information
@@ -366,7 +353,6 @@ export default function HealthReportForm({ animals, onSubmitted, onCancel }) {
         </div>
       </section>
 
-      {/* Submit */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           type="submit"
@@ -402,7 +388,6 @@ export default function HealthReportForm({ animals, onSubmitted, onCancel }) {
   )
 }
 
-// Small inline field error, matching the pattern used on the farm form.
 function FieldError({ id, error }) {
   if (!error) return null
   return (

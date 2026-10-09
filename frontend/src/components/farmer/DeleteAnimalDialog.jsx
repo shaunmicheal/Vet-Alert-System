@@ -7,9 +7,6 @@ import { getApiErrorMessage } from '../../utils/errors'
 import AlertMessage from '../ui/AlertMessage'
 import Spinner from '../ui/Spinner'
 
-// Confirmation dialog for deleting one animal.
-// Backend behaviour (prisma onDelete: SetNull): the animal is removed from the
-// farm, while health reports that referenced it are KEPT and simply unlinked.
 export default function DeleteAnimalDialog({ animal, onCancel, onDeleted }) {
   useDialogEffects(onCancel)
 
@@ -29,7 +26,6 @@ export default function DeleteAnimalDialog({ animal, onCancel, onDeleted }) {
         onDeleted(animal)
       })
       .catch((requestError) => {
-        // Keep the dialog open and the animal visible so the farmer can retry.
         setError(getApiErrorMessage(requestError))
         setDeleting(false)
       })

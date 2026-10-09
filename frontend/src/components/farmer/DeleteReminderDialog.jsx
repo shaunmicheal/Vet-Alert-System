@@ -7,9 +7,6 @@ import { formatDueDate } from '../../utils/reminders'
 import AlertMessage from '../ui/AlertMessage'
 import Spinner from '../ui/Spinner'
 
-// Confirmation dialog for deleting one farmer reminder. Nothing is removed
-// until the farmer confirms, and the list only changes after the backend
-// confirms the delete.
 export default function DeleteReminderDialog({ reminder, onCancel, onDeleted }) {
   useDialogEffects(onCancel)
   const [deleting, setDeleting] = useState(false)

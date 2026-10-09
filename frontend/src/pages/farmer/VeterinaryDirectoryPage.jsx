@@ -16,17 +16,9 @@ import { formatDate } from '../../utils/format'
 
 const EMPTY_FILTERS = { search: '', province: '', district: '', professionalType: '' }
 
-// Mirrors the backend directory query schema (backend/src/routes/vetDirectoryRoutes.js):
-// search and district must be at least 2 characters, so we validate before sending
-// instead of surfacing a backend 400 as an error card.
 const MIN_FILTER_LENGTH = 2
 const isSendable = (value) => value === '' || value.trim().length >= MIN_FILTER_LENGTH
 
-// Farmer-facing veterinary directory. All data comes from the real backend
-// (GET /api/vets) - read-only listing. When opened from a health report with
-// ?report=<id> it also becomes the referral selection flow: the report is
-// loaded (scoped to this farmer by the backend), the farmer picks a
-// professional, and CreateReferralDialog handles message -> review -> submit.
 export default function VeterinaryDirectoryPage() {
   useDocumentTitle('Veterinary Directory')
 
@@ -39,26 +31,17 @@ export default function VeterinaryDirectoryPage() {
   const [loadError, setLoadError] = useState(null)
   const [filters, setFilters] = useState(EMPTY_FILTERS)
   const [searchText, setSearchText] = useState('')
-  // District is edited as draft text and only committed on blur, so typing never
-  // fires one request per keystroke (or sends a too-short value to the backend).
   const [districtText, setDistrictText] = useState('')
   const [filterHint, setFilterHint] = useState(null)
-  // Captured from the unfiltered list so the role filter keeps every option.
   const [typeOptions, setTypeOptions] = useState([])
-  // Referral mode state: the report being referred + the chosen professional.
   const [referralReport, setReferralReport] = useState(null)
   const [referralReportLoading, setReferralReportLoading] = useState(() =>
     Boolean(searchParams.get('report')),
   )
   const [referralReportError, setReferralReportError] = useState(null)
   const [selectedProfessional, setSelectedProfessional] = useState(null)
-  // Monotonic id so a slow earlier response can never overwrite a newer one.
   const requestIdRef = useRef(0)
 
-  // Loads the health report that ?report=<id> points at. The backend returns
-  // 404 for a report that is not this farmer's - surfaced here as a banner.
-  // State only changes inside promise callbacks (never synchronously) so the
-  // mount effect cannot trigger cascading renders.
   const loadReferralReport = useCallback(() => {
     if (!referralReportId) return Promise.resolve()
 
@@ -80,12 +63,9 @@ export default function VeterinaryDirectoryPage() {
     loadReferralReport()
   }, [loadReferralReport])
 
-  // Promise-chain style (like the other farmer pages) so setState never runs
-  // synchronously inside the mount effect.
   const loadDirectory = useCallback(() => {
     const requestId = ++requestIdRef.current
     const params = {}
-    // Defence in depth: never send a value the backend schema would reject.
     if (isSendable(filters.search) && filters.search) params.search = filters.search
     if (filters.province) params.province = filters.province
     if (isSendable(filters.district) && filters.district) params.district = filters.district
@@ -122,7 +102,6 @@ export default function VeterinaryDirectoryPage() {
     loadDirectory()
   }, [loadDirectory])
 
-  // Filter changes happen in event handlers, so the loading state can be set here.
   const applyFilter = (key, value) => {
     setFilterHint(null)
     setLoading(true)
@@ -132,8 +111,6 @@ export default function VeterinaryDirectoryPage() {
   const handleSearchSubmit = (event) => {
     event.preventDefault()
     const term = searchText.trim()
-    // The backend rejects search terms under 2 characters - explain instead of
-    // showing a generic error card.
     if (!isSendable(term)) {
       setFilterHint('Please enter at least 2 characters to search.')
       return
@@ -141,7 +118,6 @@ export default function VeterinaryDirectoryPage() {
     applyFilter('search', term)
   }
 
-  // District commits on blur only (draft text lives in districtText).
   const commitDistrict = () => {
     const value = districtText.trim()
     if (value === filters.district) return
@@ -156,22 +132,17 @@ export default function VeterinaryDirectoryPage() {
     setSearchText('')
     setDistrictText('')
     setFilterHint(null)
-    // Only touch `filters` when a committed filter actually changes - setting the
-    // same EMPTY_FILTERS reference would bail out of the effect and leave the
-    // spinner stuck on when only draft text was active.
     if (Object.values(filters).some((value) => value !== '')) {
       setLoading(true)
       setFilters(EMPTY_FILTERS)
     }
   }
 
-  // Committed filters plus any draft text still being typed.
   const filtersActive =
     Object.values(filters).some((value) => value !== '') ||
     searchText.trim() !== '' ||
     districtText.trim() !== ''
 
-  // Exit referral mode and stay in the directory (removes ?report=<id>).
   const cancelReferralMode = () => {
     setSelectedProfessional(null)
     setReferralReport(null)
@@ -180,14 +151,12 @@ export default function VeterinaryDirectoryPage() {
     setSearchParams({})
   }
 
-  // Retry handler for the referral banner (event context, so loading may be set here).
   const retryReferralReport = () => {
     setReferralReportLoading(true)
     setReferralReportError(null)
     loadReferralReport()
   }
 
-  // After a successful POST /referrals, confirm + jump to the status page.
   const handleReferralCreated = (referral) => {
     const name = referral.professional ? referral.professional.name : 'the professional'
     navigate(`/farmer/referrals/${referral.id}`, {
@@ -202,7 +171,6 @@ export default function VeterinaryDirectoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <header>
         <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
           My Farm
@@ -217,7 +185,6 @@ export default function VeterinaryDirectoryPage() {
         </p>
       </header>
 
-      {/* Referral banner: which report is being shared, with an exit */}
       {referralMode && (
         <section className="card p-4 sm:p-5" aria-label="Health report being referred">
           {referralReportLoading ? (
@@ -260,7 +227,7 @@ export default function VeterinaryDirectoryPage() {
                 </p>
                 <p className="mt-2 text-xs leading-relaxed text-charcoal-500">
                   The professional will see this report&rsquo;s details, including its
-                  AI-assisted risk assessment if one has been run — health guidance, not a
+                  AI-assisted risk assessment if one has been run. This is health guidance, not a
                   confirmed diagnosis.
                 </p>
               </div>
@@ -277,7 +244,6 @@ export default function VeterinaryDirectoryPage() {
         </section>
       )}
 
-      {/* Filters */}
       <section
         aria-label="Search and filter the veterinary directory"
         className="card p-4 sm:p-5"
@@ -388,7 +354,6 @@ export default function VeterinaryDirectoryPage() {
         )}
       </section>
 
-      {/* Results */}
       {loading ? (
         <div
           className="card flex items-center justify-center gap-3 px-6 py-16"
@@ -423,15 +388,13 @@ export default function VeterinaryDirectoryPage() {
         <>
           <p className="text-sm text-charcoal-500" role="status">
             Showing {professionals.length} professional{professionals.length === 1 ? '' : 's'}
-            {referralMode ? ' — choose one to send this report to' : ''}
+            {referralMode ? '. Choose one to send this report to' : ''}
           </p>
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {professionals.map((professional) => (
               <li key={professional.id}>
                 <ProfessionalCard
                   professional={professional}
-                  // In referral mode (and only once the report has loaded) each
-                  // card gains a select action instead of staying read-only.
                   onSelect={
                     referralMode && referralReport && !referralReportLoading
                       ? setSelectedProfessional
@@ -444,7 +407,6 @@ export default function VeterinaryDirectoryPage() {
         </>
       )}
 
-      {/* Message -> review -> submit for the chosen professional */}
       {selectedProfessional && referralReport && (
         <CreateReferralDialog
           report={referralReport}

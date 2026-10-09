@@ -4,13 +4,9 @@ import AnimalCard from './AnimalCard'
 
 const show = (value) => value || '—'
 
-// Responsive animal records: structured table on tablet/desktop,
-// readable cards on mobile. Rendered from real API data only.
 export default function AnimalList({ animals, onEdit, onDelete }) {
   return (
     <>
-      {/* Tablet / desktop table. overflow-x-auto keeps long tag numbers/breeds
-          scrollable instead of clipped (the schema allows up to 80 characters). */}
       <div className="card hidden overflow-x-auto md:block">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Animals registered to your farm</caption>
@@ -85,7 +81,6 @@ export default function AnimalList({ animals, onEdit, onDelete }) {
         </table>
       </div>
 
-      {/* Mobile cards */}
       <div className="space-y-3 md:hidden">
         {animals.map((animal) => (
           <AnimalCard key={animal.id} animal={animal} onEdit={onEdit} onDelete={onDelete} />

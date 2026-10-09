@@ -1,5 +1,3 @@
-// Farm profile routes. Mounted at /api/farmer, so the resource is /api/farmer/farm.
-// Locked to logged-in farmers - other roles get 403, guests get 401.
 const express = require('express');
 const { z } = require('zod');
 
@@ -24,7 +22,6 @@ const farmFields = {
   longitude: z.number().min(-180).max(180).optional(),
 };
 
-// Create needs the full profile; update accepts any single field.
 const createFarmSchema = z.object(farmFields);
 const updateFarmSchema = z
   .object(farmFields)

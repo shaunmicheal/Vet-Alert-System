@@ -1,6 +1,5 @@
 import { ANIMAL_TYPE_LABELS } from '../../utils/constants'
 
-// Animal category breakdown rendered as an accessible list.
 export default function AnimalTypeList({ animalTypes, total }) {
   const safeTotal = total || 0
   const labels = ANIMAL_TYPE_LABELS || {}

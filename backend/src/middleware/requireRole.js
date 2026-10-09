@@ -1,15 +1,6 @@
-// Role-based authorization. Always use this AFTER authMiddleware.
-//
-// Usage:
-//   requireRole('ADMIN')
-//   requireRole('FARMER', 'VETERINARY_PROFESSIONAL')
-//   requireRole(['ADMIN', 'VETERINARY_PROFESSIONAL'])
-//
-// This runs on the SERVER, so hiding a page in React is never enough by itself.
 const ApiError = require('../utils/ApiError');
 
 const requireRole = (...allowedRoles) => {
-  // Support both requireRole('A', 'B') and requireRole(['A', 'B']).
   const roles = allowedRoles.flat();
 
   return (req, res, next) => {

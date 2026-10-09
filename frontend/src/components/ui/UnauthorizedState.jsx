@@ -1,7 +1,6 @@
 import { FiShield } from 'react-icons/fi'
 import EmptyState from './EmptyState'
 
-// Reusable "not allowed" state (403-style), used by the unauthorized page.
 export default function UnauthorizedState({ description, action }) {
   return (
     <div className="flex min-h-[60vh] items-center justify-center px-4">

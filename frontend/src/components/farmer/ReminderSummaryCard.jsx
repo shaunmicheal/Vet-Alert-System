@@ -7,9 +7,6 @@ import {
   REMINDER_TYPE_LABELS,
 } from '../../utils/reminders'
 
-// Small dashboard summary for reminders. Never duplicates the Reminders page:
-// it shows the upcoming count, the nearest due task, an overdue warning when
-// applicable, and a link to view everything.
 export default function ReminderSummaryCard({ reminders, failed }) {
   if (failed) return null
   const list = Array.isArray(reminders) ? reminders : []

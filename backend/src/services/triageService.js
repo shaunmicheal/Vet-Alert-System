@@ -1,21 +1,12 @@
-// Turns a farmer's health report into an AI-assisted RISK TRIAGE.
-//
-// This is NOT a diagnosis service. It produces a risk level, general guidance,
-// warning signs and follow-up questions. If anything about the AI is unsafe or
-// unavailable, it returns a deterministic, diagnosis-free fallback instead.
 const { z } = require('zod');
 const geminiService = require('./geminiService');
 const { env } = require('../config/env');
 
 const RISK_LEVELS = ['LOW', 'MODERATE', 'HIGH'];
 
-// Shown on every AI response so the farmer is never misled.
 const DISCLAIMER =
   'VetAlert provides health-risk guidance and does not replace professional veterinary diagnosis.';
 
-// If the AI ever uses wording that claims a definitive diagnosis, we refuse the
-// answer and use the safe fallback. This is a defence-in-depth guard on top of
-// the prompt instructions.
 const FORBIDDEN_PHRASES = [
   'definitely has',
   'confirmed diagnosis',
@@ -28,8 +19,6 @@ const FORBIDDEN_PHRASES = [
   'positive for',
 ];
 
-// The exact JSON shape we accept from Gemini. strictObject() means any missing
-// key, wrong type OR unexpected extra key makes validation fail -> safe fallback.
 const aiResponseSchema = z.strictObject({
   riskLevel: z.enum(RISK_LEVELS),
   assessment: z.string().trim().min(10).max(2000),
@@ -39,7 +28,6 @@ const aiResponseSchema = z.strictObject({
   followUpQuestions: z.array(z.string().trim().min(3).max(300)).max(10),
 });
 
-// ---- Prompt ----------------------------------------------------------------
 const INSTRUCTIONS = `You are a livestock health RISK-TRIAGE assistant for smallholder farmers in Zimbabwe.
 You are NOT a veterinarian and you MUST NOT diagnose disease.
 
@@ -65,9 +53,6 @@ Return JSON with EXACTLY these keys:
 
 const buildPrompt = (data) => `${INSTRUCTIONS}\n\nREPORT DATA (JSON):\n${JSON.stringify(data, null, 2)}`;
 
-// ---- Trusted input ---------------------------------------------------------
-// Built ONLY from database records. The farmer's account details (email, phone,
-// password, ids) are deliberately excluded.
 const buildStructuredInput = (report) => ({
   animal: report.animal
     ? {
@@ -101,7 +86,6 @@ const buildStructuredInput = (report) => ({
   symptoms: (report.symptoms || []).map((link) => link.symptom?.name).filter(Boolean),
 });
 
-// Gemini is asked for JSON, but we still tolerate stray markdown fences.
 const extractJson = (text) => {
   if (typeof text !== 'string') {
     throw new Error('AI response was not text.');
@@ -115,7 +99,6 @@ const extractJson = (text) => {
   return JSON.parse(cleaned.slice(start, end + 1));
 };
 
-// Returns true if the AI text contains wording that claims a diagnosis.
 const containsDiagnosticClaim = (result) => {
   const combined = [result.assessment, result.recommendations, ...result.warningSigns, ...result.followUpQuestions]
     .join(' ')
@@ -123,10 +106,6 @@ const containsDiagnosticClaim = (result) => {
   return FORBIDDEN_PHRASES.some((phrase) => combined.includes(phrase));
 };
 
-// ---- Deterministic fallback ------------------------------------------------
-// Used whenever Gemini is unavailable or its answer cannot be trusted.
-// It NEVER invents a diagnosis - it only rates risk from the report data and
-// gives safe, general guidance.
 const FALLBACK_WARNING_SIGNS = [
   'Laboured, noisy or rapid breathing',
   'Not eating or drinking at all',
@@ -135,7 +114,6 @@ const FALLBACK_WARNING_SIGNS = [
   'Signs spreading quickly to other animals',
 ];
 
-// A simple, explainable score. Higher = more warning signs in the report.
 const scoreReport = (data) => {
   const r = data.report || {};
   const symptomCount = (data.symptoms || []).length;
@@ -202,8 +180,6 @@ const buildFallback = (data) => {
   };
 };
 
-// ---- Orchestration ---------------------------------------------------------
-// Short, safe label for logging. We never log the AI text or the report contents.
 const failureCategory = (err) => {
   if (err.name === 'AiServiceError') return 'ai-service-unavailable';
   if (err.name === 'ZodError') return 'invalid-ai-response';
@@ -222,7 +198,6 @@ const triageHealthReport = async (structured) => {
 
     return { source: 'GEMINI', ...result };
   } catch (err) {
-    // Log a short reason only (never the AI text or the report contents).
     if (env.NODE_ENV === 'development') {
       console.warn(`[triage] using safe fallback (reason: ${failureCategory(err)}).`);
     }

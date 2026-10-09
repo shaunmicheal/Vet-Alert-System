@@ -1,16 +1,8 @@
-// Reminder helpers: ownership lookups and status rules.
-//
-// SECURITY: exactly like ownershipService and referralService, a reminder that
-// belongs to ANOTHER farmer is treated as if it does not exist, so we return 404
-// (never 403) and never reveal that the id is real. Ownership is scoped in the
-// database query itself - never trusted from the client.
 const prisma = require('../config/prisma');
 const ApiError = require('../utils/ApiError');
 
 const NOT_FOUND = 'Unable to find that record.';
 
-// Every new reminder starts PENDING (completed = false). The only permitted
-// transition is to COMPLETED (completed = true).
 const COMPLETION_TRANSITIONS = {
   false: ['true'],
   true: [],
@@ -24,8 +16,6 @@ const assertCompletion = (current) => {
   }
 };
 
-// The farmer-facing view of a reminder. Only the farmer's own records are ever
-// returned, and the response keeps the public fields the frontend needs.
 const reminderSelect = {
   id: true,
   title: true,
@@ -37,8 +27,6 @@ const reminderSelect = {
   updatedAt: true,
 };
 
-// Finds ONE reminder ONLY if it belongs to this farmer. Throws 404 otherwise so a
-// farmer can never probe or read another farmer's reminder.
 const requireOwnedReminder = async (userId, reminderId) => {
   const reminder = await prisma.reminder.findFirst({
     where: { id: reminderId, farmerId: userId },
@@ -49,10 +37,6 @@ const requireOwnedReminder = async (userId, reminderId) => {
   return reminder;
 };
 
-// Lists only reminders that belong to the authenticated farmer. Uncompleted
-// reminders come before completed ones so upcoming work stays at the top, and
-// completed ones stay visibly distinguishable below it. Within each group they
-// are ordered oldest due date first.
 const listOwnedReminders = async (userId) => {
   return prisma.reminder.findMany({
     where: { farmerId: userId },
@@ -64,8 +48,6 @@ const listOwnedReminders = async (userId) => {
   });
 };
 
-// Creates a reminder for the authenticated farmer. `farmerId` is NEVER taken
-// from the client - it is derived from the authenticated user.
 const createReminder = async (userId, input) => {
   const dueDate = input.dueDate ? new Date(input.dueDate + 'T00:00:00Z') : null;
   const reminder = await prisma.reminder.create({
@@ -82,7 +64,6 @@ const createReminder = async (userId, input) => {
   return reminder;
 };
 
-// Updates only the editable fields of one of the farmer's own reminders.
 const updateReminder = async (userId, reminderId, input) => {
   const fields = {};
   if (input.title !== undefined) fields.title = input.title;
@@ -100,7 +81,6 @@ const updateReminder = async (userId, reminderId, input) => {
   return requireOwnedReminder(userId, reminderId, reminderSelect);
 };
 
-// Marks one of the farmer's own reminders as completed (persisted).
 const completeReminder = async (userId, reminderId) => {
   assertCompletion(
     (await requireOwnedReminder(userId, reminderId)).completed
@@ -116,7 +96,6 @@ const completeReminder = async (userId, reminderId) => {
   return requireOwnedReminder(userId, reminderId, reminderSelect);
 };
 
-// Deletes one of the farmer's own reminders - rejects anyone else's record.
 const deleteReminder = async (userId, reminderId) => {
   const deleted = await prisma.reminder.deleteMany({
     where: { id: reminderId, farmerId: userId },

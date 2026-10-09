@@ -2,8 +2,6 @@ import { FiMapPin } from 'react-icons/fi'
 import EmptyState from '../components/ui/EmptyState'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 
-// Structural placeholder for role areas that later phases will implement.
-// It exists so navigation, guards and the shell can be verified now.
 export default function ModulePlaceholder({ title, icon: Icon = FiMapPin }) {
   useDocumentTitle(title)
 

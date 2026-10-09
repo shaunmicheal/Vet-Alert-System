@@ -1,5 +1,3 @@
-// Tiny wrapper around localStorage for the auth session.
-// We only ever store the JWT and the public user profile - never passwords.
 const AUTH_STORAGE_KEY = 'vetalert.auth'
 
 export const readStoredAuth = () => {
@@ -13,7 +11,6 @@ export const readStoredAuth = () => {
 
     return { token: parsed.token, user: parsed.user }
   } catch {
-    // Corrupted JSON or storage unavailable - treat as signed out.
     return null
   }
 }
@@ -22,7 +19,6 @@ export const writeStoredAuth = ({ token, user }) => {
   try {
     window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token, user }))
   } catch {
-    // Storage may be full or blocked - the app still works for this visit.
   }
 }
 
@@ -30,7 +26,6 @@ export const clearStoredAuth = () => {
   try {
     window.localStorage.removeItem(AUTH_STORAGE_KEY)
   } catch {
-    // Nothing to clean up if storage is unavailable.
   }
 }
 

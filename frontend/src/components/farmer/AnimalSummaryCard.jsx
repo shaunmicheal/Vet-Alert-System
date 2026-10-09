@@ -1,5 +1,3 @@
-// One inventory statistic tile (total, or a single animal type count).
-// Counts are always derived from the real animal records by the page.
 export default function AnimalSummaryCard({ label, count, highlight = false }) {
   return (
     <div className={`card p-4 ${highlight ? 'border-forest-200 bg-forest-50' : ''}`}>

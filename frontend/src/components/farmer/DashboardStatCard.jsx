@@ -1,5 +1,3 @@
-// Compact summary card used across the farmer dashboard.
-// `tone` only changes the accent - keep values plain and readable.
 const TONES = Object.freeze({
   default: 'bg-forest-50 text-forest-700',
   earth: 'bg-earth-50 text-earth-700',

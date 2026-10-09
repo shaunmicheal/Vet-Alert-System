@@ -14,10 +14,6 @@ import { formatDate } from '../../utils/format'
 
 const show = (value) => (value === null || value === undefined || value === '' ? null : value)
 
-// Referral detail / status view for ONE of the farmer's own referrals
-// (GET /api/referrals/:id - 404 for anything that is not theirs). Shows which
-// health report was referred, who received it, the current status with a plain
-// language explanation, and any response from the professional.
 export default function ReferralDetailPage() {
   const { id } = useParams()
   const location = useLocation()
@@ -113,7 +109,6 @@ export default function ReferralDetailPage() {
             </AlertMessage>
           )}
 
-          {/* Status header */}
           <header className="card p-5 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
@@ -146,7 +141,6 @@ export default function ReferralDetailPage() {
               </div>
             </div>
 
-            {/* Plain-language meaning of the current status */}
             <div className="mt-4 border-t border-charcoal-100 pt-4">
               <h2 className="text-sm font-semibold text-charcoal-800">What this status means</h2>
               <p className="mt-1 text-sm leading-relaxed text-charcoal-700">
@@ -158,7 +152,6 @@ export default function ReferralDetailPage() {
             </div>
           </header>
 
-          {/* Referred health report */}
           <section className="card p-5 sm:p-6" aria-labelledby="referral-report-title">
             <h2 id="referral-report-title" className="text-base font-semibold text-charcoal-900">
               Health report that was referred
@@ -186,7 +179,6 @@ export default function ReferralDetailPage() {
             </p>
           </section>
 
-          {/* Receiving professional */}
           <section className="card p-5 sm:p-6" aria-labelledby="referral-professional-title">
             <h2
               id="referral-professional-title"
@@ -234,7 +226,6 @@ export default function ReferralDetailPage() {
             </dl>
           </section>
 
-          {/* Message + response */}
           <section className="card p-5 sm:p-6" aria-labelledby="referral-conversation-title">
             <h2
               id="referral-conversation-title"

@@ -3,7 +3,6 @@ import { FaUserMd } from 'react-icons/fa'
 import { FiAlertTriangle, FiFileText } from 'react-icons/fi'
 import Logo from '../components/Logo'
 
-// Computed once at module load (not during render).
 const CURRENT_YEAR = new Date().getFullYear()
 
 const FEATURES = [
@@ -24,14 +23,9 @@ const FEATURES = [
   },
 ]
 
-// Public shell for the login and registration pages:
-// branding panel on desktop, compact header on mobile.
 export default function AuthLayout() {
   return (
     <div className="min-h-screen bg-cream-50 lg:grid lg:grid-cols-[1.05fr_1fr]">
-      {/* Branding panel is desktop-only: below lg the compact header inside
-          <main> carries the logo, so showing both would duplicate branding and
-          push the sign-in form below a full screen of marketing copy. */}
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-forest-800 px-10 py-12 lg:flex xl:px-14">
         <div
           aria-hidden="true"
@@ -51,7 +45,7 @@ export default function AuthLayout() {
             Protecting livestock health across Zimbabwe.
           </h1>
           <p className="mt-4 text-base leading-relaxed text-forest-100">
-            Early warnings, AI-assisted triage and a trusted veterinary network — built for farmers,
+            Early warnings, AI-assisted triage and a trusted veterinary network, built for farmers,
             veterinary professionals and administrators.
           </p>
           <ul className="mt-8 space-y-4">

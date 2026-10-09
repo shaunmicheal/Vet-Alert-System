@@ -8,8 +8,6 @@ import Spinner from '../../components/ui/Spinner'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// New health report. Animals come from the real Phase 6C endpoint so the farmer
-// can link a report to one of their own animals.
 export default function HealthReportFormPage() {
   useDocumentTitle('New Health Report')
 
@@ -36,8 +34,6 @@ export default function HealthReportFormPage() {
     loadAnimals()
   }, [loadAnimals])
 
-  // The form created the report and ran the separate AI triage step. If only the
-  // AI step failed, the report is still saved and shown with a friendly notice.
   const handleSubmitted = ({ report, triageError }) => {
     navigate(`/farmer/reports/${report.id}`, {
       replace: true,

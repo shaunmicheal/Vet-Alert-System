@@ -10,9 +10,6 @@ import { useAuth } from '../../hooks/useAuth'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// Mirrors the backend registration schema (POST /api/auth/register).
-// Registration is FARMER only - the backend assigns that role itself and the
-// frontend never sends (or offers) a role field.
 const registerSchema = z
   .object({
     name: z.string().trim().min(2, 'Name must be at least 2 characters'),
@@ -47,7 +44,6 @@ export default function RegisterPage() {
     try {
       setFormError(null)
 
-      // Only fields the backend accepts - confirmPassword is never sent.
       const payload = {
         name: values.name.trim(),
         email: values.email.trim(),

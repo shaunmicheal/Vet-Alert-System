@@ -1,5 +1,3 @@
-// Referral workflow status breakdown. These are workflow states, not health
-// outcomes.
 export default function ReferralStatusList({ referrals, total }) {
   const safeTotal = total || 0
   const rows = [

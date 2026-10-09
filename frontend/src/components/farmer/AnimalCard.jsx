@@ -3,7 +3,6 @@ import { ANIMAL_SEX_LABELS, ANIMAL_TYPE_LABELS } from '../../utils/constants'
 
 const show = (value) => value || '—'
 
-// Mobile/tablet card for one animal record.
 export default function AnimalCard({ animal, onEdit, onDelete }) {
   const typeLabel = ANIMAL_TYPE_LABELS[animal.animalType] || animal.animalType
   const displayName = animal.name || 'Unnamed animal'

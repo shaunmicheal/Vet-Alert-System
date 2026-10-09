@@ -1,11 +1,8 @@
-// Starts the HTTP server. Run with `npm run dev` (nodemon) or `npm start`.
 const app = require('./app');
 const prisma = require('./config/prisma');
 const { env } = require('./config/env');
 
 const start = async () => {
-  // Check the database once at startup so problems show up clearly in the logs.
-  // (We only print the error NAME, never the connection string or any secret.)
   try {
     await prisma.$queryRaw`SELECT 1`;
     console.log('[db] Connected to the database.');
@@ -19,7 +16,6 @@ const start = async () => {
     console.log(`[api] Environment: ${env.NODE_ENV}`);
   });
 
-  // Close the server and the database connection cleanly on Ctrl+C / shutdown.
   const shutdown = (signal) => {
     console.log(`\n[api] ${signal} received - shutting down...`);
     server.close(async () => {

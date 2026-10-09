@@ -30,7 +30,6 @@ import ProtectedRoute from './ProtectedRoute'
 import PublicOnlyRoute from './PublicOnlyRoute'
 import { homePathForRole, ROLES } from '../utils/constants'
 
-// "/" sends each visitor to their own workspace (or to sign in).
 function HomeRedirect() {
   const { user, loading } = useAuth()
 
@@ -45,15 +44,11 @@ function HomeRedirect() {
   return <Navigate to={homePathForRole(user.role)} replace />
 }
 
-// All application routes. Role areas are protected by role; the farmer,
-// veterinary, admin dashboard, admin alerts, admin statistics and admin
-// oversight pages are fully implemented.
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomeRedirect />} />
 
-      {/* Public: login + farmer registration */}
       <Route element={<PublicOnlyRoute />}>
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
@@ -61,7 +56,6 @@ export default function AppRoutes() {
         </Route>
       </Route>
 
-      {/* Farmer area - FARMER role only */}
       <Route element={<ProtectedRoute roles={[ROLES.FARMER]} />}>
         <Route path="/farmer" element={<AppShell />}>
           <Route index element={<FarmerDashboardPage />} />
@@ -80,7 +74,6 @@ export default function AppRoutes() {
         </Route>
       </Route>
 
-      {/* Veterinary professional area - VETERINARY_PROFESSIONAL role only */}
       <Route element={<ProtectedRoute roles={[ROLES.VETERINARY_PROFESSIONAL]} />}>
         <Route path="/vet" element={<AppShell />}>
           <Route index element={<VetDashboardPage />} />
@@ -90,7 +83,6 @@ export default function AppRoutes() {
         </Route>
       </Route>
 
-      {/* Admin area - ADMIN role only */}
       <Route element={<ProtectedRoute roles={[ROLES.ADMIN]} />}>
         <Route path="/admin" element={<AppShell />}>
           <Route index element={<AdminDashboardPage />} />

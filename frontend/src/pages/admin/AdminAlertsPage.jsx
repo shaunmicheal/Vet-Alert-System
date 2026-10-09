@@ -18,8 +18,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { ANIMAL_TYPE_LABELS } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// Fixed options for the two enum filters (UI metadata mirroring the backend
-// AlertType enum and the isActive flag).
 const TYPE_OPTIONS = Object.freeze([
   { value: 'POSSIBLE_CLUSTER', label: 'Possible cluster' },
   { value: 'HIGH_RISK', label: 'High risk' },
@@ -39,7 +37,6 @@ const EMPTY_FILTERS = Object.freeze({
   animalType: '',
 })
 
-// Compact labelled select used by the filter bar.
 function FilterSelect({ id, label, allLabel, value, options, onChange }) {
   return (
     <div>
@@ -58,14 +55,6 @@ function FilterSelect({ id, label, allLabel, value, options, onChange }) {
   )
 }
 
-// Admin alerts list. One GET /api/admin/alerts request returns the complete,
-// unpaged alert set, which drives the summary counts, the derived filter
-// options and the visible list - the same fetch-once + client-side filtering
-// pattern used by ReferralsPage and VetCasesPage. The API helper still
-// whitelists the server-supported query params (type, province, district,
-// animalType, isActive) if server-side filtering is ever needed. Summary
-// counts always describe the full backend payload, never just the filtered
-// view, so nothing on screen can be invented.
 export default function AdminAlertsPage() {
   useDocumentTitle('Alerts')
 
@@ -112,8 +101,6 @@ export default function AdminAlertsPage() {
     return { total: alerts.length, active, acknowledged: alerts.length - active }
   }, [alerts])
 
-  // Filter options are derived from the complete dataset, so every option
-  // maps to real alert data instead of a hand-maintained list.
   const filterOptions = useMemo(() => {
     const provinces = new Set()
     const districts = new Set()
@@ -152,8 +139,6 @@ export default function AdminAlertsPage() {
   const clearFilters = () => setFilters(EMPTY_FILTERS)
 
   const handleCreated = (created) => {
-    // Newest first matches the server order (createdAt desc), and filters are
-    // cleared so the new alert is immediately visible at the top.
     setAlerts((prev) => [created, ...prev])
     setFilters(EMPTY_FILTERS)
     setCreateOpen(false)

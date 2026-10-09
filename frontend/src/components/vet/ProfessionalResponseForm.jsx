@@ -5,15 +5,9 @@ import { getApiErrorMessage } from '../../utils/errors'
 import AlertMessage from '../ui/AlertMessage'
 import Spinner from '../ui/Spinner'
 
-// Backend rule (vetRoutes.js updateResponseSchema): trimmed, 10-2000 chars.
-// The form mirrors it so the vet gets instant feedback; the backend stays
-// authoritative. Only { professionalResponse } is ever submitted.
 const MIN_LENGTH = 10
 const MAX_LENGTH = 2000
 
-// The veterinarian's own written response to the farmer - never AI output.
-// Shows the existing response when one exists and allows updating it at any
-// status (the backend permits response updates on any assigned case).
 export default function ProfessionalResponseForm({ vetCase, onUpdated }) {
   const existing = (vetCase.professionalResponse || '').trim()
   const [response, setResponse] = useState(existing)
@@ -70,7 +64,7 @@ export default function ProfessionalResponseForm({ vetCase, onUpdated }) {
             Your professional response
           </h2>
           <p className="text-xs text-charcoal-500">
-            Written by you for the farmer — not AI-generated advice.
+            Written by you for the farmer, not AI-generated advice.
           </p>
         </div>
       </div>

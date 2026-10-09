@@ -1,6 +1,3 @@
-// Active vs acknowledged state of an administrative alert (backend isActive).
-// Amber = still needs review; neutral = handled administratively. The badge
-// never implies the underlying health situation was resolved.
 export default function AlertStatusBadge({ isActive }) {
   if (isActive) {
     return (

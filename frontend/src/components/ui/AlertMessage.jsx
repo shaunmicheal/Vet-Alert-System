@@ -7,7 +7,6 @@ const VARIANTS = {
   info: { container: 'border-sky-200 bg-sky-50 text-sky-900', Icon: FiInfo },
 }
 
-// Simple inline message for API errors, confirmations and information.
 export default function AlertMessage({ variant = 'info', title, children, className = '' }) {
   const { container, Icon } = VARIANTS[variant] || VARIANTS.info
   const role = variant === 'error' ? 'alert' : 'status'

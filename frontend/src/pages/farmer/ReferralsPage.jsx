@@ -11,9 +11,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { REFERRAL_STATUS_EXPLANATIONS, REFERRAL_STATUS_LABELS } from '../../utils/referrals'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// Farmer referrals: real records from GET /api/referrals (newest first).
-// Each referral carries its report (with animal) and the public view of the
-// assigned veterinary professional.
 export default function ReferralsPage() {
   useDocumentTitle('Referrals')
 

@@ -1,17 +1,12 @@
 import { FiAlertTriangle } from 'react-icons/fi'
 import { RISK_LEVELS, RISK_LEVEL_LABELS } from '../../utils/constants'
 
-// Restrained per-level accent: LOW = forest, MODERATE = amber, HIGH = red so
-// the highest tier is noticeable without turning the dashboard into an alarm.
 const RISK_TONES = Object.freeze({
   LOW: 'border-forest-200 bg-forest-50 text-forest-800',
   MODERATE: 'border-amber-200 bg-amber-50 text-amber-800',
   HIGH: 'border-red-200 bg-red-50 text-red-800 shadow-sm',
 })
 
-// Reports grouped by triage risk level (GET /api/admin/stats ->
-// statistics.reports.byRiskLevel). Every count comes from the backend; risk
-// levels are triage indicators and never confirm a diagnosis or outbreak.
 export default function RiskOverviewCard({ reports }) {
   const data = reports || {}
   const byRiskLevel = data.byRiskLevel || {}

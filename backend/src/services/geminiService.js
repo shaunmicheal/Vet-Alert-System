@@ -1,11 +1,5 @@
-// The ONLY file that talks to Google Gemini.
-//
-// The API key is read from the server environment and is NEVER sent to the
-// frontend and NEVER included in an error message. Every failure is turned into
-// a private AiServiceError so callers can fall back safely.
 const { env } = require('../config/env');
 
-// A private error type: lets callers tell "AI unavailable" apart from a real bug.
 class AiServiceError extends Error {
   constructor(message) {
     super(message);
@@ -13,9 +7,6 @@ class AiServiceError extends Error {
   }
 }
 
-// ---- Test hook -------------------------------------------------------------
-// Automated tests replace the real network call with a stub so the suite stays
-// fast, deterministic and works with no API key. It is never set in production.
 let mockGenerate = null;
 const setMockGenerate = (fn) => {
   mockGenerate = fn;
@@ -26,7 +17,6 @@ const resetMockGenerate = () => {
 
 const isConfigured = () => Boolean(env.GEMINI_API_KEY);
 
-// The SDK is an ES module, so we load it with a dynamic import() and cache the client.
 let clientPromise = null;
 const getClient = () => {
   if (!clientPromise) {
@@ -37,7 +27,6 @@ const getClient = () => {
   return clientPromise;
 };
 
-// Stops a request from hanging forever if Gemini is slow or unreachable.
 const withTimeout = (promise, ms) => {
   let timer;
   const timeout = new Promise((_, reject) => {
@@ -46,11 +35,9 @@ const withTimeout = (promise, ms) => {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 };
 
-// Sends the prompt and returns the model's raw text reply.
-// Throws AiServiceError for EVERY problem: no key, timeout, blocked, network, empty.
 const generate = async (prompt) => {
   if (mockGenerate) {
-    return mockGenerate(prompt); // tests only
+    return mockGenerate(prompt);
   }
 
   if (!isConfigured()) {
@@ -74,7 +61,6 @@ const generate = async (prompt) => {
     }
     return text;
   } catch (err) {
-    // Never pass on the raw SDK error - it can contain request details.
     if (err instanceof AiServiceError) throw err;
     throw new AiServiceError('The AI service could not be reached.');
   }

@@ -15,9 +15,6 @@ const EMPTY_FORM = Object.freeze({
   animalType: '',
 })
 
-// Client-side validation mirroring the backend createAlertSchema exactly
-// (title 3-160, message 10-1000, optional 2-120 district). The server stays
-// the authority - this only avoids an avoidable round-trip.
 const validate = (form) => {
   const errors = {}
   const title = form.title.trim()
@@ -36,10 +33,6 @@ const validate = (form) => {
   return errors
 }
 
-// Manual alert creation dialog. The backend forces type='SYSTEM' and rejects
-// any client-supplied type/isActive/reportId, so this form can only ever
-// create administrative System notices - never cluster or high-risk alerts.
-// The form resets after a successful creation.
 export default function CreateAlertDialog({ onCancel, onCreated }) {
   useDialogEffects(onCancel)
 

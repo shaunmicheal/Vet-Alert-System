@@ -11,12 +11,6 @@ import { PROVINCES } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 import { formatDate } from '../../utils/format'
 
-// Mirrors the backend updateProfileSchema (backend/src/routes/vetRoutes.js):
-// name, professionalType, phone, province and district carry real values on
-// every record, while specialisation and availability may be blank. e-mail is
-// nullable in the database and the backend rejects an empty string, so a blank
-// field simply means "keep the address we already have" (it is then omitted
-// from the payload).
 const profileSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters').max(120, 'Name is too long'),
   professionalType: z
@@ -38,9 +32,6 @@ const profileSchema = z.object({
   availability: z.string().trim().max(120, 'Availability is too long'),
 })
 
-// The exact keys the backend update schema accepts (it is a strict object, so
-// anything else - role, isActive, userId - would be rejected with a 400 and is
-// never sent by this page).
 const EDITABLE_FIELDS = Object.freeze([
   'name',
   'professionalType',
@@ -63,8 +54,6 @@ const EMPTY_VALUES = {
   availability: '',
 }
 
-// Backend record -> form values. Nullable columns (e-mail, specialisation,
-// availability) become '' so controlled inputs always receive strings.
 const toFormValues = (profile) =>
   profile
     ? {
@@ -79,9 +68,6 @@ const toFormValues = (profile) =>
       }
     : EMPTY_VALUES
 
-// Veterinary professional profile page, backed entirely by GET/PATCH
-// /api/vet/profile. Every value on this page comes from the real backend
-// record - there is no mock data here.
 export default function VetProfilePage() {
   useDocumentTitle('Professional Profile')
 
@@ -101,8 +87,6 @@ export default function VetProfilePage() {
     defaultValues: EMPTY_VALUES,
   })
 
-  // Promise-chain style (like AuthProvider) so setState never runs
-  // synchronously inside the mount effect.
   const loadProfile = useCallback(() => {
     return getVetProfile()
       .then((record) => {
@@ -118,7 +102,6 @@ export default function VetProfilePage() {
       })
   }, [reset])
 
-  // Retry handler (event context): show the loading state, then reload.
   const reloadProfile = () => {
     setLoading(true)
     setLoadError(null)
@@ -127,7 +110,6 @@ export default function VetProfilePage() {
     loadProfile()
   }
 
-  // Initial load. The first render already starts in the loading state.
   useEffect(() => {
     loadProfile()
   }, [loadProfile])
@@ -136,13 +118,9 @@ export default function VetProfilePage() {
     setSaveError(null)
     setSavedMessage(null)
 
-    // Send ONLY the fields that actually changed - the backend update schema
-    // is a strict partial update scoped to the authenticated professional.
     const payload = {}
     EDITABLE_FIELDS.forEach((field) => {
       if (!dirtyFields[field]) return
-      // A blank e-mail means "keep the stored address" (the API only ever
-      // accepts a valid address, never an empty string or null).
       if (field === 'email' && values.email === '') return
       payload[field] = values[field]
     })
@@ -159,8 +137,6 @@ export default function VetProfilePage() {
       setSavedMessage('Your professional profile has been saved.')
     } catch (error) {
       const status = error && error.response ? error.response.status : null
-      // 404 = the professional record no longer exists; re-sync so the page
-      // never shows fields the backend no longer has.
       if (status === 404) {
         await loadProfile()
       }
@@ -461,7 +437,6 @@ export default function VetProfilePage() {
   )
 }
 
-// Small inline field error shared by every field on this form.
 function FieldError({ id, error }) {
   if (!error) return null
   return (
@@ -471,7 +446,6 @@ function FieldError({ id, error }) {
   )
 }
 
-// One read-only line in the profile overview (label + value, never overflowing).
 function DetailItem({ label, Icon, children }) {
   return (
     <div className="min-w-0">

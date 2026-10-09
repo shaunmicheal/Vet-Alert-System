@@ -1,6 +1,3 @@
-// Compact analytical card: a label, a big number and one short comparative
-// subtext. Used for platform-level aggregates so the page reads as analysis
-// rather than duplicate summary tiles.
 export default function PlatformCard({
   icon: Icon,
   label,

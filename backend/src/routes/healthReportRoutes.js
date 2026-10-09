@@ -1,5 +1,3 @@
-// Health report routes. Mounted at /api/reports.
-// Locked to logged-in farmers - other roles get 403, guests get 401.
 const express = require('express');
 const { z } = require('zod');
 
@@ -18,7 +16,6 @@ const router = express.Router();
 
 router.use(authMiddleware, requireRole('FARMER'));
 
-// Structured triage information. The AI in Phase 3 will read exactly these fields.
 const createReportSchema = z.object({
   title: z.string().trim().min(3, 'Title must be at least 3 characters').max(160),
   description: z.string().trim().min(10, 'Please describe the problem in at least 10 characters').max(4000),
@@ -34,7 +31,6 @@ const createReportSchema = z.object({
   additionalNotes: z.string().trim().max(2000).optional(),
 });
 
-// Optional list filters.
 const listReportsQuerySchema = z.object({
   status: z.enum(REPORT_STATUSES).optional(),
   riskLevel: z.enum(RISK_LEVELS).optional(),
@@ -45,7 +41,6 @@ router.get('/', validateQuery(listReportsQuerySchema), listReports);
 router.post('/', validate(createReportSchema), createReport);
 router.get('/:id', validateParams(idParamSchema), getReport);
 
-// AI-assisted risk triage for one of the farmer's own reports (Phase 3).
 router.post('/:id/triage', validateParams(idParamSchema), triageReport);
 
 module.exports = router;

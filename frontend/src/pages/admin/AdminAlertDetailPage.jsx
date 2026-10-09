@@ -13,15 +13,6 @@ import { ANIMAL_TYPE_LABELS, REPORT_STATUS_LABELS } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 import { formatDate } from '../../utils/format'
 
-// Detail view for one administrative alert (GET /api/admin/alerts/:id). The
-// response may also carry the linked health report (with animal, farm and
-// symptoms) when the alert references one; that context is shown without
-// exposing internal ids. Nothing is fabricated when a field is absent and no
-// wording ever implies a confirmed diagnosis or outbreak. Acknowledgement
-// (PATCH .../acknowledge) flips isActive server-side; the updated alert comes
-// straight back from the response, so the page updates without a reload, and
-// an already-acknowledged alert resolves gracefully to the same inactive
-// state instead of failing the view.
 export default function AdminAlertDetailPage() {
   const { id } = useParams()
 
@@ -69,8 +60,6 @@ export default function AdminAlertDetailPage() {
     )
   }
 
-  // Derived display data - every piece is rendered only when the backend
-  // actually provided it.
   const report = alert?.report || null
 
   const symptomNames = useMemo(

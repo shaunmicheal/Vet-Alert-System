@@ -1,6 +1,3 @@
-// Reminder routes. Mounted at /api/reminders.
-// FARMER-only - other roles get 403, guests get 401. farmerId is derived from
-// the authenticated user and is NEVER accepted from the client.
 const express = require('express');
 const { z } = require('zod');
 
@@ -43,8 +40,6 @@ const updateReminderSchema = z.strictObject({
   }, { message: 'dueDate must be a valid date in YYYY-MM-DD format.' }).optional(),
 });
 
-// .strict() rejects unexpected keys, so a client cannot smuggle a farmerId
-// or any other ownership/control field into the request.
 router.get('/', listReminders);
 router.post('/', validate(createReminderSchema), createReminderAction);
 router.get('/:id', validateParams(idParamSchema), getReminder);

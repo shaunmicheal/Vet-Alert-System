@@ -1,10 +1,3 @@
-// Checks the "Authorization: Bearer <token>" header on protected routes.
-//
-// The token only proves "this person logged in". After verifying it we re-load the
-// user from the database so that:
-//   - deleted accounts stop working immediately, and
-//   - the role used for authorization is always the current one.
-// The loaded user (without the password) is attached to `req.user`.
 const prisma = require('../config/prisma');
 const ApiError = require('../utils/ApiError');
 const { verifyToken } = require('../utils/token');
@@ -26,7 +19,6 @@ const authMiddleware = async (req, res, next) => {
     try {
       payload = verifyToken(token);
     } catch {
-      // Covers expired tokens and tampered tokens alike.
       throw new ApiError(401, 'Your session is invalid or has expired. Please log in again.');
     }
 

@@ -1,6 +1,5 @@
 import Spinner from './Spinner'
 
-// Full-screen loading state (session restore, route transitions).
 export default function LoadingScreen({ label = 'Loading…' }) {
   return (
     <div

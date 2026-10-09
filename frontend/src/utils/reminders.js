@@ -1,9 +1,3 @@
-// Farmer reminder display metadata + date helpers.
-//
-// The backend stores due dates as persisted dates normalised to UTC midnight
-// (see backend/src/services/reminderService.js: `new Date(dueDate + 'T00:00:00Z')`).
-// To avoid timezone bugs, every comparison below works on calendar-date keys
-// ("YYYY-MM-DD") compared lexicographically - never on raw timestamps.
 import { REMINDER_TYPES } from '../api/reminders'
 
 export { REMINDER_TYPES }
@@ -26,7 +20,6 @@ export const REMINDER_TYPE_DESCRIPTIONS = Object.freeze({
   OTHER: 'Any other farm task you want to remember.',
 })
 
-// "YYYY-MM-DD" for the farmer's local today.
 export const todayKey = (now = new Date()) => {
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')
@@ -34,9 +27,6 @@ export const todayKey = (now = new Date()) => {
   return `${year}-${month}-${day}`
 }
 
-// Calendar-date key for a persisted reminder due date. The backend normalises
-// to UTC midnight, so the UTC calendar parts are the stable source of truth;
-// slicing the ISO string keeps this independent of the viewer's timezone.
 export const dueDateKey = (dueDate) => {
   if (!dueDate) return ''
   try {
@@ -48,10 +38,8 @@ export const dueDateKey = (dueDate) => {
   }
 }
 
-// Value suitable for <input type="date"> when editing an existing reminder.
 export const toDateInputValue = (dueDate) => dueDateKey(dueDate)
 
-// Farmer-friendly display, e.g. "12 Oct 2026". Falls back to "" for bad input.
 export const formatDueDate = (dueDate) => {
   const key = dueDateKey(dueDate)
   if (!key) return ''
@@ -65,8 +53,6 @@ export const formatDueDate = (dueDate) => {
   })
 }
 
-// Completed reminders keep the backend value as the source of truth. Anything
-// incomplete is classified against today's calendar date.
 export const getReminderState = (reminder, now = new Date()) => {
   if (reminder && reminder.completed) return 'completed'
   const due = dueDateKey(reminder ? reminder.dueDate : null)
@@ -84,7 +70,6 @@ export const REMINDER_STATE_LABELS = Object.freeze({
   completed: 'Completed',
 })
 
-// Nearest incomplete reminder by due date (null when there is none).
 export const nearestIncompleteReminder = (reminders) => {
   const incomplete = (Array.isArray(reminders) ? reminders : []).filter(
     (reminder) => reminder && !reminder.completed,

@@ -5,8 +5,6 @@ import AlertTypeBadge from './AlertTypeBadge'
 import { ANIMAL_TYPE_LABELS } from '../../utils/constants'
 import { formatDate } from '../../utils/format'
 
-// One alert in the admin alerts list. Links to the alert detail view and
-// shows only meaningful backend fields - no internal report ids.
 export default function AdminAlertCard({ alert }) {
   const animalType = alert.animalType
     ? ANIMAL_TYPE_LABELS[alert.animalType] || alert.animalType

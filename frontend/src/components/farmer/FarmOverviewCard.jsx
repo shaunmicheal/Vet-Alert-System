@@ -2,8 +2,6 @@ import { Link } from 'react-router-dom'
 import { FiEdit3 } from 'react-icons/fi'
 import { formatCoordinates } from '../../utils/format'
 
-// Read-only farm summary built from the real backend farm record.
-// Only fields that exist and have values are displayed.
 export default function FarmOverviewCard({ farm, actionPath, actionLabel }) {
   const coordinates = farm ? formatCoordinates(farm.latitude, farm.longitude) : null
 

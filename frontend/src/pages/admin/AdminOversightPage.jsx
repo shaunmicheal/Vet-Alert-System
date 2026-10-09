@@ -17,9 +17,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { REPORT_STATUS_LABELS, RISK_LEVEL_LABELS } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 
-// Badge metadata for backend enums (UI only - the backend stays the source of
-// truth). Every badge renders its text label, so colour is never the only way
-// to tell states apart.
 const REPORT_STATUS_ORDER = ['PENDING', 'REVIEWED', 'REFERRED', 'RESOLVED']
 const REPORT_STATUS_BADGES = {
   PENDING: 'bg-amber-100 text-amber-800',
@@ -37,7 +34,6 @@ const RISK_BADGES = {
   UNSET: 'bg-charcoal-100 text-charcoal-700',
 }
 
-// Small text badge. The label is always rendered; the tint is decorative.
 function Badge({ tone, children }) {
   return (
     <span
@@ -48,7 +44,6 @@ function Badge({ tone, children }) {
   )
 }
 
-// Shared empty-state block for a valid zero (not missing data, not loading).
 function EmptyNote({ title, description }) {
   return (
     <div className="rounded-lg border border-charcoal-100 bg-cream-100 px-4 py-5">
@@ -60,8 +55,6 @@ function EmptyNote({ title, description }) {
   )
 }
 
-// One record-category card: icon, heading, body, and a pinned availability
-// note that always travels with the numbers.
 function CategoryCard({ id, icon: Icon, title, children }) {
   return (
     <section className="card flex flex-col p-5" aria-labelledby={id}>
@@ -81,8 +74,6 @@ function CategoryCard({ id, icon: Icon, title, children }) {
   )
 }
 
-// Plain-text disclosure about what the API does (and does not) support for a
-// record category.
 function AvailabilityNote({ children }) {
   return (
     <div className="mt-auto">
@@ -93,19 +84,6 @@ function AvailabilityNote({ children }) {
   )
 }
 
-// Admin Oversight. Backend contract audit behind this page (verified against
-// backend/src/routes - no endpoint may be assumed beyond what exists):
-//   * GET /api/admin/stats is the ONLY admin-readable source for user,
-//     veterinary-professional and health-report records, and it returns
-//     aggregate counts - not record lists.
-//   * There is no admin endpoint that lists users, lists reports, or changes
-//     account status; /api/reports and /api/vets explicitly reject the ADMIN
-//     role (403), so per-record tables and account actions are omitted here
-//     rather than faked.
-//   * Per-record review of alert-linked reports, alert acknowledgement and
-//     system-alert creation live in the Alerts module (/admin/alerts), and the
-//     distributions live in Statistics (/admin/statistics) - this page links
-//     there instead of duplicating them.
 export default function AdminOversightPage() {
   useDocumentTitle('Oversight')
 
@@ -135,16 +113,12 @@ export default function AdminOversightPage() {
     loadStats()
   }, [loadStats])
 
-  // Retry makes one deliberate new request; loadStats is stable so the mount
-  // effect never re-fires and duplicates it.
   const reloadStats = useCallback(() => {
     setLoading(true)
     setLoadError(null)
     loadStats()
   }, [loadStats])
 
-  // Defensive reads: the backend always sends this shape (verified by
-  // adminSmokeTest), but each section degrades safely instead of crashing.
   const users = statistics?.users || {}
   const professionals = statistics?.professionals || {}
   const reports = statistics?.reports || {}
@@ -176,7 +150,6 @@ export default function AdminOversightPage() {
         </Link>
       </header>
 
-      {/* One request drives the whole page, so one clear error is enough. */}
       {loadError && (
         <AlertMessage variant="error" title="Could not load the oversight data">
           <p>{loadError}</p>
@@ -187,7 +160,6 @@ export default function AdminOversightPage() {
         </AlertMessage>
       )}
 
-      {/* Never render zeroed-out records while the first request is in flight. */}
       {loading ? (
         <div
           className="card flex items-center justify-center gap-3 px-6 py-16"
@@ -204,7 +176,6 @@ export default function AdminOversightPage() {
               aria-label="Record categories"
               className="grid gap-4 lg:grid-cols-3"
             >
-              {/* User accounts - aggregate counts only; no listing endpoint. */}
               <CategoryCard
                 id="oversight-accounts-title"
                 icon={FiUsers}
@@ -250,7 +221,6 @@ export default function AdminOversightPage() {
                 </AvailabilityNote>
               </CategoryCard>
 
-              {/* Veterinary professionals - the directory endpoint rejects ADMIN. */}
               <CategoryCard
                 id="oversight-professionals-title"
                 icon={FaUserMd}
@@ -290,7 +260,6 @@ export default function AdminOversightPage() {
                 </AvailabilityNote>
               </CategoryCard>
 
-              {/* Health reports - per-report listing is farmer-scoped (403). */}
               <CategoryCard
                 id="oversight-reports-title"
                 icon={FiFileText}
@@ -357,7 +326,6 @@ export default function AdminOversightPage() {
               </CategoryCard>
             </section>
 
-            {/* Honest scope statement - the contract audit's unsupported list. */}
             <section aria-labelledby="oversight-scope-title" className="card p-5">
               <div className="flex items-center gap-3">
                 <span

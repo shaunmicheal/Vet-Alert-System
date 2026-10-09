@@ -1,5 +1,3 @@
-// Animal routes. Mounted at /api/animals.
-// Locked to logged-in farmers - other roles get 403, guests get 401.
 const express = require('express');
 const { z } = require('zod');
 

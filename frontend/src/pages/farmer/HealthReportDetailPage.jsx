@@ -16,8 +16,6 @@ import { formatDate } from '../../utils/format'
 const yesNo = (value) => (value === true ? 'Yes' : value === false ? 'No' : '—')
 const show = (value) => (value === null || value === undefined || value === '' ? '—' : value)
 
-// Full detail for one of the farmer's own health reports, including the
-// AI-assisted risk assessment (run on demand against POST /reports/:id/triage).
 export default function HealthReportDetailPage() {
   const { id } = useParams()
   const location = useLocation()
@@ -73,7 +71,6 @@ export default function HealthReportDetailPage() {
       })
   }
 
-  // Show the live triage payload, or the assessment already stored on the report.
   const storedTriage =
     report && report.aiAssessment
       ? {
@@ -135,7 +132,6 @@ export default function HealthReportDetailPage() {
             </AlertMessage>
           )}
 
-          {/* Header */}
           <header className="card p-5 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
@@ -186,11 +182,10 @@ export default function HealthReportDetailPage() {
           {triageError && (
             <AlertMessage variant="error" title="The risk assessment could not be completed">
               <p>{triageError}</p>
-              <p>Your report is safe — you can try the assessment again.</p>
+              <p>Your report is safe. You can try the assessment again.</p>
             </AlertMessage>
           )}
 
-          {/* Referral entry point + any referrals already made for this report */}
           <section className="card p-5 sm:p-6" aria-labelledby="report-referrals-title">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
@@ -202,7 +197,7 @@ export default function HealthReportDetailPage() {
                 </h2>
                 <p className="mt-1 max-w-2xl text-sm leading-relaxed text-charcoal-600">
                   Share this report with a veterinary professional so they can review the details
-                  and respond here. A referral is a request for veterinary attention — it does not
+                  and respond here. A referral is a request for veterinary attention. It does not
                   confirm that any disease is present.
                 </p>
               </div>
@@ -247,7 +242,6 @@ export default function HealthReportDetailPage() {
 
           {shownTriage && <TriageResult triage={shownTriage} />}
 
-          {/* Report details */}
           <section className="card p-5 sm:p-6" aria-labelledby="report-details-title">
             <h2
               id="report-details-title"

@@ -1,7 +1,5 @@
 import api from './client'
 
-// The backend wraps every response as { success, data } on success and
-// { success, message } on failure - unwrap the success payload here.
 export const loginRequest = async (credentials) => {
   const { data } = await api.post('/auth/login', credentials)
   return data.data

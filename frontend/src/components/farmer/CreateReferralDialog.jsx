@@ -10,13 +10,10 @@ import Spinner from '../ui/Spinner'
 
 const MAX_MESSAGE_LENGTH = 1000
 
-// Two-step referral creation flow: (1) optional message, (2) review + submit.
-// The payload matches POST /api/referrals exactly - farmerMessage is only sent
-// when it has content, and no ownership field ever comes from the client.
 export default function CreateReferralDialog({ report, professional, onCancel, onCreated }) {
   useDialogEffects(onCancel)
 
-  const [step, setStep] = useState('message') // 'message' | 'review'
+  const [step, setStep] = useState('message')
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
@@ -33,8 +30,6 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
     setError(null)
 
     const payload = { reportId: report.id, professionalId: professional.id }
-    // Whitespace-only input is omitted so the strict backend schema
-    // (min 1 char after trim) never sees an empty string.
     if (trimmedMessage) payload.farmerMessage = trimmedMessage
 
     createReferral(payload)
@@ -42,7 +37,6 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
         onCreated(referral)
       })
       .catch((requestError) => {
-        // Keep the dialog open on any failure so the farmer can retry or go back.
         setError(getApiErrorMessage(requestError))
         setSubmitting(false)
       })
@@ -83,7 +77,6 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
           {step === 'message' ? 'Refer this health report' : 'Review your referral'}
         </h2>
 
-        {/* What is being shared */}
         <div className="mt-3 rounded-lg border border-charcoal-200 bg-cream-50 p-4 text-sm">
           <p className="font-semibold text-charcoal-900">{report.title}</p>
           <p className="mt-0.5 text-charcoal-600">
@@ -211,7 +204,6 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
           )}
         </div>
 
-        {/* Success feedback lives on the status page the farmer is sent to. */}
         <p className="mt-4 flex items-start gap-1.5 text-xs leading-relaxed text-charcoal-500">
           <FiCheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-forest-600" aria-hidden="true" />
           After submitting you will see the referral&rsquo;s status, where you can track any
