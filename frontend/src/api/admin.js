@@ -36,3 +36,10 @@ export const createAdminAlert = async (payload) => {
   const { data } = await api.post('/admin/alerts', body)
   return data.data.alert
 }
+
+export const runAdminClusterScan = async (payload = {}) => {
+  const body = {}
+  if (payload.district) body.district = payload.district
+  const { data } = await api.post('/admin/alerts/cluster-scan', body)
+  return data.data
+}

@@ -7,7 +7,7 @@ import {
   FiRefreshCw,
   FiSearch,
 } from 'react-icons/fi'
-import { getAdminAlerts } from '../../api/admin'
+import { getAdminAlerts, runAdminClusterScan } from '../../api/admin'
 import AdminAlertCard from '../../components/admin/AdminAlertCard'
 import CreateAlertDialog from '../../components/admin/CreateAlertDialog'
 import DashboardStatCard from '../../components/farmer/DashboardStatCard'
@@ -64,6 +64,8 @@ export default function AdminAlertsPage() {
   const [filters, setFilters] = useState(EMPTY_FILTERS)
   const [flash, setFlash] = useState(null)
   const [createOpen, setCreateOpen] = useState(false)
+  const [scanning, setScanning] = useState(false)
+  const [scanError, setScanError] = useState(null)
 
   const loadAlerts = useCallback(() => {
     return getAdminAlerts()
@@ -145,6 +147,34 @@ export default function AdminAlertsPage() {
     setFlash('System alert created. It is now active and listed at the top of the list.')
   }
 
+  const handleClusterScan = () => {
+    if (scanning) return
+    setScanning(true)
+    setScanError(null)
+    setFlash(null)
+    return runAdminClusterScan({})
+      .then((result) => {
+        const created = Array.isArray(result?.alerts) ? result.alerts : []
+        if (created.length > 0) {
+          setAlerts((prev) => [...created, ...prev])
+          setFlash(
+            created.length === 1
+              ? 'Cluster scan complete. 1 new possible-cluster alert was created.'
+              : `Cluster scan complete. ${created.length} new possible-cluster alerts were created.`,
+          )
+        } else {
+          setFlash('Cluster scan complete. No new clusters met the detection threshold.')
+        }
+        return reloadAlerts()
+      })
+      .catch((error) => {
+        setScanError(getApiErrorMessage(error))
+      })
+      .finally(() => {
+        setScanning(false)
+      })
+  }
+
   return (
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -159,17 +189,35 @@ export default function AdminAlertsPage() {
             events.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setCreateOpen(true)}
-          className="btn btn-primary self-start sm:self-auto"
-        >
-          <FiPlus className="h-4 w-4" aria-hidden="true" />
-          New system alert
-        </button>
+        <div className="flex flex-col gap-3 self-start sm:self-auto sm:flex-row">
+          <button
+            type="button"
+            onClick={handleClusterScan}
+            disabled={scanning || loading}
+            className="btn btn-secondary"
+            aria-busy={scanning}
+          >
+            <FiRefreshCw className="h-4 w-4" aria-hidden="true" />
+            {scanning ? 'Scanning…' : 'Run cluster scan'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            className="btn btn-primary"
+          >
+            <FiPlus className="h-4 w-4" aria-hidden="true" />
+            New system alert
+          </button>
+        </div>
       </header>
 
       {flash && <AlertMessage variant="success">{flash}</AlertMessage>}
+
+      {scanError && (
+        <AlertMessage variant="error" title="Cluster scan failed">
+          <p>{scanError}</p>
+        </AlertMessage>
+      )}
 
       {loading ? (
         <div
