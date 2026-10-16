@@ -7,6 +7,7 @@ const { sendSuccess } = require('./utils/response');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 const authRoutes = require('./routes/authRoutes');
+const accountRoutes = require('./routes/accountRoutes');
 const farmerRoutes = require('./routes/farmerRoutes');
 const animalRoutes = require('./routes/animalRoutes');
 const healthReportRoutes = require('./routes/healthReportRoutes');
@@ -69,6 +70,7 @@ app.get('/api/health', async (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/account', accountRoutes);
 
 app.use('/api/farmer', farmerRoutes);
 app.use('/api/animals', animalRoutes);

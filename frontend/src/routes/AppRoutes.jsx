@@ -19,6 +19,7 @@ import { homePathForRole, ROLES } from '../utils/constants'
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'))
 const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'))
 const FarmerDashboardPage = lazy(() => import('../pages/farmer/FarmerDashboardPage'))
+const FarmerAccountPage = lazy(() => import('../pages/farmer/FarmerAccountPage'))
 const FarmProfilePage = lazy(() => import('../pages/farmer/FarmProfilePage'))
 const HealthReportFormPage = lazy(() => import('../pages/farmer/HealthReportFormPage'))
 const HealthReportsPage = lazy(() => import('../pages/farmer/HealthReportsPage'))
@@ -32,6 +33,7 @@ const VetDashboardPage = lazy(() => import('../pages/vet/VetDashboardPage'))
 const VetCasesPage = lazy(() => import('../pages/vet/VetCasesPage'))
 const VetCaseDetailPage = lazy(() => import('../pages/vet/VetCaseDetailPage'))
 const VetProfilePage = lazy(() => import('../pages/vet/VetProfilePage'))
+const VetAccountPage = lazy(() => import('../pages/vet/VetAccountPage'))
 const AdminDashboardPage = lazy(() => import('../pages/admin/AdminDashboardPage'))
 const AdminAlertsPage = lazy(() => import('../pages/admin/AdminAlertsPage'))
 const AdminAlertDetailPage = lazy(() => import('../pages/admin/AdminAlertDetailPage'))
@@ -44,6 +46,7 @@ const AdminReportDetailPage = lazy(() => import('../pages/admin/AdminReportDetai
 const AdminReferralsPage = lazy(() => import('../pages/admin/AdminReferralsPage'))
 const AdminReferralDetailPage = lazy(() => import('../pages/admin/AdminReferralDetailPage'))
 const AdminVeterinaryPage = lazy(() => import('../pages/admin/AdminVeterinaryPage'))
+const AdminAccountPage = lazy(() => import('../pages/admin/AdminAccountPage'))
 const AdminVeterinaryDetailPage = lazy(() => import('../pages/admin/AdminVeterinaryDetailPage'))
 
 function HomeRedirect() {
@@ -87,6 +90,7 @@ export default function AppRoutes() {
             path="veterinarians"
             element={<VeterinaryDirectoryPage />}
           />
+          <Route path="account" element={<FarmerAccountPage />} />
         </Route>
       </Route>
 
@@ -96,6 +100,7 @@ export default function AppRoutes() {
           <Route path="cases" element={<VetCasesPage />} />
           <Route path="cases/:id" element={<VetCaseDetailPage />} />
           <Route path="profile" element={<VetProfilePage />} />
+          <Route path="account" element={<VetAccountPage />} />
         </Route>
       </Route>
 
@@ -114,6 +119,7 @@ export default function AppRoutes() {
           <Route path="referrals/:id" element={<AdminReferralDetailPage />} />
           <Route path="veterinary" element={<AdminVeterinaryPage />} />
           <Route path="veterinary/:id" element={<AdminVeterinaryDetailPage />} />
+          <Route path="account" element={<AdminAccountPage />} />
         </Route>
       </Route>
 

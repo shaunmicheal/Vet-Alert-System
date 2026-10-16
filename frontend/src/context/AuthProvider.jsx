@@ -75,6 +75,20 @@ export function AuthProvider({ children }) {
     setSessionExpired(false)
   }, [])
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const data = await getMeRequest()
+      if (data && data.user) {
+        setUser(data.user)
+        const stored = readStoredAuth()
+        if (stored && stored.token) writeStoredAuth({ token: stored.token, user: data.user })
+      }
+      return data ? data.user : null
+    } catch {
+      return null
+    }
+  }, [])
+
   const clearSessionExpired = useCallback(() => setSessionExpired(false), [])
 
   const value = useMemo(
@@ -87,9 +101,10 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      refreshUser,
       clearSessionExpired,
     }),
-    [user, token, loading, sessionExpired, login, register, logout, clearSessionExpired],
+    [user, token, loading, sessionExpired, login, register, logout, refreshUser, clearSessionExpired],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

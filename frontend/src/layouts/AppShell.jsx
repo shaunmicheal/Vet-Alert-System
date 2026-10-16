@@ -1,21 +1,13 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import { FiLogOut, FiMenu, FiX } from 'react-icons/fi'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { FiChevronRight, FiLogOut, FiMenu, FiX } from 'react-icons/fi'
 import Logo from '../components/Logo'
 import PageLoader from '../components/ui/PageLoader'
 import RouteErrorBoundary from '../components/ui/RouteErrorBoundary'
 import { useAuth } from '../hooks/useAuth'
+import { initialsFor } from '../pages/account/accountShared'
 import { homePathForRole } from '../utils/constants'
 import { navigationForRole, ROLE_LABELS } from '../utils/navigation'
-
-const initialsFor = (name = '') =>
-  name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
-    .join('') || '?'
 
 function NavItems({ items, onNavigate, variant }) {
   const isDark = variant === 'dark'
@@ -53,8 +45,22 @@ function NavItems({ items, onNavigate, variant }) {
   )
 }
 
+function InitialsAvatar({ user, className }) {
+  const name = user ? user.name || '' : ''
+  return (
+    <span
+      className={`flex shrink-0 items-center justify-center rounded-full bg-forest-700 font-bold text-white ${className}`}
+      role="img"
+      aria-label={name || 'Signed-in user'}
+    >
+      {initialsFor(name)}
+    </span>
+  )
+}
+
 export default function AppShell() {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const menuButtonRef = useRef(null)
   const drawerRef = useRef(null)
@@ -65,7 +71,12 @@ export default function AppShell() {
   const items = navigationForRole(role)
   const roleLabel = ROLE_LABELS[role] || 'Workspace'
   const homePath = homePathForRole(role)
-  const initials = initialsFor(user ? user.name : '')
+  const accountPath = `${homePath}/account`
+
+  const openAccount = (closeMobileNav) => {
+    if (closeMobileNav) setMobileNavOpen(false)
+    navigate(accountPath)
+  }
 
   useEffect(() => {
     document.body.style.overflow = mobileNavOpen ? 'hidden' : ''
@@ -137,18 +148,27 @@ export default function AppShell() {
         </nav>
 
         <div className="border-t border-forest-800 p-4">
-          <div className="flex items-center gap-3">
-            <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest-700 text-sm font-bold text-white"
-              aria-hidden="true"
-            >
-              {initials}
+          <button
+            type="button"
+            onClick={() => openAccount(false)}
+            aria-label="Manage profile and account settings"
+            title="Manage profile"
+            className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-200"
+          >
+            <InitialsAvatar user={user} className="h-9 w-9 text-sm" />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-semibold text-white">
+                {user ? user.name : ''}
+              </span>
+              <span className="block truncate text-xs text-forest-200/80">
+                {user ? user.email : ''}
+              </span>
+              <span className="mt-0.5 block text-[11px] font-medium text-forest-300/90">
+                Manage profile
+              </span>
             </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-white">{user ? user.name : ''}</p>
-              <p className="truncate text-xs text-forest-200/80">{user ? user.email : ''}</p>
-            </div>
-          </div>
+            <FiChevronRight className="h-4 w-4 shrink-0 text-forest-200/70" aria-hidden="true" />
+          </button>
           <button
             type="button"
             onClick={logout}
@@ -203,20 +223,30 @@ export default function AppShell() {
             </nav>
 
             <div className="border-t border-forest-800 p-4">
-              <div className="flex items-center gap-3">
-                <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest-700 text-sm font-bold text-white"
-                  aria-hidden="true"
-                >
-                  {initials}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-white">
+              <button
+                type="button"
+                onClick={() => openAccount(true)}
+                aria-label="Manage profile and account settings"
+                title="Manage profile"
+                className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-200"
+              >
+                <InitialsAvatar user={user} className="h-9 w-9 text-sm" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-white">
                     {user ? user.name : ''}
-                  </p>
-                  <p className="truncate text-xs text-forest-200/80">{user ? user.email : ''}</p>
-                </div>
-              </div>
+                  </span>
+                  <span className="block truncate text-xs text-forest-200/80">
+                    {user ? user.email : ''}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] font-medium text-forest-300/90">
+                    Manage profile
+                  </span>
+                </span>
+                <FiChevronRight
+                  className="h-4 w-4 shrink-0 text-forest-200/70"
+                  aria-hidden="true"
+                />
+              </button>
               <button
                 type="button"
                 onClick={logout}
@@ -251,11 +281,8 @@ export default function AppShell() {
             <span className="hidden text-sm font-medium text-charcoal-700 sm:block">
               {user ? user.name : ''}
             </span>
-            <span
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-forest-700 text-xs font-bold text-cream-50 sm:hidden"
-              aria-hidden="true"
-            >
-              {initials}
+            <span className="sm:hidden">
+              <InitialsAvatar user={user} className="h-8 w-8 text-xs" />
             </span>
             <button
               type="button"
