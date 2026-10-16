@@ -143,9 +143,9 @@ export default function FarmProfilePage() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">My Farm</p>
-        <h1 className="mt-1 text-2xl font-bold text-charcoal-900">Farm Profile</h1>
-        <p className="mt-1 text-sm text-charcoal-600">
+        <p className="page-eyebrow">My Farm</p>
+        <h1 className="page-title mt-1">Farm Profile</h1>
+        <p className="page-lede">
           {isCreate
             ? 'Add your farm’s details so VetAlert can tailor early warnings for your area.'
             : 'Keep your farm details up to date so alerts and veterinary services stay accurate.'}

@@ -28,11 +28,25 @@
   --color-earth-800: #6c4231;
   --color-earth-900: #59382a;
 
+  /* Ivory — page and reading backgrounds */
   --color-cream-50: #fdfbf5;
   --color-cream-100: #f9f4e8;
   --color-cream-200: #f2e9d5;
   --color-cream-300: #e7dab8;
 
+  /* Sage — muted secondary surfaces (section headers, table heads, tints) */
+  --color-sage-50: #f5f7f4;
+  --color-sage-100: #e9eee7;
+  --color-sage-200: #d5ded2;
+  --color-sage-300: #b6c4b2;
+  --color-sage-400: #94a790;
+  --color-sage-500: #778c73;
+  --color-sage-600: #5f735c;
+  --color-sage-700: #4c5c4a;
+  --color-sage-800: #3f4b3e;
+  --color-sage-900: #364035;
+
+  /* Neutral ink — dark, readable typography */
   --color-charcoal-900: #1b1a17;
   --color-charcoal-800: #2b2926;
   --color-charcoal-700: #3e3b36;
@@ -42,6 +56,26 @@
   --color-charcoal-300: #b9b4aa;
   --color-charcoal-200: #dad6ce;
   --color-charcoal-100: #ece9e3;
+
+  /* Radii — rounded, consistent corners */
+  --radius-card: 1rem;
+  --radius-control: 0.5rem;
+  --radius-sheet: 0.75rem;
+
+  /* Shadows — restrained elevation */
+  --shadow-card: 0 1px 2px rgba(27, 26, 23, 0.05),
+    0 12px 32px -16px rgba(28, 58, 36, 0.22);
+  --shadow-raised: 0 2px 4px rgba(27, 26, 23, 0.06),
+    0 16px 40px -18px rgba(28, 58, 36, 0.28);
+  --shadow-overlay: 0 24px 60px -20px rgba(15, 33, 20, 0.35);
+}
+
+/* Responsive layout widths (used by .page-container and AppShell) */
+:root {
+  --layout-sidebar: 16rem;
+  --layout-content: 80rem;
+  --layout-reading: 42rem;
+  --tap-target: 2.5rem;
 }
 
 @layer base {
@@ -60,18 +94,62 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Heading hierarchy — utilities still override page-specific headings. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-charcoal-900);
+    font-weight: 700;
+    letter-spacing: -0.011em;
+  }
+
   ::selection {
     background-color: var(--color-forest-200);
     color: var(--color-forest-950);
   }
 
+  /* Visible keyboard focus everywhere; dark surfaces override with utilities. */
   :focus-visible {
     outline: 2px solid var(--color-forest-600);
     outline-offset: 2px;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer components {
+  /* ---------- Layout ---------- */
+  .page-container {
+    @apply mx-auto w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8;
+    max-width: var(--layout-content);
+  }
+
+  /* ---------- Page headers ---------- */
+  .page-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-wider text-forest-700;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold text-charcoal-900;
+  }
+
+  .page-lede {
+    @apply mt-1 max-w-2xl text-sm leading-relaxed text-charcoal-600;
+  }
+
+  /* ---------- Forms ---------- */
   .field-label {
     @apply mb-1.5 block text-sm font-medium text-charcoal-700;
   }
@@ -93,7 +171,7 @@
   }
 
   .btn-primary {
-    @apply bg-forest-700 text-cream-50 shadow-sm hover:bg-forest-800;
+    @apply bg-forest-700 text-cream-50 shadow-[0_1px_2px_rgba(15,33,20,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] hover:bg-forest-800;
   }
 
   .btn-secondary {
@@ -108,7 +186,75 @@
     @apply bg-red-600 text-white shadow-sm hover:bg-red-700;
   }
 
+  .text-link {
+    @apply font-semibold text-forest-700 underline-offset-2 hover:underline;
+  }
+
+  /* ---------- Cards and sections ---------- */
   .card {
-    @apply rounded-xl border border-charcoal-200 bg-white shadow-sm;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-charcoal-100);
+    background-color: #ffffff;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-hover {
+    @apply transition hover:border-forest-200 hover:shadow-[var(--shadow-raised)];
+  }
+
+  .card-header {
+    @apply flex flex-wrap items-center justify-between gap-3 border-b border-charcoal-100 bg-sage-50 px-5 py-4;
+  }
+
+  .section-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.12em] text-charcoal-400;
+  }
+
+  /* ---------- Status badges ---------- */
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  /* ---------- Tables ---------- */
+  .table-wrap {
+    @apply overflow-x-auto;
+  }
+
+  .data-table {
+    @apply w-full min-w-[42rem] text-left text-sm;
+  }
+
+  .data-table thead {
+    @apply bg-sage-50 text-xs font-semibold uppercase tracking-wider text-sage-700;
+  }
+
+  .data-table tbody {
+    @apply divide-y divide-charcoal-100;
+  }
+
+  /* ---------- Dialogs ---------- */
+  .dialog-panel {
+    @apply relative max-h-[92vh] w-full overflow-y-auto rounded-t-xl bg-white p-5 shadow-xl sm:rounded-xl sm:p-6;
+  }
+
+  .dialog-icon {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-lg;
+  }
+
+  /* ---------- Search/filter toolbars ----------
+   * Matches .card (same radius, border, elevation) with toolbar padding.
+   * Pair with flex/grid utilities for the control layout. */
+  .toolbar {
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-charcoal-100);
+    background-color: #ffffff;
+    box-shadow: var(--shadow-card);
+    padding: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .toolbar {
+      padding: 1.25rem;
+    }
   }
 }

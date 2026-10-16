@@ -56,7 +56,7 @@ export default function AdminAlertDetailPage() {
     setAlert(updated)
     setConfirmOpen(false)
     setNotice(
-      'Alert acknowledged. It is now marked as handled and no longer active. This records administrative handling only - the underlying health situation may still need attention.'
+      'Alert acknowledged. It is now marked as handled and no longer active. This records administrative handling only. The underlying health situation may still need attention.'
     )
   }
 
@@ -98,7 +98,7 @@ export default function AdminAlertDetailPage() {
       <div>
         <Link
           to="/admin/alerts"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline"
+          className="text-link inline-flex items-center gap-1.5 text-sm"
         >
           <FiArrowLeft className="h-4 w-4" aria-hidden="true" />
           Back to alerts
@@ -132,7 +132,7 @@ export default function AdminAlertDetailPage() {
               <AlertStatusBadge isActive={alert.isActive} />
             </div>
 
-            <h1 id="alert-detail-title" className="mt-3 text-2xl font-bold text-charcoal-900">
+            <h1 id="alert-detail-title" className="page-title mt-3">
               {alert.title}
             </h1>
             {(createdLabel || updatedLabel) && (

@@ -1,8 +1,14 @@
 import { FiAward, FiClock, FiMail, FiMapPin, FiPhone, FiShare2 } from 'react-icons/fi'
+import { isDemoProfessional } from '../../utils/vetDemoMode'
+import { DemoProfileBadge } from './VetDemoModeBanner'
 
 export default function ProfessionalCard({ professional, onSelect }) {
   const { name, professionalType, province, district, specialisation, availability, phone, email } =
     professional
+
+  const isDemo = isDemoProfessional(professional)
+  // Fictional contact details must never render as tappable tel:/mailto: links.
+  const contactActionable = !isDemo
 
   const initials = name
     .replace(/^Dr\s+/i, '')
@@ -23,9 +29,12 @@ export default function ProfessionalCard({ professional, onSelect }) {
         </span>
         <div className="min-w-0">
           <h3 className="text-base font-semibold text-charcoal-900">{name}</h3>
-          <p className="mt-0.5 inline-flex items-center rounded-full border border-earth-200 bg-earth-50 px-2.5 py-0.5 text-xs font-medium text-earth-800">
-            {professionalType}
-          </p>
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <p className="inline-flex items-center rounded-full border border-earth-200 bg-earth-50 px-2.5 py-0.5 text-xs font-medium text-earth-800">
+              {professionalType}
+            </p>
+            {isDemo && <DemoProfileBadge />}
+          </div>
         </div>
       </div>
 
@@ -65,35 +74,53 @@ export default function ProfessionalCard({ professional, onSelect }) {
             type="button"
             onClick={() => onSelect(professional)}
             className="btn btn-primary min-h-[44px] px-3.5 py-2"
-            aria-label={`Select ${name} to receive this referral`}
+            aria-label={`Select ${name} to receive this referral${isDemo ? ' (demonstration profile, no real professional is contacted)' : ''}`}
           >
             <FiShare2 className="h-4 w-4" aria-hidden="true" />
             Select
           </button>
         )}
-        {phone && (
-          <a
-            href={`tel:${phone.replace(/\s+/g, '')}`}
-            className="btn btn-secondary min-h-[44px] px-3.5 py-2"
-            aria-label={`Call ${name} on ${phone}`}
-          >
-            <FiPhone className="h-4 w-4" aria-hidden="true" />
-            Call
-          </a>
-        )}
-        {email && (
-          <a
-            href={`mailto:${email}`}
-            className="btn btn-secondary min-h-[44px] px-3.5 py-2"
-            aria-label={`Email ${name} at ${email}`}
-          >
-            <FiMail className="h-4 w-4" aria-hidden="true" />
-            Email
-          </a>
-        )}
+        {phone &&
+          (contactActionable ? (
+            <a
+              href={`tel:${phone.replace(/\s+/g, '')}`}
+              className="btn btn-secondary min-h-[44px] px-3.5 py-2"
+              aria-label={`Call ${name} on ${phone}`}
+            >
+              <FiPhone className="h-4 w-4" aria-hidden="true" />
+              Call
+            </a>
+          ) : (
+            <span className="btn btn-secondary min-h-[44px] cursor-not-allowed px-3.5 py-2 opacity-60" aria-disabled="true" title="Demonstration contact details are not callable">
+              <FiPhone className="h-4 w-4" aria-hidden="true" />
+              Call
+            </span>
+          ))}
+        {email &&
+          (contactActionable ? (
+            <a
+              href={`mailto:${email}`}
+              className="btn btn-secondary min-h-[44px] px-3.5 py-2"
+              aria-label={`Email ${name} at ${email}`}
+            >
+              <FiMail className="h-4 w-4" aria-hidden="true" />
+              Email
+            </a>
+          ) : (
+            <span className="btn btn-secondary min-h-[44px] cursor-not-allowed px-3.5 py-2 opacity-60" aria-disabled="true" title="Demonstration contact details are not emailable">
+              <FiMail className="h-4 w-4" aria-hidden="true" />
+              Email
+            </span>
+          ))}
         <p className="w-full text-xs text-charcoal-500 sm:mt-1 sm:w-auto sm:self-end sm:pl-1">
-          {phone}
-          {email ? ` · ${email}` : ''}
+          {isDemo ? (
+            <>Demonstration contact details — not a real practice line.</>
+          ) : (
+            <>
+              {phone}
+              {email ? ` · ${email}` : ''}
+            </>
+          )}
         </p>
       </div>
     </article>

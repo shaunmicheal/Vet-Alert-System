@@ -89,11 +89,11 @@ export default function HealthReportsPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
+          <p className="page-eyebrow">
             My Farm
           </p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900">Health Reports</h1>
-          <p className="mt-1 text-sm text-charcoal-600">
+          <h1 className="page-title mt-1">Health Reports</h1>
+          <p className="page-lede">
             Report signs of illness and get an AI-assisted risk assessment.
           </p>
         </div>
@@ -168,7 +168,7 @@ export default function HealthReportsPage() {
           </section>
           <section
             aria-label="Search and filter health reports"
-            className="flex flex-col gap-3 lg:flex-row"
+            className="toolbar flex flex-col gap-3 lg:flex-row"
           >
             <div className="relative flex-1">
               <label htmlFor="report-search" className="sr-only">
@@ -246,7 +246,7 @@ export default function HealthReportsPage() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-sm font-semibold text-forest-700 underline-offset-2 hover:underline"
+                className="text-link text-sm"
               >
                 Clear filters
               </button>

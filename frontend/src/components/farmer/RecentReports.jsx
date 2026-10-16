@@ -23,27 +23,30 @@ export default function RecentReports({ reports, actionPath }) {
   }
 
   return (
-    <section className="card p-5" aria-labelledby="recent-reports-heading">
-      <header className="mb-2 flex flex-wrap items-center justify-between gap-3">
-        <h2 id="recent-reports-heading" className="text-base font-semibold text-charcoal-900">
-          Recent health reports
-        </h2>
+    <section className="card overflow-hidden" aria-labelledby="recent-reports-heading">
+      <header className="card-header">
+        <div>
+          <p className="section-eyebrow">Health monitoring</p>
+          <h2 id="recent-reports-heading" className="mt-0.5 text-base font-semibold tracking-tight text-charcoal-900">
+            Recent health reports
+          </h2>
+        </div>
         <Link
           to={actionPath}
-          className="text-sm font-semibold text-forest-700 underline-offset-2 hover:underline"
+          className="text-link text-sm"
         >
           View all
         </Link>
       </header>
 
-      <ul className="divide-y divide-charcoal-100">
+      <ul className="divide-y divide-charcoal-100 px-5">
         {reports.map((report) => {
           const animalLabel = report.animal
             ? ANIMAL_TYPE_LABELS[report.animal.animalType] || report.animal.animalType
             : 'General'
 
           return (
-            <li key={report.id} className="flex flex-wrap items-start justify-between gap-3 py-3">
+            <li key={report.id} className="flex flex-wrap items-start justify-between gap-3 py-3.5 transition hover:bg-cream-50/60">
               <div className="min-w-0 flex-1">
                 <Link
                   to={`/farmer/reports/${report.id}`}
@@ -51,7 +54,8 @@ export default function RecentReports({ reports, actionPath }) {
                 >
                   {report.title}
                 </Link>
-                <p className="mt-0.5 text-xs text-charcoal-500">
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-charcoal-500">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-forest-400" aria-hidden="true" />
                   {formatDate(report.createdAt)} · {animalLabel}
                 </p>
               </div>

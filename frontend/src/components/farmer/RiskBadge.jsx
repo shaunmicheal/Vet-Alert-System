@@ -9,7 +9,7 @@ export default function RiskBadge({ riskLevel }) {
 
   if (!style) {
     return (
-      <span className="inline-flex items-center rounded-full border border-charcoal-200 bg-charcoal-100 px-2.5 py-0.5 text-xs font-medium text-charcoal-600">
+      <span className="badge border-charcoal-200 bg-charcoal-100 text-charcoal-600">
         Not assessed
       </span>
     )
@@ -17,7 +17,7 @@ export default function RiskBadge({ riskLevel }) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${style.className}`}
+      className={`badge font-semibold ${style.className}`}
     >
       {style.label}
     </span>

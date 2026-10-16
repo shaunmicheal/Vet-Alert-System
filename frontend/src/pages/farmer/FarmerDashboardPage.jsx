@@ -10,6 +10,8 @@ import DashboardStatCard from '../../components/farmer/DashboardStatCard'
 import FarmOverviewCard from '../../components/farmer/FarmOverviewCard'
 import RecentReports from '../../components/farmer/RecentReports'
 import ReminderSummaryCard from '../../components/farmer/ReminderSummaryCard'
+import DashboardWelcomeBanner from '../../components/ui/DashboardWelcomeBanner'
+import { LIVESTOCK_IMAGES } from '../../utils/livestockImages'
 import AlertMessage from '../../components/ui/AlertMessage'
 import EmptyState from '../../components/ui/EmptyState'
 import Spinner from '../../components/ui/Spinner'
@@ -94,22 +96,30 @@ export default function FarmerDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
-            {TODAY_LABEL}
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900 sm:text-3xl">
-            {GREETING}
-            {firstName ? `, ${firstName}` : ''}
-          </h1>
-          <p className="mt-1 text-sm text-charcoal-600">Here is how your farm is doing today.</p>
-        </div>
-        <Link to="/farmer/reports" className="btn btn-primary self-start sm:self-auto">
-          <FiPlus className="h-4 w-4" aria-hidden="true" />
-          Report a Health Concern
-        </Link>
-      </header>
+      <DashboardWelcomeBanner
+        eyebrow={TODAY_LABEL}
+        title={`${GREETING}${firstName ? `, ${firstName}` : ''}`}
+        image={LIVESTOCK_IMAGES.farmer}
+        imagePosition="center 40%"
+        stats={
+          loading
+            ? []
+            : [
+                { label: 'Animals', value: sectionFailed('animals') ? '—' : String(animals.length) },
+                { label: 'Reports', value: sectionFailed('reports') ? '—' : String(reports.length) },
+                {
+                  label: 'Active concerns',
+                  value: sectionFailed('reports') ? '—' : String(activeReports.length),
+                },
+              ]
+        }
+        action={
+          <Link to="/farmer/reports" className="btn btn-primary self-start sm:self-auto">
+            <FiPlus className="h-4 w-4" aria-hidden="true" />
+            Report a Health Concern
+          </Link>
+        }
+      />
 
       {!loading && failedSections.length > 0 && (
         <AlertMessage variant="warning" title="Some information could not be loaded">

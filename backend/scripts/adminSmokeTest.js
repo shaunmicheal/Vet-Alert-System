@@ -20,15 +20,14 @@ const ADMIN = { name: 'Phase5 Admin', email: 'phase5.temp.admin@example.com', pa
 const VET = { name: 'Phase5 Vet', email: 'phase5.temp.vet@example.com', password: 'VetPass123' };
 const FARMER_PASSWORD = 'Phase5Pass123';
 
-// One farmer per test district (Phase 5 needs several isolated districts).
 const FARMER_EMAILS = [
-  'phase5.temp.f1@example.com', // Phase5 HighRisk
-  'phase5.temp.f2@example.com', // Phase5 Cluster One
-  'phase5.temp.f3@example.com', // Phase5 Cluster One
-  'phase5.temp.f4@example.com', // Phase5 Old Reports
-  'phase5.temp.f5@example.com', // Phase5 DiffA
-  'phase5.temp.f6@example.com', // Phase5 DiffB
-  'phase5.temp.f7@example.com', // Phase5 No Shared
+  'phase5.temp.f1@example.com',
+  'phase5.temp.f2@example.com',
+  'phase5.temp.f3@example.com',
+  'phase5.temp.f4@example.com',
+  'phase5.temp.f5@example.com',
+  'phase5.temp.f6@example.com',
+  'phase5.temp.f7@example.com',
 ];
 
 const TEMP_EMAILS = [ADMIN.email, VET.email, ...FARMER_EMAILS];
@@ -55,7 +54,7 @@ const D_ADMIN = 'Phase5 Admin District';
 const results = [];
 let passed = 0;
 let failed = 0;
-const seenBodies = []; // every response body received (for the secret-leak checks)
+const seenBodies = [];
 
 const check = (name, condition, detail = '') => {
   if (condition) {
@@ -88,8 +87,6 @@ const patchJson = (token, body) => ({ method: 'PATCH', headers: auth(token), bod
 const sumValues = (obj) => Object.values(obj).reduce((total, value) => total + value, 0);
 
 const cleanup = async () => {
-  // Alerts first: HIGH_RISK alerts point at reports via reportId, and cluster /
-  // system alerts are recognised by their Phase5 test markers.
   const tempReports = await prisma.healthReport.findMany({
     where: { farmer: { email: { startsWith: 'phase5.temp.' } } },
     select: { id: true },
@@ -105,13 +102,11 @@ const cleanup = async () => {
 const run = async () => {
   await cleanup();
 
-  // Test symptoms (shared symptom drives the cluster rule; the rest are unique).
   const symptoms = {};
   for (const name of SYMPTOM_NAMES) {
     symptoms[name] = await prisma.symptom.create({ data: { name } });
   }
 
-  // Vet and admin accounts are created directly (registration only makes farmers).
   await prisma.user.create({
     data: { ...VET, password: await bcrypt.hash(VET.password, 10), role: 'VETERINARY_PROFESSIONAL' },
   });
@@ -165,7 +160,6 @@ const run = async () => {
   const listAlerts = async (query, token) => api(base, `/api/admin/alerts${query}`, { headers: auth(token) });
 
   try {
-    // --- Setup: farmers, farms, animals ------------------------------------
     const fHR = await setupFarmer(FARMER_EMAILS[0], D_HR);
     const fC1 = await setupFarmer(FARMER_EMAILS[1], D_CLUSTER);
     const fC2 = await setupFarmer(FARMER_EMAILS[2], D_CLUSTER);
@@ -190,7 +184,6 @@ const run = async () => {
     const adminToken = adminLogin.body?.data?.token;
     check('Vet and admin test accounts can log in', !!vetToken && !!adminToken);
 
-    // --- 1. Admin authorization --------------------------------------------
     const guestList = await api(base, '/api/admin/alerts');
     check('Unauthenticated admin list is rejected (401)', guestList.status === 401);
     const guestStats = await api(base, '/api/admin/stats');
@@ -232,7 +225,6 @@ const run = async () => {
     );
     check('Admin sees an empty alert list before any alert exists', phase5AlertsBefore.length === 0, `count ${phase5AlertsBefore.length} (total ${adminList.body?.data?.count})`);
 
-    // --- 2. Alert creation, detail, filters --------------------------------
     const systemCreate = await api(
       base,
       '/api/admin/alerts',
@@ -281,7 +273,6 @@ const run = async () => {
     const activeList = await listAlerts('?isActive=true', adminToken);
     check('Filter by isActive=true works', activeList.status === 200 && activeList.body?.data?.alerts.every((a) => a.isActive === true));
 
-    // --- 3. Invalid filters and payloads are rejected ----------------------
     const badType = await listAlerts('?type=NOT_A_REAL_TYPE', adminToken);
     check('Invalid alert type filter is rejected (400)', badType.status === 400);
     const badProvince = await listAlerts('?province=Atlantis', adminToken);
@@ -305,7 +296,6 @@ const run = async () => {
     const unknownId = await api(base, '/api/admin/alerts/ckdoesnotexist000000000000', { headers: auth(adminToken) });
     check('Unknown alert id returns 404', unknownId.status === 404);
 
-    // --- 4. Acknowledgement (deactivate via isActive=false) ----------------
     const ack1 = await api(base, `/api/admin/alerts/${systemAlert.id}/acknowledge`, patchJson(adminToken, {}));
     check('Admin can acknowledge an alert (200)', ack1.status === 200, `status ${ack1.status}`);
     check('Acknowledged alert is no longer active', ack1.body?.data?.alert?.isActive === false);
@@ -326,7 +316,6 @@ const run = async () => {
     const ackMalformed = await api(base, '/api/admin/alerts/abc/acknowledge', patchJson(adminToken, {}));
     check('Acknowledging with a malformed id is rejected (400)', ackMalformed.status === 400);
 
-    // --- 5. HIGH_RISK alerts from triage -----------------------------------
     const VALID_HIGH = JSON.stringify({
       riskLevel: 'HIGH',
       assessment: 'The reported signs may indicate a significant health concern affecting several animals. This is a risk indication only and is not a diagnosis.',
@@ -347,7 +336,6 @@ const run = async () => {
     const highReportId = await createReport(fHR, [symptoms.PHASE5_SYM_HR.id], animalHR);
     check('High-risk report created', !!highReportId);
 
-    // Mocked so the Phase 5 suite stays deterministic (no live AI call needed).
     geminiService.setMockGenerate(async () => VALID_HIGH);
     const highTriage = await api(base, `/api/reports/${highReportId}/triage`, { method: 'POST', headers: auth(fHR.token) });
     check('HIGH risk triage returns riskLevel HIGH', highTriage.status === 200 && highTriage.body?.data?.aiTriage?.riskLevel === 'HIGH');
@@ -367,13 +355,11 @@ const run = async () => {
     );
     check('HIGH_RISK message never claims confirmation or an outbreak', !/confirmed|outbreak|guaranteed|definitely/i.test(highRiskAlert?.message || ''));
 
-    // Duplicate prevention: triage the SAME report again.
     const highTriageAgain = await api(base, `/api/reports/${highReportId}/triage`, { method: 'POST', headers: auth(fHR.token) });
     check('Triaging again still returns HIGH', highTriageAgain.body?.data?.aiTriage?.riskLevel === 'HIGH');
     const highRiskAfter = (await listAlerts('?type=HIGH_RISK', adminToken)).body?.data?.alerts.filter((a) => a.reportId === highReportId) || [];
     check('No duplicate active HIGH_RISK alert for the same report', highRiskAfter.length === 1, `got ${highRiskAfter.length}`);
 
-    // A LOW result must not raise a HIGH_RISK alert.
     const lowReportId = await createReport(fHR, [], null);
     geminiService.setMockGenerate(async () => VALID_LOW);
     const lowTriage = await api(base, `/api/reports/${lowReportId}/triage`, { method: 'POST', headers: auth(fHR.token) });
@@ -386,8 +372,6 @@ const run = async () => {
     check('HIGH_RISK alert detail includes the linked report farm', !!highDetail.body?.data?.alert?.report?.farm);
     check('HIGH_RISK alert detail never exposes passwords', !JSON.stringify(highDetail.body).toLowerCase().includes('password'));
 
-    // --- 6. POSSIBLE_CLUSTER detection -------------------------------------
-    // Qualifying group (4 of 5 so far) in District 1, shared symptom.
     const clusterReports = [
       await createReport(fC1, [symptoms.PHASE5_SYM_SHARED.id], animalC1),
       await createReport(fC1, [symptoms.PHASE5_SYM_SHARED.id], animalC1),
@@ -396,8 +380,6 @@ const run = async () => {
     ];
     check('Four qualifying reports created in the cluster district', clusterReports.every(Boolean));
 
-    // 7-day window: 3 fresh reports, one backdated beyond 7 days, then a 4th
-    // fresh report so detection runs while the group is split across the window.
     const oldFresh1 = await createReport(fOld, [symptoms.PHASE5_SYM_OLD.id], null);
     const oldFresh2 = await createReport(fOld, [symptoms.PHASE5_SYM_OLD.id], null);
     const oldFresh3 = await createReport(fOld, [symptoms.PHASE5_SYM_OLD.id], null);
@@ -414,7 +396,6 @@ const run = async () => {
     const oldFresh4 = await createReport(fOld, [symptoms.PHASE5_SYM_OLD.id], null);
     check('Old-window district reports created', !!oldFresh1 && !!oldFresh2 && !!oldFresh3 && !!oldFresh4);
 
-    // District separation: 4 reports in DiffA + 1 report in DiffB share a symptom.
     const diffReports = [
       await createReport(fDiffA, [symptoms.PHASE5_SYM_DIFF.id], null),
       await createReport(fDiffA, [symptoms.PHASE5_SYM_DIFF.id], null),
@@ -424,7 +405,6 @@ const run = async () => {
     ];
     check('Different-district reports created', diffReports.every(Boolean));
 
-    // Symptom separation: 5 reports in one district, each with a unique symptom.
     const noShareSymptoms = [
       symptoms.PHASE5_SYM_N1.id,
       symptoms.PHASE5_SYM_N2.id,
@@ -438,8 +418,6 @@ const run = async () => {
     }
     check('Five non-sharing reports created', noShareReports.every(Boolean));
 
-    // A full scan now must find nothing: every group is below the threshold,
-    // outside the window, split across districts, or missing a shared symptom.
     const scan1 = await api(base, '/api/admin/alerts/cluster-scan', postJson(adminToken, {}));
     check('Cluster scan finds no qualifying group yet (count 0)', scan1.status === 200 && scan1.body?.data?.count === 0, `count ${scan1.body?.data?.count}`);
 
@@ -456,8 +434,6 @@ const run = async () => {
     const badScanBody = await api(base, '/api/admin/alerts/cluster-scan', postJson(adminToken, { foo: 'bar' }));
     check('Cluster scan rejects unknown body fields (400)', badScanBody.status === 400);
 
-    // The 5th qualifying report completes the cluster -> alert is created
-    // automatically during report creation.
     const fifthReport = await createReport(fC2, [symptoms.PHASE5_SYM_SHARED.id], animalC2);
     check('Fifth qualifying report created', !!fifthReport);
 
@@ -478,12 +454,10 @@ const run = async () => {
     );
     check('Cluster message never claims confirmation or an outbreak', !/confirmed|outbreak|guaranteed|definitely/i.test(clusterAlert?.message || ''));
 
-    // Duplicate prevention: a repeat scan must not create another alert.
     const scan2 = await api(base, '/api/admin/alerts/cluster-scan', postJson(adminToken, {}));
     check('Repeat cluster scan creates no duplicate alerts (count 0)', scan2.status === 200 && scan2.body?.data?.count === 0, `count ${scan2.body?.data?.count}`);
     check('Only one cluster alert exists for the district after re-scan', (await clusterCount(D_CLUSTER)) === 1);
 
-    // --- 7. Admin oversight statistics -------------------------------------
     const statsRes = await api(base, '/api/admin/stats', { headers: auth(adminToken) });
     check('Admin statistics endpoint works (200)', statsRes.status === 200);
     const stats = statsRes.body?.data?.statistics;
@@ -506,7 +480,6 @@ const run = async () => {
     check('Referral counts are present and consistent', sumValues(stats.referrals.byStatus) === stats.referrals.total);
     check('Statistics never include passwords', !JSON.stringify(statsRes.body).toLowerCase().includes('password'));
 
-    // --- 8. Secrets must never appear in any response ----------------------
     check('No API response contains the admin password', seenBodies.every((b) => !b.includes(ADMIN.password)));
     check('No API response contains the vet password', seenBodies.every((b) => !b.includes(VET.password)));
     check('No API response contains the farmer password', seenBodies.every((b) => !b.includes(FARMER_PASSWORD)));

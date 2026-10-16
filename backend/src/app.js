@@ -20,10 +20,18 @@ const app = express();
 
 app.set('trust proxy', 1);
 
-const allowedOrigins = String(env.CLIENT_URL || '')
+const configuredOrigins = String(env.CLIENT_URL || '')
   .split(',')
   .map((origin) => origin.trim().replace(/\/+$/, ''))
   .filter(Boolean);
+
+// Local development only: allow both Vite dev-server ports (5173, plus 5174 when
+// 5173 is already in use). Never applied in production, where CLIENT_URL and the
+// Vercel preview pattern below remain the only allowed origins.
+const localDevOrigins =
+  env.NODE_ENV === 'production' ? [] : ['http://localhost:5173', 'http://localhost:5174'];
+
+const allowedOrigins = [...new Set([...configuredOrigins, ...localDevOrigins])];
 
 const vercelProjectPattern =
   /^https:\/\/vet-alert-system(-[a-z0-9-]+)?-shaunmicheals-projects\.vercel\.app$/;

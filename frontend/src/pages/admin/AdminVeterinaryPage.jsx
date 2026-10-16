@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { FaUserMd } from 'react-icons/fa'
-import { FiRefreshCw } from 'react-icons/fi'
+import { FiAlertTriangle } from 'react-icons/fi'
 import { getAdminProfessionals, getAdminUsers } from '../../api/admin'
 import AlertMessage from '../../components/ui/AlertMessage'
 import EmptyState from '../../components/ui/EmptyState'
 import Spinner from '../../components/ui/Spinner'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { getApiErrorMessage } from '../../utils/errors'
+import { VET_DEMO_MODE_ENABLED, VET_DEMO_DIRECTORY_MESSAGE } from '../../utils/vetDemoMode'
 
 const PAGE_SIZE = 20
 
@@ -54,14 +55,21 @@ export default function AdminVeterinaryPage() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">Admin console</p>
-        <h1 className="mt-1 text-2xl font-bold text-charcoal-900 sm:text-3xl">Veterinary Oversight</h1>
-        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-charcoal-600">Directory profiles and registered professional accounts are separate records. A profile is only linked when the database stores that relationship.</p>
+        <h1 className="page-title mt-1 sm:text-3xl">Veterinary Oversight</h1>
+        <p className="page-lede">Directory profiles and registered professional accounts are separate records. A profile is only linked when the database stores that relationship.</p>
       </header>
-      <form onSubmit={(e) => { e.preventDefault(); const t = searchInput.trim(); setSearch(t); setPage(1); sync(1, t) }} className="card flex flex-wrap gap-2 p-4">
+      {VET_DEMO_MODE_ENABLED && (
+        <AlertMessage variant="warning" title="Demonstration mode">
+          <p className="flex items-start gap-1.5">
+            <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>{VET_DEMO_DIRECTORY_MESSAGE}</span>
+          </p>
+        </AlertMessage>
+      )}
+      <form onSubmit={(e) => { e.preventDefault(); const t = searchInput.trim(); setSearch(t); setPage(1); sync(1, t) }} className="toolbar flex flex-wrap gap-3">
         <input aria-label="Search directory" type="search" className="field-input max-w-xs" placeholder="Search name or district" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
         <button type="submit" className="btn btn-primary">Search</button>
-        {search && <button type="button" onClick={() => { setSearch(''); setSearchInput(''); setPage(1); setSearchParams({}, { replace: true }) }} className="text-sm font-semibold text-forest-700 hover:underline">Clear</button>}
+        {search && <button type="button" onClick={() => { setSearch(''); setSearchInput(''); setPage(1); setSearchParams({}, { replace: true }) }} className="text-link text-sm">Clear</button>}
       </form>
       {loading ? (
         <div className="card flex items-center justify-center gap-3 px-6 py-16" role="status" aria-live="polite"><Spinner className="h-6 w-6 text-forest-700" /><p className="text-sm font-medium text-charcoal-600">Loading directory…</p></div>

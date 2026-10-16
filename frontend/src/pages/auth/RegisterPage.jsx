@@ -82,7 +82,7 @@ export default function RegisterPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-forest-700">
           Farmer registration
         </p>
-        <h1 className="mt-2 text-2xl font-bold text-charcoal-900 sm:text-3xl">
+        <h1 className="page-title mt-2 sm:text-3xl">
           Create your account
         </h1>
         <p className="mt-2 text-sm text-charcoal-600">

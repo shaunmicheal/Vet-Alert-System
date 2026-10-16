@@ -7,10 +7,10 @@ const show = (value) => value || '—'
 export default function AnimalList({ animals, onEdit, onDelete }) {
   return (
     <>
-      <div className="card hidden overflow-x-auto md:block">
-        <table className="w-full text-left text-sm">
+      <div className="card hidden table-wrap md:block">
+        <table className="data-table">
           <caption className="sr-only">Animals registered to your farm</caption>
-          <thead className="bg-charcoal-100 text-xs font-semibold uppercase tracking-wider text-charcoal-500">
+          <thead>
             <tr>
               <th scope="col" className="px-4 py-3">
                 Type
@@ -35,7 +35,7 @@ export default function AnimalList({ animals, onEdit, onDelete }) {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-charcoal-100">
+          <tbody>
             {animals.map((animal) => {
               const displayName = animal.name || 'Unnamed animal'
               return (

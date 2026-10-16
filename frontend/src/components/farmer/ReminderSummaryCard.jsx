@@ -15,22 +15,23 @@ export default function ReminderSummaryCard({ reminders, failed }) {
   const nearest = nearestIncompleteReminder(list)
 
   return (
-    <div className="card p-5">
-      <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-forest-50 text-forest-700" aria-hidden="true">
+    <div className="card overflow-hidden">
+      <div className="card-header">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-forest-700 text-cream-50" aria-hidden="true">
           <FiBell className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-charcoal-600">Reminders</p>
-          <p className="truncate text-sm text-charcoal-600">
+          <p className="section-eyebrow">Schedule</p>
+          <p className="truncate text-sm font-semibold text-charcoal-900">
             {upcoming.length === 0
-              ? 'Nothing upcoming - enjoy the quiet'
+              ? 'No upcoming reminders.'
               : `${upcoming.length} upcoming task${upcoming.length > 1 ? 's' : ''}`}
           </p>
         </div>
       </div>
+      <div className="px-5 py-4">
       {overdue > 0 && (
-        <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800" role="alert">
+        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800" role="alert">
           {overdue} overdue reminder{overdue > 1 ? 's need' : ' needs'} your attention.
         </p>
       )}
@@ -48,6 +49,7 @@ export default function ReminderSummaryCard({ reminders, failed }) {
         View all reminders
         <FiArrowRight className="h-4 w-4" aria-hidden="true" />
       </Link>
+      </div>
     </div>
   )
 }

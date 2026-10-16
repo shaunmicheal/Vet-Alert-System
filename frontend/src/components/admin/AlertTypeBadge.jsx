@@ -12,7 +12,7 @@ export default function AlertTypeBadge({ type }) {
 
   if (!style) {
     return (
-      <span className="inline-flex items-center rounded-full border border-charcoal-200 bg-charcoal-100 px-2.5 py-0.5 text-xs font-medium text-charcoal-600">
+      <span className="badge border-charcoal-200 bg-charcoal-100 text-charcoal-600">
         {type || 'Unknown type'}
       </span>
     )
@@ -20,7 +20,7 @@ export default function AlertTypeBadge({ type }) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${style.className}`}
+      className={`badge font-semibold ${style.className}`}
     >
       {style.label}
     </span>

@@ -65,9 +65,8 @@ export default function VetCasesPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">Veterinary workspace</p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900">Assigned Cases</h1>
-          <p className="mt-1 max-w-2xl text-sm text-charcoal-600">Farmer referrals assigned to you, most recently updated first. Open a case to review the full report.</p>
+          <h1 className="page-title">Assigned Cases</h1>
+          <p className="page-lede">Farmer referrals assigned to you, most recently updated first. Open a case to review the full report.</p>
         </div>
         <button type="button" onClick={reloadCases} disabled={loading} className="btn btn-secondary self-start sm:self-auto">
           <FiRefreshCw className="h-4 w-4" aria-hidden="true" />
@@ -91,7 +90,7 @@ export default function VetCasesPage() {
         <EmptyState icon={FiClipboard} title="No veterinary cases yet" description="Cases farmers refer to you will appear here when assigned." />
       ) : (
         <>
-          <section aria-label="Filter cases" className="card p-4 sm:p-5">
+          <section aria-label="Filter cases" className="toolbar">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="sm:col-span-1">
                 <label htmlFor="vet-case-search" className="field-label">Search</label>

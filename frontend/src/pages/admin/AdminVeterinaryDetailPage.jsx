@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { FiArrowLeft, FiRefreshCw } from 'react-icons/fi'
+import { FiArrowLeft, FiRefreshCw, FiAlertTriangle } from 'react-icons/fi'
 import { getAdminProfessional } from '../../api/admin'
 import AlertMessage from '../../components/ui/AlertMessage'
 import Spinner from '../../components/ui/Spinner'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { getApiErrorMessage } from '../../utils/errors'
 import { formatDate } from '../../utils/format'
+import { VET_DEMO_MODE_ENABLED, VET_DEMO_DIRECTORY_MESSAGE } from '../../utils/vetDemoMode'
 
 export default function AdminVeterinaryDetailPage() {
   useDocumentTitle('Directory Profile')
@@ -28,9 +29,17 @@ export default function AdminVeterinaryDetailPage() {
   return (
     <div className="space-y-6">
       <header>
-        <Link to="/admin/veterinary" className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline"><FiArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to veterinary oversight</Link>
-        <h1 className="mt-2 text-2xl font-bold text-charcoal-900">Directory Profile</h1>
+        <Link to="/admin/veterinary" className="text-link inline-flex items-center gap-1.5 text-sm"><FiArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to veterinary oversight</Link>
+        <h1 className="page-title mt-2">Directory Profile</h1>
       </header>
+      {VET_DEMO_MODE_ENABLED && (
+        <AlertMessage variant="warning" title="Demonstration mode">
+          <p className="flex items-start gap-1.5">
+            <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>{VET_DEMO_DIRECTORY_MESSAGE}</span>
+          </p>
+        </AlertMessage>
+      )}
       {loading ? (
         <div className="card flex items-center justify-center gap-3 px-6 py-16" role="status" aria-live="polite"><Spinner className="h-6 w-6 text-forest-700" /><p className="text-sm font-medium text-charcoal-600">Loading profile…</p></div>
       ) : loadError ? (

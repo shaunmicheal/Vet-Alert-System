@@ -6,6 +6,7 @@ import { getHealthReport } from '../../api/healthReports'
 import { getVeterinaryDirectory } from '../../api/vets'
 import CreateReferralDialog from '../../components/farmer/CreateReferralDialog'
 import ProfessionalCard from '../../components/farmer/ProfessionalCard'
+import VetDemoModeBanner from '../../components/farmer/VetDemoModeBanner'
 import AlertMessage from '../../components/ui/AlertMessage'
 import EmptyState from '../../components/ui/EmptyState'
 import Spinner from '../../components/ui/Spinner'
@@ -13,6 +14,7 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import { ANIMAL_TYPE_LABELS, PROVINCES } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 import { formatDate } from '../../utils/format'
+import { VET_DEMO_MODE_ENABLED, VET_URGENT_CARE_GUIDANCE } from '../../utils/vetDemoMode'
 
 const EMPTY_FILTERS = { search: '', province: '', district: '', professionalType: '' }
 
@@ -172,18 +174,26 @@ export default function VeterinaryDirectoryPage() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
+        <p className="page-eyebrow">
           My Farm
         </p>
-        <h1 className="mt-1 text-2xl font-bold text-charcoal-900">
+        <h1 className="page-title mt-1">
           {referralMode ? 'Choose a veterinary professional' : 'Veterinary Directory'}
         </h1>
-        <p className="mt-1 max-w-2xl text-sm text-charcoal-600">
+        <p className="page-lede">
           {referralMode
             ? 'Select the professional you would like to review this health report. You can add an optional message and review everything before the referral is sent.'
             : 'Find veterinary professionals who can help your farm. Search by name or specialisation, narrow down by province or district, and contact them directly.'}
         </p>
+        {VET_DEMO_MODE_ENABLED && (
+          <p className="mt-2 text-xs leading-relaxed text-charcoal-500">
+            Profiles marked as demonstration profiles are fictional examples for this
+            stakeholder demonstration not participating professionals. {VET_URGENT_CARE_GUIDANCE}
+          </p>
+        )}
       </header>
+
+      <VetDemoModeBanner />
 
       {referralMode && (
         <section className="card p-4 sm:p-5" aria-label="Health report being referred">
@@ -246,7 +256,7 @@ export default function VeterinaryDirectoryPage() {
 
       <section
         aria-label="Search and filter the veterinary directory"
-        className="card p-4 sm:p-5"
+        className="toolbar"
       >
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
           <form onSubmit={handleSearchSubmit} className="lg:col-span-2">
@@ -345,7 +355,7 @@ export default function VeterinaryDirectoryPage() {
             <button
               type="button"
               onClick={clearFilters}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline"
+              className="text-link inline-flex items-center gap-1.5 text-sm"
             >
               <FiX className="h-4 w-4" aria-hidden="true" />
               Clear all filters

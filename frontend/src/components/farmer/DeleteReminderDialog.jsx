@@ -29,9 +29,9 @@ export default function DeleteReminderDialog({ reminder, onCancel, onDeleted }) 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="delete-reminder-title">
       <button type="button" className="absolute inset-0 bg-charcoal-900/50" aria-label="Cancel deletion" onClick={onCancel} />
-      <div className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-xl bg-white p-5 shadow-xl sm:rounded-xl sm:p-6">
+      <div className="dialog-panel max-w-md">
         <div className="flex items-start justify-between gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-700">
+          <span className="dialog-icon bg-red-50 text-red-700">
             <FiTrash2 className="h-5 w-5" aria-hidden="true" />
           </span>
           <button type="button" onClick={onCancel} className="rounded-lg p-2 text-charcoal-500 transition hover:bg-charcoal-100 hover:text-charcoal-800" aria-label="Cancel deletion">

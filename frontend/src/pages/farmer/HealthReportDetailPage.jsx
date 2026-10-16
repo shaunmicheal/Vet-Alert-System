@@ -85,7 +85,7 @@ export default function HealthReportDetailPage() {
       <div>
         <Link
           to="/farmer/reports"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline"
+          className="text-link inline-flex items-center gap-1.5 text-sm"
         >
           <FiArrowLeft className="h-4 w-4" aria-hidden="true" />
           Back to health reports

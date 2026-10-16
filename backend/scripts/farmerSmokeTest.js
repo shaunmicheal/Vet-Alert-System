@@ -1,15 +1,3 @@
-// ============================================================================
-// PHASE 2 SMOKE TEST - Farmer functionality + ownership security
-// ----------------------------------------------------------------------------
-// Run from the backend folder with:  npm run smoke:farmer
-//
-// It starts the API in-process, creates TWO farmers (A and B), and proves that:
-//   - a farmer can fully manage their OWN farm, animals and reports, and
-//   - a farmer CANNOT read or change another farmer's records (404), and
-//   - veterinary/admin accounts are blocked from farmer routes (403).
-//
-// Every temporary record it creates is deleted at the end.
-// ============================================================================
 const bcrypt = require('bcrypt');
 
 const app = require('../src/app');
@@ -69,20 +57,17 @@ const post = (token, body) => ({ method: 'POST', headers: auth(token), body: JSO
 const put = (token, body) => ({ method: 'PUT', headers: auth(token), body: JSON.stringify(body) });
 
 const cleanup = async () => {
-  // Deleting a user cascades to their farm, animals, reports and report-symptoms.
   await prisma.user.deleteMany({ where: { email: { in: TEMP_EMAILS } } });
   await prisma.symptom.deleteMany({ where: { name: { in: SYMPTOM_NAMES } } });
 };
 
 const run = async () => {
-  await cleanup(); // remove leftovers from a previous incomplete run
+  await cleanup();
 
-  // Reference symptoms that reports can link to.
   const [symptomA, symptomB] = await Promise.all(
     SYMPTOM_NAMES.map((name) => prisma.symptom.create({ data: { name } })),
   );
 
-  // A vet and an admin account, used to prove role blocking on farmer routes.
   await prisma.user.create({
     data: { ...VET, password: await bcrypt.hash(VET.password, 10), role: 'VETERINARY_PROFESSIONAL' },
   });
@@ -94,7 +79,6 @@ const run = async () => {
   const base = `http://127.0.0.1:${server.address().port}`;
 
   try {
-    // --- Accounts ---------------------------------------------------------
     const regA = await api(base, '/api/auth/register', { method: 'POST', body: JSON.stringify(FARMER_A) });
     const regB = await api(base, '/api/auth/register', { method: 'POST', body: JSON.stringify(FARMER_B) });
     const tokenA = regA.body?.data?.token;
@@ -108,7 +92,6 @@ const run = async () => {
     const adminToken = adminLogin.body?.data?.token;
     check('Vet and admin can log in', !!vetToken && !!adminToken);
 
-    // --- Farm profile -----------------------------------------------------
     const noFarm = await api(base, '/api/farmer/farm', { headers: auth(tokenA) });
     check('New farmer has no farm yet (farm = null)', noFarm.status === 200 && noFarm.body?.data?.farm === null);
 
@@ -132,7 +115,6 @@ const run = async () => {
     check('Farmer A sees only their own farm', getFarmA.body?.data?.farm?.name === FARM_A.name);
     check('Farmer B sees only their own farm', getFarmB.body?.data?.farm?.name === FARM_B.name);
 
-    // --- Animals ----------------------------------------------------------
     const createAnimalA = await api(base, '/api/animals', post(tokenA, ANIMAL_A));
     const animalAId = createAnimalA.body?.data?.animal?.id;
     check('Farmer A can add an animal', createAnimalA.status === 201 && !!animalAId);
@@ -148,7 +130,6 @@ const run = async () => {
     const getOwnAnimal = await api(base, `/api/animals/${animalAId}`, { headers: auth(tokenA) });
     check('Farmer A can read their own animal', getOwnAnimal.status === 200);
 
-    // CROSS-FARMER: B must not touch A's animal.
     const crossRead = await api(base, `/api/animals/${animalAId}`, { headers: auth(tokenB) });
     check('Farmer B CANNOT read A\'s animal (404)', crossRead.status === 404);
     const crossUpdate = await api(base, `/api/animals/${animalAId}`, put(tokenB, { name: 'Stolen' }));
@@ -166,7 +147,6 @@ const run = async () => {
 
     const missing = await api(base, '/api/animals/ckdoesnotexist000000000000', { headers: auth(tokenA) });
     check('Unknown animal id returns 404', missing.status === 404);
-    // --- Health reports ---------------------------------------------------
     const reportBodyA = {
       title: 'Cow with fever',
       description: 'My cow has had a high temperature and is eating very little for two days.',
@@ -199,13 +179,11 @@ const run = async () => {
     const ownReport = await api(base, `/api/reports/${reportAId}`, { headers: auth(tokenA) });
     check('Farmer A can read their own report', ownReport.status === 200 && ownReport.body?.data?.report?.farm?.name === FARM_A.name);
 
-    // CROSS-FARMER: B must not read A's report, nor attach a report to A's animal.
     const crossReport = await api(base, `/api/reports/${reportAId}`, { headers: auth(tokenB) });
     check('Farmer B CANNOT read A\'s report (404)', crossReport.status === 404);
     const crossReportCreate = await api(base, '/api/reports', post(tokenB, { ...reportBodyA, symptomIds: [] }));
     check('Farmer B CANNOT create a report against A\'s animal (404)', crossReportCreate.status === 404);
 
-    // Validation
     const badSymptom = await api(
       base,
       '/api/reports',
@@ -234,7 +212,6 @@ const run = async () => {
     check('Report list can be filtered by status', filtered.body?.data?.count === 1 && filteredNone.body?.data?.count === 0);
     check('Invalid list filter is rejected (400)', badFilter.status === 400);
 
-    // --- Farmer with no farm yet -----------------------------------------
     const regC = await api(base, '/api/auth/register', { method: 'POST', body: JSON.stringify(FARMER_C) });
     const tokenC = regC.body?.data?.token;
     const noFarmAnimal = await api(base, '/api/animals', post(tokenC, ANIMAL_A));
@@ -246,7 +223,6 @@ const run = async () => {
     check('Adding an animal without a farm is rejected (400)', noFarmAnimal.status === 400);
     check('Submitting a report without a farm is rejected (400)', noFarmReport.status === 400);
 
-    // --- Role + authentication guards ------------------------------------
     const guest = await api(base, '/api/animals');
     check('Guest cannot read animals (401)', guest.status === 401);
     const vetBlocked = await api(base, '/api/animals', { headers: auth(vetToken) });
@@ -256,7 +232,6 @@ const run = async () => {
     const vetFarm = await api(base, '/api/farmer/farm', { headers: auth(vetToken) });
     check('Vet is blocked from the farm profile route (403)', vetFarm.status === 403);
 
-    // --- Deletion rules --------------------------------------------------
     const deleteOwnAnimal = await api(base, `/api/animals/${animalAId}`, { method: 'DELETE', headers: auth(tokenA) });
     check('Farmer A can delete their own animal', deleteOwnAnimal.status === 200);
     const reportAfterAnimalDelete = await api(base, `/api/reports/${reportAId}`, { headers: auth(tokenA) });

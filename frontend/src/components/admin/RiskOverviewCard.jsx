@@ -14,18 +14,21 @@ export default function RiskOverviewCard({ reports }) {
   const unset = byRiskLevel.UNSET || 0
 
   return (
-    <section className="card p-5" aria-labelledby="risk-overview-title">
-      <div className="flex items-center justify-between gap-2">
-        <h2
-          id="risk-overview-title"
-          className="text-sm font-semibold uppercase tracking-wider text-charcoal-500"
-        >
-          Reports by risk level
-        </h2>
-        <span className="text-xs text-charcoal-500">{total} total</span>
+    <section className="card overflow-hidden" aria-labelledby="risk-overview-title">
+      <div className="card-header">
+        <div>
+          <p className="section-eyebrow">Triage by risk</p>
+          <h2
+            id="risk-overview-title"
+            className="mt-0.5 text-base font-semibold tracking-tight text-charcoal-900"
+          >
+            Reports by risk level
+          </h2>
+        </div>
+        <span className="rounded-full bg-charcoal-100 px-2.5 py-1 text-xs font-semibold text-charcoal-700">{total} total</span>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 px-5 pt-5 sm:grid-cols-3">
         {RISK_LEVELS.map((level) => {
           const count = byRiskLevel[level] || 0
           return (
@@ -46,7 +49,7 @@ export default function RiskOverviewCard({ reports }) {
 
       {unset > 0 && <p className="mt-3 text-xs text-charcoal-500">Not yet assessed: {unset}</p>}
 
-      <p className="mt-4 border-t border-charcoal-100 pt-3 text-xs leading-relaxed text-charcoal-500">
+      <p className="mx-5 mb-5 mt-4 border-t border-charcoal-100 pt-3 text-xs leading-relaxed text-charcoal-500">
         Risk levels are triage indicators recorded on submitted reports. A high-risk report does
         not confirm a disease or outbreak.
       </p>

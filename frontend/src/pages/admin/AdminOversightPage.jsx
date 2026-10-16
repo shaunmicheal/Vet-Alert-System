@@ -133,15 +133,9 @@ export default function AdminOversightPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
-            Admin console
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900 sm:text-3xl">Oversight</h1>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-charcoal-600">
-            Read-only administrative review of platform records. This page shows exactly
-            what the admin API supports today - aggregate oversight of accounts, veterinary
-            professionals and health reports - and marks each unavailable listing or action
-            instead of faking it.
+          <h1 className="page-title mt-1 sm:text-3xl">Oversight</h1>
+          <p className="page-lede">
+            Read-only summaries of accounts, veterinary professionals and health reports.
           </p>
         </div>
         <Link to="/admin" className="btn btn-secondary self-start sm:self-auto">

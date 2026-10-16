@@ -158,9 +158,9 @@ export default function VetProfilePage() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">My Profile</p>
-        <h1 className="mt-1 text-2xl font-bold text-charcoal-900">Professional Profile</h1>
-        <p className="mt-1 text-sm text-charcoal-600">
+        <p className="page-eyebrow">My Profile</p>
+        <h1 className="page-title mt-1">Professional Profile</h1>
+        <p className="page-lede">
           Keep your professional details up to date so farmers can find you and reach you for referrals.
         </p>
       </header>
@@ -198,7 +198,7 @@ export default function VetProfilePage() {
               </div>
               <div className="flex shrink-0 flex-col items-start gap-1 sm:items-end">
                 <span
-                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${
+                  className={`badge ${
                     profile.isActive
                       ? 'border-forest-200 bg-forest-50 text-forest-800'
                       : 'border-amber-200 bg-amber-50 text-amber-800'
@@ -436,7 +436,7 @@ export default function VetProfilePage() {
                     ? profile
                       ? 'Only the fields you changed are sent to the server.'
                       : 'Complete the required fields, then create your profile.'
-                    : 'No changes yet - edit a field to enable saving.'}
+                    : 'No changes yet. Edit a field to enable saving.'}
                 </p>
               </div>
             </form>

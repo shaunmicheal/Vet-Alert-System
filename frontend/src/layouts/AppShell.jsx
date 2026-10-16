@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Suspense, useEffect, useRef, useState } from 'react'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { FiLogOut, FiMenu, FiX } from 'react-icons/fi'
 import Logo from '../components/Logo'
+import PageLoader from '../components/ui/PageLoader'
+import RouteErrorBoundary from '../components/ui/RouteErrorBoundary'
 import { useAuth } from '../hooks/useAuth'
 import { homePathForRole } from '../utils/constants'
 import { navigationForRole, ROLE_LABELS } from '../utils/navigation'
@@ -30,19 +32,19 @@ function NavItems({ items, onNavigate, variant }) {
               onClick={onNavigate}
               className={({ isActive }) => {
                 const base =
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition'
+                  'flex min-h-10 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2'
                 if (isDark) {
                   return isActive
-                    ? `${base} bg-forest-700 text-white`
-                    : `${base} text-forest-100 hover:bg-forest-800 hover:text-white`
+                    ? `${base} bg-forest-800 text-white focus-visible:outline-forest-200`
+                    : `${base} text-forest-100/75 hover:bg-white/5 hover:text-white focus-visible:outline-forest-200`
                 }
                 return isActive
-                  ? `${base} bg-forest-50 text-forest-800`
+                  ? `${base} bg-forest-100 text-forest-900`
                   : `${base} text-charcoal-600 hover:bg-charcoal-100 hover:text-charcoal-900`
               }}
             >
               <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>{item.label}</span>
+              <span className="min-w-0">{item.label}</span>
             </NavLink>
           </li>
         )
@@ -54,6 +56,10 @@ function NavItems({ items, onNavigate, variant }) {
 export default function AppShell() {
   const { user, logout } = useAuth()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const menuButtonRef = useRef(null)
+  const drawerRef = useRef(null)
+  const drawerWasOpenRef = useRef(false)
+  const location = useLocation()
 
   const role = user ? user.role : null
   const items = navigationForRole(role)
@@ -69,17 +75,54 @@ export default function AppShell() {
   }, [mobileNavOpen])
 
   useEffect(() => {
+    if (mobileNavOpen) {
+      drawerWasOpenRef.current = true
+      drawerRef.current?.focus()
+      return undefined
+    }
+    if (drawerWasOpenRef.current) {
+      drawerWasOpenRef.current = false
+      menuButtonRef.current?.focus()
+    }
+    return undefined
+  }, [mobileNavOpen])
+
+  useEffect(() => {
     if (!mobileNavOpen) return undefined
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') setMobileNavOpen(false)
+      if (event.key === 'Escape') {
+        setMobileNavOpen(false)
+        return
+      }
+      if (event.key !== 'Tab') return
+      const drawer = drawerRef.current
+      if (!drawer) return
+      const focusable = drawer.querySelectorAll('a[href], button:not([disabled])')
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      const active = document.activeElement
+      if (event.shiftKey && (active === first || active === drawer)) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [mobileNavOpen])
 
   return (
-    <div className="min-h-screen bg-cream-50">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-forest-900 lg:flex">
+    <div className="min-h-screen bg-cream-100">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:border focus:border-forest-200 focus:bg-white focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-forest-800 focus:shadow-[var(--shadow-overlay)]"
+      >
+        Skip to main content
+      </a>
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[var(--layout-sidebar)] flex-col bg-forest-950 lg:flex">
         <div className="flex h-16 items-center border-b border-forest-800 px-5">
           <Link to={homePath} aria-label="VetAlert Zimbabwe home">
             <Logo tone="light" />
@@ -96,7 +139,7 @@ export default function AppShell() {
         <div className="border-t border-forest-800 p-4">
           <div className="flex items-center gap-3">
             <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-earth-500 text-sm font-bold text-white"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest-700 text-sm font-bold text-white"
               aria-hidden="true"
             >
               {initials}
@@ -109,7 +152,7 @@ export default function AppShell() {
           <button
             type="button"
             onClick={logout}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-forest-700 px-3 py-2 text-sm font-medium text-forest-100 transition hover:bg-forest-800 hover:text-white"
+            className="mt-3 flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-forest-700 px-3 py-2 text-sm font-medium text-forest-100 transition hover:bg-forest-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-200"
           >
             <FiLogOut className="h-4 w-4" aria-hidden="true" />
             Log out
@@ -129,7 +172,11 @@ export default function AppShell() {
             aria-label="Close navigation menu"
             onClick={() => setMobileNavOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-forest-900 shadow-xl">
+          <div
+            ref={drawerRef}
+            tabIndex={-1}
+            className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-forest-950 shadow-xl outline-none"
+          >
             <div className="flex h-16 items-center justify-between border-b border-forest-800 px-4">
               <Link
                 to={homePath}
@@ -140,7 +187,7 @@ export default function AppShell() {
               </Link>
               <button
                 type="button"
-                className="rounded-lg p-2 text-forest-100 hover:bg-forest-800"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-forest-100 transition hover:bg-forest-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-200"
                 aria-label="Close navigation menu"
                 onClick={() => setMobileNavOpen(false)}
               >
@@ -158,7 +205,7 @@ export default function AppShell() {
             <div className="border-t border-forest-800 p-4">
               <div className="flex items-center gap-3">
                 <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-earth-500 text-sm font-bold text-white"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest-700 text-sm font-bold text-white"
                   aria-hidden="true"
                 >
                   {initials}
@@ -173,7 +220,7 @@ export default function AppShell() {
               <button
                 type="button"
                 onClick={logout}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-forest-700 px-3 py-2 text-sm font-medium text-forest-100 transition hover:bg-forest-800 hover:text-white"
+                className="mt-3 flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-forest-700 px-3 py-2 text-sm font-medium text-forest-100 transition hover:bg-forest-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-200"
               >
                 <FiLogOut className="h-4 w-4" aria-hidden="true" />
                 Log out
@@ -183,11 +230,12 @@ export default function AppShell() {
         </div>
       )}
 
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-charcoal-200 bg-white px-4 sm:px-6">
+      <div className="lg:pl-[var(--layout-sidebar)]">
+        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-charcoal-200/70 bg-white/90 px-4 backdrop-blur-sm sm:px-6">
           <button
+            ref={menuButtonRef}
             type="button"
-            className="rounded-lg p-2 text-charcoal-600 transition hover:bg-charcoal-100 hover:text-charcoal-900 lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-charcoal-600 transition hover:bg-charcoal-100 hover:text-charcoal-900 lg:hidden"
             aria-label="Open navigation menu"
             aria-expanded={mobileNavOpen}
             onClick={() => setMobileNavOpen(true)}
@@ -198,8 +246,6 @@ export default function AppShell() {
           <span className="lg:hidden">
             <Logo compact />
           </span>
-
-          <p className="hidden text-sm text-charcoal-500 lg:block">{roleLabel} workspace</p>
 
           <div className="ml-auto flex items-center gap-2">
             <span className="hidden text-sm font-medium text-charcoal-700 sm:block">
@@ -222,8 +268,16 @@ export default function AppShell() {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-          <Outlet />
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="page-container outline-none"
+        >
+          <RouteErrorBoundary key={location.pathname}>
+            <Suspense fallback={<PageLoader />}>
+              <Outlet />
+            </Suspense>
+          </RouteErrorBoundary>
         </main>
       </div>
     </div>

@@ -50,24 +50,24 @@ export default function HealthReportFormPage() {
       <div>
         <Link
           to="/farmer/reports"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline"
+          className="text-link inline-flex items-center gap-1.5 text-sm"
         >
           <FiArrowLeft className="h-4 w-4" aria-hidden="true" />
           Back to health reports
         </Link>
-        <h1 className="mt-2 text-2xl font-bold text-charcoal-900">New Health Report</h1>
-        <p className="mt-1 text-sm text-charcoal-600">
+        <h1 className="page-title mt-2">New Health Report</h1>
+        <p className="page-lede">
           Describe what you are seeing so VetAlert can assess the risk level.
         </p>
       </div>
 
       {loading ? (
         <div
-          className="card flex items-center justify-center gap-3 px-6 py-12"
+          className="card flex items-center justify-center gap-3 px-6 py-16"
           role="status"
           aria-live="polite"
         >
-          <Spinner className="h-5 w-5 text-forest-700" />
+          <Spinner className="h-6 w-6 text-forest-700" />
           <p className="text-sm font-medium text-charcoal-600">Loading your animals…</p>
         </div>
       ) : (

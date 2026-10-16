@@ -1,14 +1,5 @@
-// ============================================================================
-// PHASE 3 SMOKE TEST - Gemini AI triage
-// ----------------------------------------------------------------------------
-// Run from the backend folder with:  npm run smoke:triage
-//
-// Gemini is MOCKED (see geminiService.setMockGenerate). No real network call is
-// made, no API key is needed, and every result is fully deterministic.
-// ============================================================================
 const SENTINEL_GEMINI_KEY = 'SENTINEL_GEMINI_KEY_SHOULD_NEVER_LEAK_9f3a1';
 
-// Set BEFORE the app is loaded so we can prove the key never appears in a response.
 process.env.GEMINI_API_KEY = SENTINEL_GEMINI_KEY;
 process.env.NODE_ENV = 'test';
 
@@ -28,7 +19,6 @@ const SYMPTOM_NAMES = ['PHASE3_TEST_FEVER', 'PHASE3_TEST_COUGH', 'PHASE3_TEST_DI
 
 const FARM_A = { name: 'Phase3 Farm', province: 'Masvingo', district: 'Masvingo', ward: 'Ward 3', village: 'Village 3' };
 
-// A worrying report (should score HIGH on the fallback scale).
 const SEVERE_REPORT = {
   title: 'Severe breathing problem',
   description: 'The cow is breathing with difficulty and the whole group looks unwell for three days.',
@@ -41,7 +31,6 @@ const SEVERE_REPORT = {
   additionalNotes: 'Several animals affected in the same kraal.',
 };
 
-// A minor report (should score LOW on the fallback scale).
 const MILD_REPORT = {
   title: 'Slight limp',
   description: 'One goat has a small limp on the front leg but is eating and drinking normally.',
@@ -53,8 +42,8 @@ const MILD_REPORT = {
 const results = [];
 let passed = 0;
 let failed = 0;
-const seenBodies = []; // every response body we received (for the key-leak check)
-let capturedPrompt = null; // the last prompt handed to the mocked Gemini
+const seenBodies = [];
+let capturedPrompt = null;
 
 const check = (name, condition, detail = '') => {
   if (condition) {
@@ -86,8 +75,6 @@ const postJson = (token, body) => ({ method: 'POST', headers: auth(token), body:
 const postEmpty = (token) => (token ? { method: 'POST', headers: auth(token) } : { method: 'POST' });
 
 const cleanup = async () => {
-  // Phase 5: a HIGH risk triage can create an Alert linked to these reports.
-  // Alerts are removed FIRST, while their reportId link still exists.
   const tempReports = await prisma.healthReport.findMany({
     where: { farmer: { email: { in: TEMP_EMAILS } } },
     select: { id: true },
@@ -127,7 +114,6 @@ const run = async () => {
     const adminToken = adminLogin.body?.data?.token;
     check('Test accounts are ready', !!tokenA && !!tokenB && !!vetToken && !!adminToken);
 
-    // Farmer A data: farm, animal and two reports.
     await api(base, '/api/farmer/farm', postJson(tokenA, FARM_A));
     const animalRes = await api(base, '/api/animals', postJson(tokenA, { animalType: 'CATTLE', name: 'Phase3 Cow', tagNumber: 'P3-001' }));
     const animalId = animalRes.body?.data?.animal?.id;
@@ -162,7 +148,6 @@ const run = async () => {
       followUpQuestions: ['How many days has the group been unwell?'],
     });
 
-    // --- 1. Successful (mocked) AI triage --------------------------------
     geminiService.setMockGenerate(async (prompt) => {
       capturedPrompt = prompt;
       return VALID_HIGH;
@@ -201,7 +186,6 @@ const run = async () => {
     const triageAgain = await api(base, `/api/reports/${severeId}/triage`, postEmpty(tokenA));
     check('Triaging again updates the stored risk level', triageAgain.body?.data?.report?.riskLevel === 'LOW');
 
-    // --- 2. Invalid or unsafe AI answers must fall back safely -----------
     const expectFallback = async (label, mockFn) => {
       geminiService.setMockGenerate(mockFn);
       const res = await api(base, `/api/reports/${mildId}/triage`, postEmpty(tokenA));
@@ -236,7 +220,6 @@ const run = async () => {
       throw new Error('simulated outage');
     });
 
-    // --- 3. Fallback risk levels are deterministic -----------------------
     geminiService.setMockGenerate(async () => {
       throw new Error('outage');
     });
@@ -250,7 +233,6 @@ const run = async () => {
       fallbackSevere.body?.data?.aiTriage?.veterinaryAttentionRecommended === true,
     );
 
-    // --- 4. Ownership and role guards ------------------------------------
     geminiService.setMockGenerate(async () => VALID_HIGH);
 
     const guestTriage = await api(base, `/api/reports/${severeId}/triage`, postEmpty(null));
@@ -274,7 +256,6 @@ const run = async () => {
     const malformedReport = await api(base, '/api/reports/abc/triage', postEmpty(tokenA));
     check('Malformed report id is rejected (400)', malformedReport.status === 400);
 
-    // --- 5. The Gemini API key must never appear in any response ---------
     check('No API response contains the Gemini API key', seenBodies.every((b) => !b.includes(SENTINEL_GEMINI_KEY)));
   } catch (err) {
     failed += 1;

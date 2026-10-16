@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { FiArrowLeft, FiMail, FiMapPin, FiPhone, FiRefreshCw, FiX } from 'react-icons/fi'
+import { FiArrowLeft, FiMail, FiMapPin, FiPhone, FiRefreshCw, FiX, FiAlertTriangle } from 'react-icons/fi'
 import { getReferral } from '../../api/referrals'
 import ReferralStatusBadge from '../../components/farmer/ReferralStatusBadge'
 import RiskBadge from '../../components/farmer/RiskBadge'
@@ -11,6 +11,12 @@ import { ANIMAL_TYPE_LABELS } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 import { REFERRAL_STATUS_EXPLANATIONS, REFERRAL_STATUS_NEXT } from '../../utils/referrals'
 import { formatDate } from '../../utils/format'
+import {
+  VET_DEMO_MODE_ENABLED,
+  VET_DEMO_RESPONSE_NOTE,
+  VET_URGENT_CARE_GUIDANCE,
+  isDemoProfessional,
+} from '../../utils/vetDemoMode'
 
 const show = (value) => (value === null || value === undefined || value === '' ? null : value)
 
@@ -57,12 +63,14 @@ export default function ReferralDetailPage() {
   const farmerMessage = show(referral ? referral.farmerMessage : null)
   const professionalResponse = show(referral ? referral.professionalResponse : null)
 
+  const isDemo = VET_DEMO_MODE_ENABLED && isDemoProfessional(professional)
+
   return (
     <div className="space-y-6">
       <div>
         <Link
           to="/farmer/referrals"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline"
+          className="text-link inline-flex items-center gap-1.5 text-sm"
         >
           <FiArrowLeft className="h-4 w-4" aria-hidden="true" />
           Back to referrals
@@ -106,6 +114,14 @@ export default function ReferralDetailPage() {
                   <FiX className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
+            </AlertMessage>
+          )}
+          {isDemo && (
+            <AlertMessage variant="warning" title="Demonstration mode">
+              <p className="flex items-start gap-1.5">
+                <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>{VET_URGENT_CARE_GUIDANCE}</span>
+              </p>
             </AlertMessage>
           )}
 
@@ -167,7 +183,7 @@ export default function ReferralDetailPage() {
             </div>
             <Link
               to={`/farmer/reports/${report.id}`}
-              className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline"
+              className="text-link mt-4 inline-flex items-center gap-1.5 text-sm"
             >
               <FiArrowLeft className="h-4 w-4" aria-hidden="true" />
               Open the full health report
@@ -254,9 +270,16 @@ export default function ReferralDetailPage() {
                 Response from the professional
               </h3>
               {professionalResponse ? (
-                <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-charcoal-800">
-                  {professionalResponse}
-                </p>
+                <div className="mt-1 whitespace-pre-line text-sm leading-relaxed text-charcoal-800">
+                  {isDemo ? (
+                    <>
+                      <span className="text-amber-700">{VET_DEMO_RESPONSE_NOTE}</span>
+                      <span className="relative whitespace-pre-line">{professionalResponse}</span>
+                    </>
+                  ) : (
+                    professionalResponse
+                  )}
+                </div>
               ) : (
                 <p className="mt-1 text-sm text-charcoal-500">
                   {referral.status === 'DECLINED'

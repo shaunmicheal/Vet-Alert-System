@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import LoadingScreen from '../components/ui/LoadingScreen'
 import { useAuth } from '../hooks/useAuth'
@@ -5,38 +6,45 @@ import AuthLayout from '../layouts/AuthLayout'
 import AppShell from '../layouts/AppShell'
 import NotFoundPage from '../pages/NotFoundPage'
 import UnauthorizedPage from '../pages/UnauthorizedPage'
-import AdminAlertDetailPage from '../pages/admin/AdminAlertDetailPage'
-import AdminAlertsPage from '../pages/admin/AdminAlertsPage'
-import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
-import AdminOversightPage from '../pages/admin/AdminOversightPage'
-import AdminReferralDetailPage from '../pages/admin/AdminReferralDetailPage'
-import AdminReferralsPage from '../pages/admin/AdminReferralsPage'
-import AdminReportDetailPage from '../pages/admin/AdminReportDetailPage'
-import AdminReportsPage from '../pages/admin/AdminReportsPage'
-import AdminStatisticsPage from '../pages/admin/AdminStatisticsPage'
-import AdminUserDetailPage from '../pages/admin/AdminUserDetailPage'
-import AdminUsersPage from '../pages/admin/AdminUsersPage'
-import AdminVeterinaryDetailPage from '../pages/admin/AdminVeterinaryDetailPage'
-import AdminVeterinaryPage from '../pages/admin/AdminVeterinaryPage'
-import HealthReportsPage from '../pages/farmer/HealthReportsPage'
-import HealthReportDetailPage from '../pages/farmer/HealthReportDetailPage'
-import HealthReportFormPage from '../pages/farmer/HealthReportFormPage'
-import ReferralsPage from '../pages/farmer/ReferralsPage'
-import ReferralDetailPage from '../pages/farmer/ReferralDetailPage'
-import RemindersPage from '../pages/farmer/RemindersPage'
-import VeterinaryDirectoryPage from '../pages/farmer/VeterinaryDirectoryPage'
-import VetDashboardPage from '../pages/vet/VetDashboardPage'
-import VetCasesPage from '../pages/vet/VetCasesPage'
-import VetCaseDetailPage from '../pages/vet/VetCaseDetailPage'
-import VetProfilePage from '../pages/vet/VetProfilePage'
-import FarmerDashboardPage from '../pages/farmer/FarmerDashboardPage'
-import FarmProfilePage from '../pages/farmer/FarmProfilePage'
-import AnimalsPage from '../pages/farmer/AnimalsPage'
-import LoginPage from '../pages/auth/LoginPage'
-import RegisterPage from '../pages/auth/RegisterPage'
 import ProtectedRoute from './ProtectedRoute'
 import PublicOnlyRoute from './PublicOnlyRoute'
 import { homePathForRole, ROLES } from '../utils/constants'
+
+/*
+ * Route-level code splitting: page components load on demand so the initial
+ * bundle stays small. Shared shells (AppShell, AuthLayout), route guards and
+ * the 404/unauthorized pages stay eager. Suspense fallbacks render inside the
+ * shells; lazy-load failures are caught by RouteErrorBoundary.
+ */
+const LoginPage = lazy(() => import('../pages/auth/LoginPage'))
+const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'))
+const FarmerDashboardPage = lazy(() => import('../pages/farmer/FarmerDashboardPage'))
+const FarmProfilePage = lazy(() => import('../pages/farmer/FarmProfilePage'))
+const HealthReportFormPage = lazy(() => import('../pages/farmer/HealthReportFormPage'))
+const HealthReportsPage = lazy(() => import('../pages/farmer/HealthReportsPage'))
+const HealthReportDetailPage = lazy(() => import('../pages/farmer/HealthReportDetailPage'))
+const AnimalsPage = lazy(() => import('../pages/farmer/AnimalsPage'))
+const ReferralsPage = lazy(() => import('../pages/farmer/ReferralsPage'))
+const ReferralDetailPage = lazy(() => import('../pages/farmer/ReferralDetailPage'))
+const RemindersPage = lazy(() => import('../pages/farmer/RemindersPage'))
+const VeterinaryDirectoryPage = lazy(() => import('../pages/farmer/VeterinaryDirectoryPage'))
+const VetDashboardPage = lazy(() => import('../pages/vet/VetDashboardPage'))
+const VetCasesPage = lazy(() => import('../pages/vet/VetCasesPage'))
+const VetCaseDetailPage = lazy(() => import('../pages/vet/VetCaseDetailPage'))
+const VetProfilePage = lazy(() => import('../pages/vet/VetProfilePage'))
+const AdminDashboardPage = lazy(() => import('../pages/admin/AdminDashboardPage'))
+const AdminAlertsPage = lazy(() => import('../pages/admin/AdminAlertsPage'))
+const AdminAlertDetailPage = lazy(() => import('../pages/admin/AdminAlertDetailPage'))
+const AdminStatisticsPage = lazy(() => import('../pages/admin/AdminStatisticsPage'))
+const AdminOversightPage = lazy(() => import('../pages/admin/AdminOversightPage'))
+const AdminUsersPage = lazy(() => import('../pages/admin/AdminUsersPage'))
+const AdminUserDetailPage = lazy(() => import('../pages/admin/AdminUserDetailPage'))
+const AdminReportsPage = lazy(() => import('../pages/admin/AdminReportsPage'))
+const AdminReportDetailPage = lazy(() => import('../pages/admin/AdminReportDetailPage'))
+const AdminReferralsPage = lazy(() => import('../pages/admin/AdminReferralsPage'))
+const AdminReferralDetailPage = lazy(() => import('../pages/admin/AdminReferralDetailPage'))
+const AdminVeterinaryPage = lazy(() => import('../pages/admin/AdminVeterinaryPage'))
+const AdminVeterinaryDetailPage = lazy(() => import('../pages/admin/AdminVeterinaryDetailPage'))
 
 function HomeRedirect() {
   const { user, loading } = useAuth()

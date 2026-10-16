@@ -18,11 +18,14 @@ export default function FarmOverviewCard({ farm, actionPath, actionLabel }) {
     : []
 
   return (
-    <section className="card p-5" aria-labelledby="farm-overview-heading">
-      <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 id="farm-overview-heading" className="text-base font-semibold text-charcoal-900">
-          Farm overview
-        </h2>
+    <section className="card overflow-hidden" aria-labelledby="farm-overview-heading">
+      <header className="card-header">
+        <div>
+          <p className="section-eyebrow">Farm profile</p>
+          <h2 id="farm-overview-heading" className="mt-0.5 text-base font-semibold tracking-tight text-charcoal-900">
+            Farm overview
+          </h2>
+        </div>
         {actionPath && (
           <Link
             to={actionPath}
@@ -34,7 +37,7 @@ export default function FarmOverviewCard({ farm, actionPath, actionLabel }) {
         )}
       </header>
 
-      <dl className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+      <dl className="grid grid-cols-1 gap-x-6 gap-y-4 px-5 py-5 sm:grid-cols-2">
         {details.map((item) => (
           <div key={item.term}>
             <dt className="text-xs font-semibold uppercase tracking-wider text-charcoal-400">

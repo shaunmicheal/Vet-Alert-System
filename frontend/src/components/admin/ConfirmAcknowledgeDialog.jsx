@@ -41,9 +41,9 @@ export default function ConfirmAcknowledgeDialog({ alert, onCancel, onAcknowledg
         onClick={onCancel}
       />
 
-      <div className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-xl bg-white p-5 shadow-xl sm:rounded-xl sm:p-6">
+      <div className="dialog-panel max-w-md">
         <div className="flex items-start justify-between gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+          <span className="dialog-icon bg-amber-50 text-amber-700">
             <FiAlertCircle className="h-5 w-5" aria-hidden="true" />
           </span>
           <button

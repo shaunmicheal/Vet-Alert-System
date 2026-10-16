@@ -114,9 +114,9 @@ export default function AnimalsPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">My Farm</p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900">Animals</h1>
-          <p className="mt-1 text-sm text-charcoal-600">
+          <p className="page-eyebrow">My Farm</p>
+          <h1 className="page-title mt-1">Animals</h1>
+          <p className="page-lede">
             Manage the livestock registered to your farm.
           </p>
         </div>
@@ -191,7 +191,7 @@ export default function AnimalsPage() {
             ))}
           </section>
 
-          <section aria-label="Search and filter animals" className="flex flex-col gap-3 sm:flex-row">
+          <section aria-label="Search and filter animals" className="toolbar flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
               <label htmlFor="animal-search" className="sr-only">
                 Search animals

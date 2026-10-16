@@ -29,10 +29,10 @@ export default function AdminUserDetailPage() {
   return (
     <div className="space-y-6">
       <header>
-        <Link to="/admin/users" className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline">
+        <Link to="/admin/users" className="text-link inline-flex items-center gap-1.5 text-sm">
           <FiArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to users
         </Link>
-        <h1 className="mt-2 text-2xl font-bold text-charcoal-900">User Detail</h1>
+        <h1 className="page-title mt-2">User Detail</h1>
       </header>
       {loading ? (
         <div className="card flex items-center justify-center gap-3 px-6 py-16" role="status" aria-live="polite">

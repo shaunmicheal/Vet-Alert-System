@@ -50,11 +50,10 @@ export default function AdminReportsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">Admin console</p>
-        <h1 className="mt-1 text-2xl font-bold text-charcoal-900 sm:text-3xl">Health Report Oversight</h1>
-        <p className="mt-1 text-sm text-charcoal-600">All submitted reports. Awaiting review means status PENDING.</p>
+        <h1 className="page-title mt-1 sm:text-3xl">Health Report Oversight</h1>
+        <p className="page-lede">All submitted reports. Awaiting review means status PENDING.</p>
       </header>
-      <section aria-label="Filter reports" className="card flex flex-wrap gap-3 p-4">
+      <section aria-label="Filter reports" className="toolbar flex flex-wrap gap-3">
         <select aria-label="Report status" className="field-input max-w-xs pr-8" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); sync(1, e.target.value, search) }}>
           <option value="">All statuses</option>
           <option value="PENDING">Pending review</option>
@@ -66,7 +65,7 @@ export default function AdminReportsPage() {
           <input aria-label="Search reports" type="search" className="field-input" placeholder="Search title" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
           <button type="submit" className="btn btn-primary">Search</button>
         </form>
-        {active && <button type="button" onClick={() => { setStatus(''); setSearch(''); setSearchInput(''); setPage(1); setSearchParams({}, { replace: true }) }} className="text-sm font-semibold text-forest-700 hover:underline">Clear filters</button>}
+        {active && <button type="button" onClick={() => { setStatus(''); setSearch(''); setSearchInput(''); setPage(1); setSearchParams({}, { replace: true }) }} className="text-link text-sm">Clear filters</button>}
       </section>
       {status && <p className="text-sm text-charcoal-600" role="status">Active filter: status <span className="font-semibold text-charcoal-900">{status}</span></p>}
       {loading ? (

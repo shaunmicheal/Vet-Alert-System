@@ -5,7 +5,6 @@ def write(rel, content):
     p.write_text(content, encoding='utf-8')
     print('wrote', rel, len(content))
 
-# Reminder controller (Phase 6F-B)
 write('src/controllers/reminderController.js', '''// Reminder controller. Every read and write is scoped to the authenticated
 // farmer via `req.user.id` (never the client). Errors pass through `next(err)`
 // to the central error middleware so Prisma details are never leaked.
@@ -80,7 +79,6 @@ module.exports = {
 };
 ''')
 
-# Reminder validation (Phase 6F-B) - plain JS (no TypeScript `as` syntax)
 write('src/middleware/reminderValidation.js', '''// Zod validation for reminder requests.
 // `idSchema` comes from the shared validate middleware and enforces the format
 // Prisma's cuid() produces (lowercase letters + digits, 8-64 chars). `strictObject`

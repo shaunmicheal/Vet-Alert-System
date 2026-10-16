@@ -28,8 +28,8 @@ export default function AdminReferralDetailPage() {
   return (
     <div className="space-y-6">
       <header>
-        <Link to="/admin/referrals" className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline"><FiArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to referrals</Link>
-        <h1 className="mt-2 text-2xl font-bold text-charcoal-900">Referral Detail</h1>
+        <Link to="/admin/referrals" className="text-link inline-flex items-center gap-1.5 text-sm"><FiArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to referrals</Link>
+        <h1 className="page-title mt-2">Referral Detail</h1>
       </header>
       {loading ? (
         <div className="card flex items-center justify-center gap-3 px-6 py-16" role="status" aria-live="polite"><Spinner className="h-6 w-6 text-forest-700" /><p className="text-sm font-medium text-charcoal-600">Loading referral…</p></div>

@@ -71,7 +71,7 @@ export default function VetCaseDetailPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link to="/vet/cases" className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline">
+        <Link to="/vet/cases" className="text-link inline-flex items-center gap-1.5 text-sm">
           <FiArrowLeft className="h-4 w-4" aria-hidden="true" />
           Back to assigned cases
         </Link>

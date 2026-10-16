@@ -89,9 +89,9 @@ export default function CreateReminderDialog({ reminder, onClose, onSaved }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="reminder-form-title">
       <button type="button" className="absolute inset-0 bg-charcoal-900/50" aria-label="Cancel" onClick={onClose} />
-      <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-xl bg-white p-5 shadow-xl sm:rounded-xl sm:p-6">
+      <div className="dialog-panel max-w-lg">
         <div className="flex items-start justify-between gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-forest-50 text-forest-700">
+          <span className="dialog-icon bg-forest-50 text-forest-700">
             <FiBell className="h-5 w-5" aria-hidden="true" />
           </span>
           <button type="button" onClick={onClose} className="rounded-lg p-2 text-charcoal-500 transition hover:bg-charcoal-100 hover:text-charcoal-800" aria-label="Close">

@@ -121,17 +121,12 @@ export default function AdminStatisticsPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
-            Admin console
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900 sm:text-3xl">
+          <h1 className="page-title mt-1 sm:text-3xl">
             Statistics &amp; Analytics
           </h1>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-charcoal-600">
-            Aggregate system-level information for administrative monitoring. The
-            distributions and comparisons below come from a single live request to
-            the platform statistics endpoint - no mock data and no fabricated
-            metrics.
+          <p className="page-lede">
+            Live totals and breakdowns for users, veterinary professionals, reports,
+            referrals and alerts.
           </p>
         </div>
         <Link to="/admin" className="btn btn-secondary self-start sm:self-auto">

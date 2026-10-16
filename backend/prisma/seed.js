@@ -21,7 +21,6 @@ const prisma = require('../src/config/prisma');
 
 const DEMO_EMAIL_DOMAIN = '@example.com';
 
-// Name, professional type, province, district, specialisation, availability.
 const DEMO_PROFESSIONALS = [
   {
     name: 'Dr Tendai Marange',
@@ -160,7 +159,6 @@ const run = async () => {
     return;
   }
 
-  // createMany is a single round trip and never touches the User table.
   const result = await prisma.veterinaryProfessional.createMany({
     data: DEMO_PROFESSIONALS.map((professional) => ({
       ...professional,

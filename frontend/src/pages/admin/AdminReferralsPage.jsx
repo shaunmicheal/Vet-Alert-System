@@ -46,11 +46,10 @@ export default function AdminReferralsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">Admin console</p>
-        <h1 className="mt-1 text-2xl font-bold text-charcoal-900 sm:text-3xl">Referral Oversight</h1>
-        <p className="mt-1 text-sm text-charcoal-600">Farmer-to-vet referrals. Read-only; assignment rules are unchanged.</p>
+        <h1 className="page-title mt-1 sm:text-3xl">Referral Oversight</h1>
+        <p className="page-lede">Farmer-to-vet referrals. Read-only; assignment rules are unchanged.</p>
       </header>
-      <section aria-label="Filter referrals" className="card flex flex-wrap gap-3 p-4">
+      <section aria-label="Filter referrals" className="toolbar flex flex-wrap gap-3">
         <select aria-label="Referral status" className="field-input max-w-xs pr-8" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); sync(1, e.target.value) }}>
           <option value="">All statuses</option>
           <option value="PENDING">Pending</option>
@@ -59,7 +58,7 @@ export default function AdminReferralsPage() {
           <option value="COMPLETED">Completed</option>
           <option value="DECLINED">Declined</option>
         </select>
-        {status && <button type="button" onClick={() => { setStatus(''); setPage(1); setSearchParams({}, { replace: true }) }} className="text-sm font-semibold text-forest-700 hover:underline">Clear filters</button>}
+        {status && <button type="button" onClick={() => { setStatus(''); setPage(1); setSearchParams({}, { replace: true }) }} className="text-link text-sm">Clear filters</button>}
       </section>
       {status && <p className="text-sm text-charcoal-600" role="status">Active filter: status <span className="font-semibold text-charcoal-900">{status}</span></p>}
       {loading ? (

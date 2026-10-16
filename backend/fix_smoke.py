@@ -3,7 +3,6 @@ import pathlib
 p = pathlib.Path('scripts/reminderSmokeTest.js')
 s = p.read_text(encoding='utf-8')
 
-# 1. Capture farmer A's user id from registration response
 old1 = """    const tokenA = (regA && regA.body && regA.body.data && regA.body.data.token) || null;
     const tokenB = (regB && regB.body && regB.body.data && regB.body.data.token) || null;
     const vetToken = (regVet && regVet.body && regVet.body.data && regVet.body.data.token) || null;
@@ -16,7 +15,6 @@ new1 = """    const tokenA = (regA && regA.body && regA.body.data && regA.body.d
 assert old1 in s, 'old1 not found'
 s = s.replace(old1, new1)
 
-# 2. Fix ownership check: farmerId (cuid) vs JWT token -> compare with user id
 old2 = """    check('Created reminder belongs to Farmer A', createdFarmer === tokenA);
     check('Created reminder dueDate is stored', (created && created.body && created.body.data && created.body.data.reminder && created.body.data.reminder.dueDate) === '2026-11-30');
 """

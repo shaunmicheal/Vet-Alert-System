@@ -69,11 +69,10 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">Admin console</p>
-        <h1 className="mt-1 text-2xl font-bold text-charcoal-900 sm:text-3xl">User Management</h1>
-        <p className="mt-1 text-sm text-charcoal-600">Registered accounts. Directory profiles live under Veterinary oversight.</p>
+        <h1 className="page-title mt-1 sm:text-3xl">User Management</h1>
+        <p className="page-lede">Registered accounts. Directory profiles live under Veterinary oversight.</p>
       </header>
-      <section aria-label="Filter users" className="card p-4 sm:p-5">
+      <section aria-label="Filter users" className="toolbar">
         <form onSubmit={applySearch} className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="sm:col-span-2">
             <label htmlFor="users-search" className="field-label">Search by name or email</label>
@@ -88,7 +87,7 @@ export default function AdminUsersPage() {
         </form>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <button type="button" onClick={applySearch} className="btn btn-primary"><FiSearch className="h-4 w-4" aria-hidden="true" /> Search</button>
-          {filtersActive && <button type="button" onClick={clearFilters} className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest-700 hover:underline"><FiX className="h-4 w-4" aria-hidden="true" /> Clear filters</button>}
+          {filtersActive && <button type="button" onClick={clearFilters} className="text-link inline-flex items-center gap-1.5 text-sm"><FiX className="h-4 w-4" aria-hidden="true" /> Clear filters</button>}
         </div>
       </section>
       {loading ? (

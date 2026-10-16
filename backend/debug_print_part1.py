@@ -3,7 +3,6 @@ import pathlib
 p = pathlib.Path('scripts/reminderSmokeTest.js')
 s = p.read_text(encoding='utf-8')
 
-# Print the entire file in chunks for verification
 lines = s.split('\n')
 print('Total lines:', len(lines))
 print('===== CHUNK 1 (lines 1-120) =====')

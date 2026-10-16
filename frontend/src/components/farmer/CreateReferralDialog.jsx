@@ -5,6 +5,8 @@ import useDialogEffects from '../../hooks/useDialogEffects'
 import { ANIMAL_TYPE_LABELS } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
 import { formatDate } from '../../utils/format'
+import { VET_DEMO_REFERRAL_MESSAGE, isDemoProfessional } from '../../utils/vetDemoMode'
+import { DemoProfileBadge } from './VetDemoModeBanner'
 import AlertMessage from '../ui/AlertMessage'
 import Spinner from '../ui/Spinner'
 
@@ -19,6 +21,7 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
   const [error, setError] = useState(null)
 
   const trimmedMessage = message.trim()
+  const isDemo = isDemoProfessional(professional)
   const animal = report.animal || null
   const animalLabel = animal
     ? ANIMAL_TYPE_LABELS[animal.animalType] || animal.animalType
@@ -57,9 +60,9 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
         disabled={submitting}
       />
 
-      <div className="relative max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-xl bg-white p-5 shadow-xl sm:rounded-xl sm:p-6">
+      <div className="dialog-panel max-w-xl">
         <div className="flex items-start justify-between gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-forest-50 text-forest-700">
+          <span className="dialog-icon bg-forest-50 text-forest-700">
             <FiShare2 className="h-5 w-5" aria-hidden="true" />
           </span>
           <button
@@ -82,16 +85,28 @@ export default function CreateReferralDialog({ report, professional, onCancel, o
           <p className="mt-0.5 text-charcoal-600">
             {animalLabel} · Submitted {formatDate(report.createdAt)}
           </p>
-          <p className="mt-2 border-t border-charcoal-200 pt-2 font-semibold text-charcoal-900">
+          <p className="mt-2 flex flex-wrap items-center gap-2 border-t border-charcoal-200 pt-2 font-semibold text-charcoal-900">
             {professional.name}
+            {isDemo && <DemoProfileBadge />}
           </p>
           <p className="mt-0.5 text-charcoal-600">
             {professional.professionalType || 'Professional'}
             {professional.district ? ` · ${professional.district}` : ''}
             {professional.province ? `, ${professional.province}` : ''}
           </p>
+          {isDemo && (
+            <p className="mt-2 text-xs leading-relaxed text-amber-800">
+              Demonstration profile — this referral stays inside the demonstration.
+            </p>
+          )}
         </div>
 
+        {isDemo && step === 'message' && (
+          <AlertMessage variant="warning" title="Demonstration mode" className="mt-4">
+            <p>{VET_DEMO_REFERRAL_MESSAGE}</p>
+            <p className="text-amber-800">{VET_URGENT_CARE_GUIDANCE}</p>
+          </AlertMessage>
+        )}
         {step === 'message' ? (
           <div className="mt-4">
             <label htmlFor="referral-message" className="field-label">

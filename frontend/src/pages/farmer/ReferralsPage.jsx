@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FiRefreshCw, FiSearch, FiShare2 } from 'react-icons/fi'
+import { FiRefreshCw, FiSearch, FiShare2, FiAlertTriangle } from 'react-icons/fi'
 import { getMyReferrals } from '../../api/referrals'
+import { VET_DEMO_REFERRAL_MESSAGE, VET_DEMO_MODE_ENABLED } from '../../utils/vetDemoMode'
 import ReferralCard from '../../components/farmer/ReferralCard'
 import DashboardStatCard from '../../components/farmer/DashboardStatCard'
 import AlertMessage from '../../components/ui/AlertMessage'
@@ -80,11 +81,11 @@ export default function ReferralsPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
+          <p className="page-eyebrow">
             My Farm
           </p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900">Referrals</h1>
-          <p className="mt-1 max-w-2xl text-sm text-charcoal-600">
+          <h1 className="page-title mt-1">Referrals</h1>
+          <p className="page-lede">
             Health reports you have shared with veterinary professionals. Open a referral
             to see its status and any response from the professional.
           </p>
@@ -100,10 +101,19 @@ export default function ReferralsPage() {
         </button>
       </header>
 
+      {VET_DEMO_MODE_ENABLED && (
+        <AlertMessage variant="warning" title="Demonstration mode">
+          <p className="flex items-start gap-1.5">
+            <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>{VET_DEMO_REFERRAL_MESSAGE}</span>
+          </p>
+        </AlertMessage>
+      )}
+
       {loading ? (
-        <div className="card flex items-center justify-center gap-3 px-6 py-16" role="status">
-          <Spinner />
-          <p className="text-sm text-charcoal-600">Loading your referrals…</p>
+        <div className="card flex items-center justify-center gap-3 px-6 py-16" role="status" aria-live="polite">
+          <Spinner className="h-6 w-6 text-forest-700" />
+          <p className="text-sm font-medium text-charcoal-600">Loading your referrals…</p>
         </div>
       ) : loadError ? (
         <AlertMessage variant="error" title="Could not load your referrals">
@@ -158,7 +168,7 @@ export default function ReferralsPage() {
             />
           </section>
 
-          <section aria-label="Filter referrals" className="card p-4 sm:p-5">
+          <section aria-label="Filter referrals" className="toolbar">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="referral-search" className="field-label">

@@ -195,14 +195,10 @@ export default function AdminAlertsPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
-            Admin Console
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900">Alerts</h1>
-          <p className="mt-1 max-w-2xl text-sm text-charcoal-600">
-            System-generated and manually created administrative alerts. Alerts flag
-            patterns worth reviewing - they are not confirmed diagnoses or outbreak
-            events.
+          <h1 className="page-title mt-1">Alerts</h1>
+          <p className="page-lede">
+            System-generated and manually created alerts flag patterns for review; they are
+            not confirmed diagnoses or outbreak events.
           </p>
         </div>
         <div className="flex flex-col gap-3 self-start sm:self-auto sm:flex-row">
@@ -287,7 +283,7 @@ export default function AdminAlertsPage() {
             </p>
           </AlertMessage>
 
-          <section aria-label="Filter alerts" className="card p-4 sm:p-5">
+          <section aria-label="Filter alerts" className="toolbar">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
               {[
                 {
@@ -349,7 +345,7 @@ export default function AdminAlertsPage() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-sm font-semibold text-forest-700 hover:underline"
+                className="text-link text-sm"
               >
                 Clear filters
               </button>

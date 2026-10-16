@@ -19,10 +19,13 @@ import RiskOverviewCard from '../../components/admin/RiskOverviewCard'
 import AlertOverviewCard from '../../components/admin/AlertOverviewCard'
 import StatBreakdownCard from '../../components/admin/StatBreakdownCard'
 import AlertMessage from '../../components/ui/AlertMessage'
+import DashboardWelcomeBanner from '../../components/ui/DashboardWelcomeBanner'
 import Spinner from '../../components/ui/Spinner'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
+import { useAuth } from '../../hooks/useAuth'
 import { REPORT_STATUS_LABELS } from '../../utils/constants'
 import { getApiErrorMessage } from '../../utils/errors'
+import { LIVESTOCK_IMAGES } from '../../utils/livestockImages'
 
 const REFERRAL_STATUS_LABELS = Object.freeze({
   PENDING: 'Pending',
@@ -44,6 +47,7 @@ const REFERRAL_STATUS_ORDER = Object.freeze([
 export default function AdminDashboardPage() {
   useDocumentTitle('Admin Dashboard')
 
+  const { user } = useAuth()
   const [statistics, setStatistics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
@@ -94,24 +98,31 @@ export default function AdminDashboardPage() {
     label: REFERRAL_STATUS_LABELS[key] || key,
     count: referralStatuses[key] || 0,
   }))
+  const firstName = user && user.name ? user.name.trim().split(/\s+/)[0] : ''
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">
-            Admin console
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900 sm:text-3xl">Dashboard</h1>
-          <p className="mt-1 text-sm text-charcoal-600">
-            Platform-wide totals from the live database - accounts, reports, referrals and alerts.
-          </p>
-        </div>
-        <Link to="/admin/alerts" className="btn btn-primary self-start sm:self-auto">
-          <FiAlertTriangle className="h-4 w-4" aria-hidden="true" />
-          Review alerts
-        </Link>
-      </header>
+      <DashboardWelcomeBanner
+        title={firstName ? `Welcome, ${firstName}` : 'Welcome'}
+        description="Current totals for reports, alerts and referrals."
+        image={LIVESTOCK_IMAGES.smallStock}
+        imagePosition="center 40%"
+        stats={
+          loading || !statistics
+            ? []
+            : [
+                { label: 'Reports', value: String(reports.total || 0) },
+                { label: 'Active alerts', value: String(alerts.active || 0) },
+                { label: 'Referrals', value: String(referrals.total || 0) },
+              ]
+        }
+        action={
+          <Link to="/admin/alerts" className="btn btn-primary self-start sm:self-auto">
+            <FiAlertTriangle className="h-4 w-4" aria-hidden="true" />
+            Review alerts
+          </Link>
+        }
+      />
 
       {loadError && (
         <AlertMessage variant="error" title="Could not load the platform statistics">
@@ -229,7 +240,7 @@ export default function AdminDashboardPage() {
               <div className="grid gap-4 sm:grid-cols-3">
                 <Link
                   to="/admin/alerts"
-                  className="card flex gap-4 p-5 transition hover:border-forest-300"
+                  className="card card-hover flex gap-4 p-5"
                 >
                   <span
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-700"
@@ -249,7 +260,7 @@ export default function AdminDashboardPage() {
                 </Link>
                 <Link
                   to="/admin/statistics"
-                  className="card flex gap-4 p-5 transition hover:border-forest-300"
+                  className="card card-hover flex gap-4 p-5"
                 >
                   <span
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-forest-50 text-forest-700"
@@ -271,7 +282,7 @@ export default function AdminDashboardPage() {
                 </Link>
                 <Link
                   to="/admin/oversight"
-                  className="card flex gap-4 p-5 transition hover:border-forest-300"
+                  className="card card-hover flex gap-4 p-5"
                 >
                   <span
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-earth-50 text-earth-700"

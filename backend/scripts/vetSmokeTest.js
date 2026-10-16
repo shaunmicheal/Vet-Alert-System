@@ -1,18 +1,3 @@
-// ============================================================================
-// PHASE 4 SMOKE TEST - Veterinary functionality
-// ----------------------------------------------------------------------------
-// Run from the backend folder with:  npm run smoke:vet
-//
-// It starts the API in-process, creates TWO vets (each with a linked professional
-// record), an admin and TWO farmers, then proves:
-//   - the directory lists ACTIVE professionals only, and filters correctly,
-//   - a vet can read/update ONLY their own profile (never role/isActive/userId),
-//   - a farmer can refer ONLY their own reports to an ACTIVE professional,
-//   - a vet can manage ONLY their own assigned cases,
-//   - status transitions are enforced and arbitrary status changes are rejected.
-//
-// Every temporary record it creates is deleted at the end.
-// ============================================================================
 const bcrypt = require('bcrypt');
 
 const app = require('../src/app');
@@ -69,20 +54,18 @@ const post = (token, body) => ({ method: 'POST', headers: auth(token), body: JSO
 const patch = (token, body) => ({ method: 'PATCH', headers: auth(token), body: JSON.stringify(body) });
 
 const cleanup = async () => {
-  // Deleting a farmer cascades to their farm, animals, reports and referrals.
   await prisma.user.deleteMany({ where: { email: { in: TEMP_EMAILS } } });
   await prisma.veterinaryProfessional.deleteMany({ where: { name: { in: PROF_NAMES } } });
   await prisma.symptom.deleteMany({ where: { name: { in: SYMPTOM_NAMES } } });
 };
 
 const run = async () => {
-  await cleanup(); // remove leftovers from a previous incomplete run
+  await cleanup();
 
   const [symptomFever, symptomCough] = await Promise.all(
     SYMPTOM_NAMES.map((name) => prisma.symptom.create({ data: { name } })),
   );
 
-  // Vets + an admin (public registration only ever creates farmers).
   const vetOneUser = await prisma.user.create({
     data: { ...VET_ONE, password: await bcrypt.hash(VET_ONE.password, 10), role: 'VETERINARY_PROFESSIONAL' },
   });
@@ -93,7 +76,6 @@ const run = async () => {
     data: { ...ADMIN, password: await bcrypt.hash(ADMIN.password, 10), role: 'ADMIN' },
   });
 
-  // Professional records: two ACTIVE (each linked to a vet user) + one INACTIVE.
   const profOne = await prisma.veterinaryProfessional.create({
     data: {
       name: PROF_ONE_NAME,
@@ -138,7 +120,6 @@ const run = async () => {
   const base = `http://127.0.0.1:${server.address().port}`;
 
   try {
-    // --- Accounts --------------------------------------------------------
     const regA = await api(base, '/api/auth/register', { method: 'POST', body: JSON.stringify(FARMER_A) });
     const regB = await api(base, '/api/auth/register', { method: 'POST', body: JSON.stringify(FARMER_B) });
     const tokenA = regA.body?.data?.token;
@@ -153,7 +134,6 @@ const run = async () => {
     const adminToken = adminLogin.body?.data?.token;
     check('Accounts are ready', !!tokenA && !!tokenB && !!vetOneToken && !!vetTwoToken && !!adminToken);
 
-    // --- Farmer data: farms + reports ------------------------------------
     await api(base, '/api/farmer/farm', post(tokenA, FARM_A));
     await api(base, '/api/farmer/farm', post(tokenB, FARM_B));
 
@@ -170,7 +150,6 @@ const run = async () => {
     const reportBId = reportBRes.body?.data?.report?.id;
     check('Farmers created reports', !!reportAId && !!reportBId);
 
-    // --- AUTHORIZATION ---------------------------------------------------
     const guestCases = await api(base, '/api/vet/cases');
     check('Guest cannot access vet cases (401)', guestCases.status === 401);
 
@@ -190,7 +169,6 @@ const run = async () => {
     check('Farmer cannot update a vet profile (403)', farmerProfileWrite.status === 403);
 
 
-    // --- DIRECTORY -------------------------------------------------------
     const guestDir = await api(base, '/api/vets');
     check('Guest cannot list the directory (401)', guestDir.status === 401);
 
@@ -228,7 +206,6 @@ const run = async () => {
     check('Too-short district filter is rejected (400)', badDistrictFilter.status === 400);
 
 
-    // --- PROFILE ---------------------------------------------------------
     const ownProfile = await api(base, '/api/vet/profile', get(vetOneToken));
     check('Vet can read their own profile', ownProfile.status === 200 && ownProfile.body?.data?.profile?.name === PROF_ONE_NAME);
     check('Own profile never exposes a password field', ownProfile.body?.data?.profile?.password === undefined);
@@ -251,14 +228,11 @@ const run = async () => {
     const meAfter = await api(base, '/api/auth/me', get(vetOneToken));
     check('Vet role is unchanged after the profile attempts', meAfter.body?.data?.user?.role === 'VETERINARY_PROFESSIONAL');
 
-    // Profile updates are self-scoped: Vet Two editing their own profile must not
-    // touch Vet One's record.
     await api(base, '/api/vet/profile', patch(vetTwoToken, { availability: 'Nights' }));
     const vetOneProfileAfter = await api(base, '/api/vet/profile', get(vetOneToken));
     check('A vet cannot modify another vet\'s profile', vetOneProfileAfter.body?.data?.profile?.availability === 'Weekends 9-1');
 
 
-    // --- REFERRALS: creation ---------------------------------------------
     const createRef = await api(base, '/api/referrals', post(tokenA, {
       reportId: reportAId,
       professionalId: profOne.id,
@@ -287,7 +261,6 @@ const run = async () => {
     const guestRefCreate = await api(base, '/api/referrals', { method: 'POST', body: JSON.stringify({ reportId: reportAId, professionalId: profOne.id }) });
     check('Guest cannot create a referral (401)', guestRefCreate.status === 401);
 
-    // --- REFERRALS: farmer visibility ------------------------------------
     const listRefA = await api(base, '/api/referrals', get(tokenA));
     check('Farmer A sees their own referral', listRefA.body?.data?.count === 1 && listRefA.body?.data?.referrals?.[0]?.id === referralId);
 
@@ -300,7 +273,6 @@ const run = async () => {
     const ownRefRead = await api(base, `/api/referrals/${referralId}`, get(tokenA));
     check('Farmer A can read their own referral', ownRefRead.status === 200 && ownRefRead.body?.data?.referral?.report?.id === reportAId);
 
-    // --- REFERRALS: vet case access --------------------------------------
     const vetOneCases = await api(base, '/api/vet/cases', get(vetOneToken));
     const vetOneCaseIds = (vetOneCases.body?.data?.cases || []).map((c) => c.id);
     check('Vet One sees the referral assigned to them', vetOneCases.status === 200 && vetOneCaseIds.includes(referralId));
@@ -321,8 +293,6 @@ const run = async () => {
     check('Guest cannot read a vet case (401)', guestCaseRead.status === 401);
 
 
-    // --- STATUS TRANSITIONS ----------------------------------------------
-    // Still PENDING: skipping straight to IN_PROGRESS must be refused.
     const skip = await api(base, `/api/vet/cases/${referralId}/status`, patch(vetOneToken, { status: 'IN_PROGRESS' }));
     check('A PENDING referral cannot skip to IN_PROGRESS (409)', skip.status === 409);
 
@@ -356,7 +326,6 @@ const run = async () => {
     const completedTerminal = await api(base, `/api/vet/cases/${referralId}/status`, patch(vetOneToken, { status: 'ACCEPTED' }));
     check('A COMPLETED referral is terminal (409)', completedTerminal.status === 409);
 
-    // A second referral to prove the DECLINED path is terminal too.
     const refTwo = await api(base, '/api/referrals', post(tokenA, { reportId: reportAId, professionalId: profOne.id }));
     const referralTwoId = refTwo.body?.data?.referral?.id;
     const decline = await api(base, `/api/vet/cases/${referralTwoId}/status`, patch(vetOneToken, { status: 'DECLINED' }));
@@ -366,7 +335,6 @@ const run = async () => {
     check('A DECLINED referral is terminal (409)', declinedTerminal.status === 409);
 
 
-    // --- PROFESSIONAL RESPONSE -------------------------------------------
     const responseRes = await api(base, `/api/vet/cases/${referralId}/response`, patch(vetOneToken, {
       professionalResponse: 'Please isolate the cow and provide clean water. Contact me if it worsens.',
     }));
@@ -408,4 +376,3 @@ const run = async () => {
 };
 
 run();
-

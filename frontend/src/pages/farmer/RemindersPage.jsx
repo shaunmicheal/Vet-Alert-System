@@ -96,7 +96,7 @@ export default function RemindersPage() {
 
   const handleCompleted = (updated) => {
     setReminders((prev) => prev.map((reminder) => (reminder.id === updated.id ? updated : reminder)))
-    setFlash('Nice work - reminder marked as done.')
+    setFlash('Reminder marked as done.')
   }
 
   const handleDeleted = (deleted) => {
@@ -111,9 +111,9 @@ export default function RemindersPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">My Farm</p>
-          <h1 className="mt-1 text-2xl font-bold text-charcoal-900">Reminders</h1>
-          <p className="mt-1 max-w-2xl text-sm text-charcoal-600">
+          <p className="page-eyebrow">My Farm</p>
+          <h1 className="page-title mt-1">Reminders</h1>
+          <p className="page-lede">
             Stay on top of vaccinations, deworming, dipping, pregnancy checks and follow-ups.
             Overdue tasks appear first so nothing slips.
           </p>
@@ -158,7 +158,7 @@ export default function RemindersPage() {
             />
           ) : (
             <>
-              <section aria-label="Filter reminders" className="card p-4 sm:p-5">
+              <section aria-label="Filter reminders" className="toolbar">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                   <div className="sm:w-64">
                     <label htmlFor="reminder-type-filter" className="field-label">Reminder type</label>
@@ -249,4 +249,3 @@ export default function RemindersPage() {
     </div>
   )
 }
-

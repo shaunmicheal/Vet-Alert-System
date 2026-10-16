@@ -3,26 +3,26 @@ export default function StatBreakdownCard({ title, total, rows, emptyTitle, empt
   const headingId = `breakdown-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
 
   return (
-    <section className="card p-5" aria-labelledby={headingId}>
-      <div className="flex items-center justify-between gap-2">
+    <section className="card overflow-hidden" aria-labelledby={headingId}>
+      <div className="card-header">
         <h2
           id={headingId}
-          className="text-sm font-semibold uppercase tracking-wider text-charcoal-500"
+          className="text-base font-semibold tracking-tight text-charcoal-900"
         >
           {title}
         </h2>
-        <span className="text-xs text-charcoal-500">{safeTotal} total</span>
+        <span className="rounded-full bg-charcoal-100 px-2.5 py-1 text-xs font-semibold text-charcoal-700">{safeTotal} total</span>
       </div>
 
       {safeTotal === 0 ? (
-        <div className="mt-4 rounded-lg border border-charcoal-100 bg-cream-100 px-4 py-5">
+        <div className="m-5 rounded-xl border border-charcoal-100 bg-cream-100 px-4 py-5">
           <p className="text-sm font-semibold text-charcoal-800">{emptyTitle}</p>
           {emptyDescription && (
             <p className="mt-1 text-xs leading-relaxed text-charcoal-600">{emptyDescription}</p>
           )}
         </div>
       ) : (
-        <ul className="mt-4 space-y-3">
+        <ul className="space-y-4 px-5 py-5">
           {rows.map((row) => {
             const count = row.count || 0
             const pct = safeTotal > 0 ? Math.round((count / safeTotal) * 100) : 0

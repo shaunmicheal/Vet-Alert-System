@@ -59,7 +59,7 @@ export default function LoginPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-forest-700">
           VetAlert Zimbabwe
         </p>
-        <h1 className="mt-2 text-2xl font-bold text-charcoal-900 sm:text-3xl">Welcome back</h1>
+        <h1 className="page-title mt-2 sm:text-3xl">Welcome back</h1>
         <p className="mt-2 text-sm text-charcoal-600">Sign in to your workspace to continue.</p>
       </div>
 
